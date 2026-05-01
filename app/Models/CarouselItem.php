@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class CarouselItem extends Model
+{
+    protected $fillable = [
+        'title',
+        'subtitle',
+        'button_text',
+        'button_url',
+        'product_id',
+        'image',
+        'order',
+        'active',
+    ];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+}

@@ -9,7 +9,7 @@ export default function ThemeToggle() {
         <button
             type="button"
             onClick={() => setTheme(nextTheme)}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-200 transition hover:border-gold-400 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-gold-300 dark:border-slate-700 dark:bg-slate-900/70"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 bg-slate-100 text-slate-700 transition hover:border-gold-400 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-gold-300 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
             aria-label={`Ativar tema ${nextTheme}`}
             title={`Ativar tema ${nextTheme}`}
         >

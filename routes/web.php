@@ -1,15 +1,20 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\CarouselController;
+use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', [ShopController::class, 'index'])->name('home');
+Route::get('/produtos', [ProductController::class, 'index'])->name('products.index');
+Route::get('/produtos/{product:slug}', [ProductController::class, 'show'])->name('products.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
@@ -22,7 +27,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin Routes
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-        Route::resource('products', ProductController::class);
+        Route::resource('products', AdminProductController::class)->only(['index', 'edit', 'update']);
+        Route::resource('carousel', CarouselController::class)->except(['show']);
+        Route::resource('campaigns', CampaignController::class)->except(['show']);
     });
 
     // Client Routes

@@ -2,24 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\Product;
-use App\Models\Category;
-use App\Models\CarouselItem;
-use App\Models\Campaign;
 
-class ShopController extends Controller
+class ProductController extends Controller
 {
     public function index(Request $request)
     {
         $search = $request->query('search');
         $categorySlug = $request->query('category');
+        $type = $request->query('type');
+        $color = $request->query('color');
 
         $categories = Category::withCount('products')
             ->having('products_count', '>', 0)
             ->orderBy('name')
             ->get();
+
+        $types = Product::whereNotNull('type')
+            ->where('type', '!=', '')
+            ->distinct()
+            ->orderBy('type')
+            ->pluck('type');
 
         $productsQuery = Product::where('is_active', true)
             ->with('category');
@@ -28,6 +34,7 @@ class ShopController extends Controller
             $productsQuery->where(function ($query) use ($search) {
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('type', 'like', "%{$search}%")
                     ->orWhereHas('category', function ($query) use ($search) {
                         $query->where('name', 'like', "%{$search}%");
                     });
@@ -40,38 +47,35 @@ class ShopController extends Controller
             });
         }
 
-        $featuredProducts = $productsQuery->latest()->take(8)->get();
-
-        $newArrivals = Product::where('is_active', true)
-            ->with('category')
-            ->latest()
-            ->take(4)
-            ->get();
-
-        $carouselItems = CarouselItem::where('active', true)
-            ->orderBy('order')
-            ->get();
-
-        $campaigns = Campaign::where('active', true)
-            ->with('category')
-            ->orderBy('order')
-            ->take(4)
-            ->get();
-
-        if ($search || $categorySlug) {
-            return redirect()->route('products.index', array_filter(['search' => $search, 'category' => $categorySlug]));
+        if ($type) {
+            $productsQuery->where('type', $type);
         }
 
-        return Inertia::render('Shop/Index', [
-            'featuredProducts' => $featuredProducts,
+        if ($color) {
+            $productsQuery->whereJsonContains('available_colors', $color);
+        }
+
+        $products = $productsQuery->latest()->paginate(12)->withQueryString();
+
+        return Inertia::render('Shop/Products', [
+            'products' => $products,
             'categories' => $categories,
-            'newArrivals' => $newArrivals,
-            'carouselItems' => $carouselItems,
-            'campaigns' => $campaigns,
+            'types' => $types,
             'filters' => [
                 'search' => $search,
                 'category' => $categorySlug,
+                'type' => $type,
+                'color' => $color,
             ],
+        ]);
+    }
+
+    public function show(Product $product)
+    {
+        $product->load('category');
+
+        return Inertia::render('Shop/ProductShow', [
+            'product' => $product,
         ]);
     }
 }

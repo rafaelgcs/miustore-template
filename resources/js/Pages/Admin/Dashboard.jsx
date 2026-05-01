@@ -59,13 +59,13 @@ export default function Dashboard({ auth, stats }) {
                                 <LayoutDashboard className="h-5 w-5" />
                                 Visão Geral
                             </a>
-                            <a
-                                href="#"
+                            <Link
+                                href={route('admin.products.index')}
                                 className="flex items-center gap-3 rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-gold-200 hover:bg-gold-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
                             >
                                 <ShoppingBag className="h-5 w-5" />
                                 Produtos
-                            </a>
+                            </Link>
                             <a
                                 href="#"
                                 className="flex items-center gap-3 rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-gold-200 hover:bg-gold-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
