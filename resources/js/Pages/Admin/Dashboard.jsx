@@ -12,7 +12,7 @@ import {
     ShieldCheck,
 } from 'lucide-react';
 
-export default function Dashboard({ auth }) {
+export default function Dashboard({ auth, stats }) {
     return (
         <AuthenticatedLayout
             header={
@@ -105,8 +105,8 @@ export default function Dashboard({ auth }) {
                                 <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-gold-50 text-gold-700">
                                     <ShoppingBag className="h-6 w-6" />
                                 </div>
-                                <p className="mt-5 text-sm text-slate-500 dark:text-slate-400">Vendas no mês</p>
-                                <h3 className="mt-3 text-3xl font-semibold text-slate-950 dark:text-slate-100">R$ 12.450</h3>
+                                <p className="mt-5 text-sm text-slate-500 dark:text-slate-400">Receita Total</p>
+                                <h3 className="mt-3 text-3xl font-semibold text-slate-950 dark:text-slate-100">R$ {parseFloat(stats.total_revenue).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
                             </motion.div>
 
                             <motion.div
@@ -118,8 +118,8 @@ export default function Dashboard({ auth }) {
                                 <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
                                     <Users className="h-6 w-6" />
                                 </div>
-                                <p className="mt-5 text-sm text-slate-500 dark:text-slate-400">Usuários ativos</p>
-                                <h3 className="mt-3 text-3xl font-semibold text-slate-950 dark:text-slate-100">1.548</h3>
+                                <p className="mt-5 text-sm text-slate-500 dark:text-slate-400">Total de Clientes</p>
+                                <h3 className="mt-3 text-3xl font-semibold text-slate-950 dark:text-slate-100">{stats.total_users}</h3>
                             </motion.div>
 
                             <motion.div
@@ -129,10 +129,10 @@ export default function Dashboard({ auth }) {
                                 className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/95"
                             >
                                 <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                                    <ShieldCheck className="h-6 w-6" />
+                                    <Sparkles className="h-6 w-6" />
                                 </div>
-                                <p className="mt-5 text-sm text-slate-500 dark:text-slate-400">Segurança</p>
-                                <h3 className="mt-3 text-3xl font-semibold text-slate-950 dark:text-slate-100">100%</h3>
+                                <p className="mt-5 text-sm text-slate-500 dark:text-slate-400">Produtos Ativos</p>
+                                <h3 className="mt-3 text-3xl font-semibold text-slate-950 dark:text-slate-100">{stats.total_products}</h3>
                             </motion.div>
                         </div>
 
@@ -151,12 +151,57 @@ export default function Dashboard({ auth }) {
 
                             <div className="mt-8 grid gap-4 md:grid-cols-2">
                                 <div className="rounded-[1.75rem] border border-slate-200/80 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-900">
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">Pedidos abertos</p>
-                                    <p className="mt-4 text-3xl font-semibold text-slate-950 dark:text-slate-100">24</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Total de Pedidos</p>
+                                    <p className="mt-4 text-3xl font-semibold text-slate-950 dark:text-slate-100">{stats.total_orders}</p>
                                 </div>
                                 <div className="rounded-[1.75rem] border border-slate-200/80 bg-slate-50 p-5 dark:border-slate-800 dark:bg-slate-900">
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">Novas consultas</p>
-                                    <p className="mt-4 text-3xl font-semibold text-slate-950 dark:text-slate-100">8</p>
+                                    <p className="text-sm text-slate-500 dark:text-slate-400">Produtos com Estoque Baixo</p>
+                                    <p className="mt-4 text-3xl font-semibold text-slate-950 dark:text-slate-100">{stats.low_stock_products.length}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid gap-6 lg:grid-cols-2">
+                            <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/95">
+                                <h3 className="text-lg font-semibold text-slate-950 dark:text-slate-100">Pedidos Recentes</h3>
+                                <div className="mt-4 space-y-3">
+                                    {stats.recent_orders.length === 0 ? (
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">Nenhum pedido recente</p>
+                                    ) : (
+                                        stats.recent_orders.map((order) => (
+                                            <div key={order.id} className="flex items-center justify-between rounded-lg border border-slate-200/50 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900">
+                                                <div>
+                                                    <p className="text-sm font-medium text-slate-950 dark:text-slate-100">Pedido #{order.id}</p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400">{order.user.name}</p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-sm font-semibold text-slate-950 dark:text-slate-100">R$ {parseFloat(order.total_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">{order.status}</p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/95">
+                                <h3 className="text-lg font-semibold text-slate-950 dark:text-slate-100">Estoque Baixo</h3>
+                                <div className="mt-4 space-y-3">
+                                    {stats.low_stock_products.length === 0 ? (
+                                        <p className="text-sm text-slate-500 dark:text-slate-400">Todos os produtos com estoque adequado</p>
+                                    ) : (
+                                        stats.low_stock_products.map((product) => (
+                                            <div key={product.id} className="flex items-center justify-between rounded-lg border border-red-200/50 bg-red-50 p-3 dark:border-red-800 dark:bg-red-900/20">
+                                                <div>
+                                                    <p className="text-sm font-medium text-slate-950 dark:text-slate-100">{product.name}</p>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400">{product.category?.name}</p>
+                                                </div>
+                                                <div className="text-right">
+                                                    <p className="text-sm font-semibold text-red-600 dark:text-red-400">{product.stock} unidades</p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    )}
                                 </div>
                             </div>
                         </div>

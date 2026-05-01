@@ -28,6 +28,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Client Routes
     Route::prefix('client')->name('client.')->group(function () {
         Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
+        Route::get('/orders', [ClientDashboardController::class, 'orders'])->name('orders');
+        Route::get('/favorites', [ClientDashboardController::class, 'favorites'])->name('favorites');
+        Route::get('/cart', [ClientDashboardController::class, 'cart'])->name('cart');
     });
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
