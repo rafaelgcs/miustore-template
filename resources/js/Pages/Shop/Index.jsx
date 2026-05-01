@@ -25,16 +25,16 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
     const searchValue = filters?.search ?? '';
     return (
         <div className="min-h-screen bg-white dark:bg-neutral-950 text-slate-900 dark:text-slate-100 font-sans">
-            <Head title="Podologia & Massoterapia Rodrigues" />
+            <Head title="Miu Store" />
 
             <nav className="fixed inset-x-0 top-0 z-50 border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black/70 backdrop-blur-xl">
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
                     <div className="flex items-center gap-3">
                         <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20">
-                            R
+                            M
                         </div>
                         <div>
-                            <p className="text-xs uppercase tracking-[0.32em] text-slate-400 dark:text-slate-400">Clínica Rodrigues</p>
+                            <p className="text-xs uppercase tracking-[0.32em] text-slate-400 dark:text-slate-400">Miu Store</p>
                             <h1 className="text-lg font-semibold tracking-wide text-black dark:text-white">Joias & Bem-estar</h1>
                         </div>
                     </div>

@@ -26,7 +26,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     Admin
                                 </p>
                                 <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                                    Clínica Rodrigues
+                                    Miu Store
                                 </p>
                             </div>
                         </Link>
@@ -45,7 +45,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                 <span className="inline-flex rounded-md">
                                     <button
                                         type="button"
-                                        className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-slate-600"
+                                        className="inline-flex items-center rounded-full border border-slate-200/80 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-xl transition hover:border-gold-300 hover:bg-gold-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-gold-500/50 dark:hover:bg-gold-500/10"
                                     >
                                         {user.name}
 
@@ -89,7 +89,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     (previousState) => !previousState,
                                 )
                             }
-                            className="inline-flex items-center justify-center rounded-md p-2 text-slate-500 transition duration-150 ease-in-out hover:bg-slate-100 hover:text-slate-700 focus:bg-slate-100 focus:text-slate-700 focus:outline-none dark:text-slate-400 dark:hover:bg-slate-900 dark:hover:text-slate-100 dark:focus:bg-slate-900"
+                            className="inline-flex items-center justify-center rounded-full p-2 text-slate-500 transition duration-150 ease-in-out hover:bg-gold-50 hover:text-gold-700 focus:bg-gold-50 focus:text-gold-700 focus:outline-none dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-slate-100 dark:focus:bg-white/10"
                         >
                             <svg
                                 className="h-6 w-6"
@@ -155,7 +155,7 @@ export default function AuthenticatedLayout({ header, children }) {
             </nav>
 
             {header && (
-                <header className="bg-white shadow dark:bg-slate-900">
+                <header className="border-b border-slate-200/80 bg-slate-50/50 dark:border-white/10 dark:bg-transparent">
                     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                         {header}
                     </div>
