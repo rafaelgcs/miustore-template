@@ -2,42 +2,17 @@ import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { Package, Truck, CheckCircle, Clock, Eye, Star } from 'lucide-react';
+import { Package, Truck, CheckCircle, Clock, Eye, Star, AlertCircle } from 'lucide-react';
 
-const orders = [
-    {
-        id: '#1234',
-        date: '15/04/2026',
-        status: 'Entregue',
-        total: 'R$ 189,90',
-        items: 3,
-        statusColor: 'text-green-600',
-        statusBg: 'bg-green-50',
-        icon: CheckCircle,
-    },
-    {
-        id: '#1233',
-        date: '10/04/2026',
-        status: 'Em trânsito',
-        total: 'R$ 245,90',
-        items: 2,
-        statusColor: 'text-blue-600',
-        statusBg: 'bg-blue-50',
-        icon: Truck,
-    },
-    {
-        id: '#1232',
-        date: '05/04/2026',
-        status: 'Processando',
-        total: 'R$ 89,90',
-        items: 1,
-        statusColor: 'text-yellow-600',
-        statusBg: 'bg-yellow-50',
-        icon: Clock,
-    },
-];
+const statusConfig = {
+    pending: { label: 'Pendente', color: 'text-yellow-600', bg: 'bg-yellow-50', icon: Clock },
+    processing: { label: 'Processando', color: 'text-blue-600', bg: 'bg-blue-50', icon: Clock },
+    shipped: { label: 'Em trânsito', color: 'text-indigo-600', bg: 'bg-indigo-50', icon: Truck },
+    delivered: { label: 'Entregue', color: 'text-green-600', bg: 'bg-green-50', icon: CheckCircle },
+    cancelled: { label: 'Cancelado', color: 'text-red-600', bg: 'bg-red-50', icon: AlertCircle },
+};
 
-export default function Orders({ auth }) {
+export default function Orders({ auth, orders }) {
     return (
         <AuthenticatedLayout
             header={
@@ -72,38 +47,46 @@ export default function Orders({ auth }) {
                         </div>
                     ) : (
                         <div className="grid gap-6">
-                            {orders.map((order, index) => (
-                                <motion.article
-                                    key={order.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/95"
-                                >
-                                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-slate-100 dark:bg-slate-800">
-                                                <order.icon className="h-6 w-6 text-slate-600 dark:text-slate-400" />
+                            {orders.map((order, index) => {
+                                const config = statusConfig[order.status] || statusConfig.pending;
+                                const StatusIcon = config.icon;
+                                return (
+                                    <motion.article
+                                        key={order.id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.5, delay: index * 0.1 }}
+                                        className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/95"
+                                    >
+                                        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                                            <div className="flex items-center gap-4">
+                                                <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-slate-100 dark:bg-slate-800">
+                                                    <StatusIcon className="h-6 w-6 text-slate-600 dark:text-slate-400" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-semibold text-slate-950 dark:text-slate-100">#{order.id}</h3>
+                                                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                                                        {new Date(order.created_at).toLocaleDateString('pt-BR')} • {order.items?.length || 0} item(s)
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h3 className="text-lg font-semibold text-slate-950 dark:text-slate-100">{order.id}</h3>
-                                                <p className="text-sm text-slate-600 dark:text-slate-400">{order.date} • {order.items} item(s)</p>
-                                            </div>
-                                        </div>
 
-                                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-                                            <div className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${order.statusBg} ${order.statusColor}`}>
-                                                {order.status}
+                                            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+                                                <div className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${config.bg} ${config.color}`}>
+                                                    {config.label}
+                                                </div>
+                                                <span className="text-lg font-semibold text-slate-950 dark:text-slate-100">
+                                                    R$ {parseFloat(order.total_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                                </span>
+                                                <button className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-gold-200 hover:bg-gold-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
+                                                    <Eye className="mr-2 h-4 w-4" />
+                                                    Ver detalhes
+                                                </button>
                                             </div>
-                                            <span className="text-lg font-semibold text-slate-950 dark:text-slate-100">{order.total}</span>
-                                            <button className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-gold-200 hover:bg-gold-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
-                                                <Eye className="mr-2 h-4 w-4" />
-                                                Ver detalhes
-                                            </button>
                                         </div>
-                                    </div>
-                                </motion.article>
-                            ))}
+                                    </motion.article>
+                                );
+                            })}
                         </div>
                     )}
 

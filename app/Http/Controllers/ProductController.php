@@ -57,10 +57,13 @@ class ProductController extends Controller
 
         $products = $productsQuery->latest()->paginate(12)->withQueryString();
 
+        $userFavorites = auth()->check() ? auth()->user()->favorites()->pluck('product_id')->toArray() : [];
+
         return Inertia::render('Shop/Products', [
             'products' => $products,
             'categories' => $categories,
             'types' => $types,
+            'userFavorites' => $userFavorites,
             'filters' => [
                 'search' => $search,
                 'category' => $categorySlug,
@@ -73,9 +76,11 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         $product->load('category');
+        $isFavorited = auth()->check() ? auth()->user()->favorites()->where('product_id', $product->id)->exists() : false;
 
         return Inertia::render('Shop/ProductShow', [
             'product' => $product,
+            'isFavorited' => $isFavorited,
         ]);
     }
 }

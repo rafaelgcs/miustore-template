@@ -62,12 +62,15 @@ class ShopController extends Controller
             return redirect()->route('products.index', array_filter(['search' => $search, 'category' => $categorySlug]));
         }
 
+        $userFavorites = auth()->check() ? auth()->user()->favorites()->pluck('product_id')->toArray() : [];
+
         return Inertia::render('Shop/Index', [
             'featuredProducts' => $featuredProducts,
             'categories' => $categories,
             'newArrivals' => $newArrivals,
             'carouselItems' => $carouselItems,
             'campaigns' => $campaigns,
+            'userFavorites' => $userFavorites,
             'filters' => [
                 'search' => $search,
                 'category' => $categorySlug,

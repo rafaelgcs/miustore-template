@@ -37,6 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
         Route::get('/orders', [ClientDashboardController::class, 'orders'])->name('orders');
         Route::get('/favorites', [ClientDashboardController::class, 'favorites'])->name('favorites');
+        Route::post('/favorites/{product}', [ClientDashboardController::class, 'toggleFavorite'])->name('favorites.toggle');
         Route::get('/cart', [ClientDashboardController::class, 'cart'])->name('cart');
     });
 

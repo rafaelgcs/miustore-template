@@ -1,11 +1,24 @@
 import React, { useState } from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { ArrowRight, Heart, ShoppingBag, ZoomIn } from 'lucide-react';
 import ThemeToggle from '@/Components/ThemeToggle';
 
-export default function ProductShow({ product }) {
+export default function ProductShow({ product, isFavorited }) {
+    const { post } = useForm();
+    const { auth } = usePage().props;
+    const isLoggedIn = !!auth?.user;
     const [selectedSize, setSelectedSize] = useState(product.available_sizes?.[0] || '');
     const [selectedColor, setSelectedColor] = useState(product.available_colors?.[0] || '');
+
+    const toggleFavorite = () => {
+        if (!isLoggedIn) {
+            window.location.href = route('login');
+            return;
+        }
+        post(route('client.favorites.toggle', product.id), {
+            preserveScroll: true,
+        });
+    };
 
     return (
         <div className="min-h-screen bg-white dark:bg-neutral-950 text-slate-900 dark:text-slate-100 font-sans">
@@ -161,9 +174,12 @@ export default function ProductShow({ product }) {
                                         <ShoppingBag className="h-4 w-4" />
                                         Adicionar ao carrinho
                                     </button>
-                                    <button className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-5 py-4 text-sm text-slate-700 dark:text-slate-200 transition hover:border-gold-400 hover:bg-slate-200 dark:hover:bg-white/10 dark:hover:text-white">
-                                        <Heart className="h-4 w-4" />
-                                        Favoritar
+                                    <button 
+                                        onClick={toggleFavorite}
+                                        className={`inline-flex items-center justify-center gap-2 rounded-full border px-5 py-4 text-sm font-semibold transition ${isFavorited ? 'bg-red-500 border-red-500 text-white shadow-lg shadow-red-500/20' : 'border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-200 hover:border-red-400 hover:text-red-500'}`}
+                                    >
+                                        <Heart className={`h-4 w-4 ${isFavorited ? 'fill-current' : ''}`} />
+                                        {isFavorited ? 'Remover dos favoritos' : 'Favoritar'}
                                     </button>
                                 </div>
                             </div>

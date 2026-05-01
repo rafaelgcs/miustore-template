@@ -1,5 +1,4 @@
-import React from 'react';
-import { Head, Link } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Star, ArrowRight, Search, Heart, ShoppingCart } from 'lucide-react';
 import ThemeToggle from '@/Components/ThemeToggle';
@@ -19,10 +18,21 @@ const sections = [
     },
 ];
 
-export default function Index({ featuredProducts, categories, newArrivals, carouselItems, campaigns, filters, auth }) {
+export default function Index({ featuredProducts, categories, newArrivals, carouselItems, campaigns, filters, auth, userFavorites = [] }) {
+    const { post } = useForm();
     const isLoggedIn = !!auth?.user;
     const selectedCategory = filters?.category ?? '';
     const searchValue = filters?.search ?? '';
+
+    const toggleFavorite = (productId) => {
+        if (!isLoggedIn) {
+            window.location.href = route('login');
+            return;
+        }
+        post(route('client.favorites.toggle', productId), {
+            preserveScroll: true,
+        });
+    };
     return (
         <div className="min-h-screen bg-white dark:bg-neutral-950 text-slate-900 dark:text-slate-100 font-sans">
             <Head title="Miu Store" />
@@ -314,9 +324,17 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                                         <p className="mt-1 text-xs text-gold-600 dark:text-gold-200">{product.category?.name}</p>
                                         <div className="mt-2 flex items-center justify-between">
                                             <span className="text-sm font-semibold text-gold-600 dark:text-gold-300">R$ {parseFloat(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                                            <Link href={route('client.cart')} className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400">
-                                                <ShoppingBag className="h-4 w-4" />
-                                            </Link>
+                                            <div className="flex items-center gap-2">
+                                                <button 
+                                                    onClick={() => toggleFavorite(product.id)}
+                                                    className={`inline-flex h-8 w-8 items-center justify-center rounded-full border transition ${userFavorites.includes(product.id) ? 'bg-red-500 border-red-500 text-white' : 'border-slate-300 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:border-red-400 hover:text-red-500'}`}
+                                                >
+                                                    <Heart className={`h-4 w-4 ${userFavorites.includes(product.id) ? 'fill-current' : ''}`} />
+                                                </button>
+                                                <Link href={route('client.cart')} className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400">
+                                                    <ShoppingBag className="h-4 w-4" />
+                                                </Link>
+                                            </div>
                                         </div>
                                     </div>
                                 </motion.article>
@@ -382,9 +400,17 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                                             <Link href={route('products.show', product.slug)} className="inline-flex items-center rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/10 px-4 py-2 text-sm text-slate-700 dark:text-slate-200 transition hover:border-gold-400 hover:bg-slate-200 dark:hover:bg-white/15">
                                                 Detalhes
                                             </Link>
-                                            <Link href={route('client.cart')} className="inline-flex h-12 min-w-[3rem] items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400">
-                                                <ShoppingBag className="h-5 w-5" />
-                                            </Link>
+                                            <div className="flex items-center gap-2">
+                                                <button 
+                                                    onClick={() => toggleFavorite(product.id)}
+                                                    className={`inline-flex h-12 w-12 items-center justify-center rounded-full border transition ${userFavorites.includes(product.id) ? 'bg-red-500 border-red-500 text-white shadow-lg shadow-red-500/20' : 'border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:border-red-400 hover:text-red-500'}`}
+                                                >
+                                                    <Heart className={`h-5 w-5 ${userFavorites.includes(product.id) ? 'fill-current' : ''}`} />
+                                                </button>
+                                                <Link href={route('client.cart')} className="inline-flex h-12 min-w-[3rem] items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400">
+                                                    <ShoppingBag className="h-5 w-5" />
+                                                </Link>
+                                            </div>
                                         </div>
                                     </motion.article>
                                 ))

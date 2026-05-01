@@ -29,6 +29,7 @@ export default function AuthenticatedLayout({ header, children }) {
     ];
 
     const clientLinks = [
+        { name: 'Ir para a Loja', href: route('home'), icon: ShoppingBag, active: route().current('home') },
         { name: 'Meu Painel', href: route('client.dashboard'), icon: Package, active: route().current('client.dashboard') },
         { name: 'Meus Pedidos', href: route('client.orders'), icon: ShoppingBag, active: route().current('client.orders') },
         { name: 'Favoritos', href: route('client.favorites'), icon: Heart, active: route().current('client.favorites') },

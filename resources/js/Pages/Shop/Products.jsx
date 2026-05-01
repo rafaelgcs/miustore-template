@@ -1,11 +1,21 @@
-import React from 'react';
-import { Head, Link } from '@inertiajs/react';
-import { Search, ArrowRight, ShoppingBag } from 'lucide-react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { Search, ArrowRight, ShoppingBag, Heart } from 'lucide-react';
 import ThemeToggle from '@/Components/ThemeToggle';
 
-export default function Products({ products, categories, types, filters, auth }) {
+export default function Products({ products, categories, types, filters, auth, userFavorites = [] }) {
+    const { post } = useForm();
     const productList = products.data || [];
     const isLoggedIn = !!auth?.user;
+
+    const toggleFavorite = (productId) => {
+        if (!isLoggedIn) {
+            window.location.href = route('login');
+            return;
+        }
+        post(route('client.favorites.toggle', productId), {
+            preserveScroll: true,
+        });
+    };
 
     return (
         <div className="min-h-screen bg-white dark:bg-neutral-950 text-slate-900 dark:text-slate-100 font-sans">
@@ -178,7 +188,18 @@ export default function Products({ products, categories, types, filters, auth })
                                         </p>
                                         <div className="mt-5 flex items-center justify-between gap-4">
                                             <span className="text-lg font-semibold text-gold-600 dark:text-gold-300">R$ {parseFloat(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                                            <ArrowRight className="h-5 w-5 text-gold-600 dark:text-gold-300" />
+                                            <div className="flex items-center gap-2">
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        toggleFavorite(product.id);
+                                                    }}
+                                                    className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${userFavorites.includes(product.id) ? 'bg-red-500 border-red-500 text-white shadow-lg shadow-red-500/20' : 'border-slate-300 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:border-red-400 hover:text-red-500'}`}
+                                                >
+                                                    <Heart className={`h-4.5 w-4.5 ${userFavorites.includes(product.id) ? 'fill-current' : ''}`} />
+                                                </button>
+                                                <ArrowRight className="h-5 w-5 text-gold-600 dark:text-gold-300" />
+                                            </div>
                                         </div>
                                     </div>
                                 </Link>

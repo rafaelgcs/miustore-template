@@ -1,10 +1,15 @@
-import React from 'react';
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
-import { motion } from 'framer-motion';
+import { useForm } from '@inertiajs/react';
 import { ShoppingBag, Heart, Star, Package } from 'lucide-react';
 
 export default function Dashboard({ auth, stats }) {
+    const { post } = useForm();
+
+    const toggleFavorite = (productId) => {
+        post(route('client.favorites.toggle', productId), {
+            preserveScroll: true,
+        });
+    };
+
     return (
         <AuthenticatedLayout
             header={
@@ -43,10 +48,10 @@ export default function Dashboard({ auth, stats }) {
                             className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/95"
                         >
                             <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                                <Heart className="h-6 w-6" />
+                                <Package className="h-6 w-6" />
                             </div>
                             <p className="mt-5 text-sm font-medium text-slate-500 dark:text-slate-400">Total gasto</p>
-                            <h3 className="mt-2 text-3xl font-bold text-slate-950 dark:text-slate-100">R$ {parseFloat(stats.total_spent).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
+                            <h3 className="mt-2 text-3xl font-bold text-slate-950 dark:text-slate-100">R$ {parseFloat(stats.total_spent || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</h3>
                         </motion.div>
 
                         <motion.div
@@ -56,7 +61,7 @@ export default function Dashboard({ auth, stats }) {
                             className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/95"
                         >
                             <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                                <Star className="h-6 w-6" />
+                                <Heart className="h-6 w-6" />
                             </div>
                             <p className="mt-5 text-sm font-medium text-slate-500 dark:text-slate-400">Produtos favoritos</p>
                             <h3 className="mt-2 text-3xl font-bold text-slate-950 dark:text-slate-100">{stats.favorite_products.length}</h3>
@@ -72,7 +77,7 @@ export default function Dashboard({ auth, stats }) {
                                 </h2>
                             </div>
                             <Link href={route('home')} className="inline-flex items-center rounded-full bg-gold-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-gold-400">
-                                Ver Produtos
+                                Ir para a Loja
                             </Link>
                         </div>
 
@@ -99,12 +104,14 @@ export default function Dashboard({ auth, stats }) {
                             <div className="rounded-[1.75rem] border border-slate-200/50 bg-slate-50 p-6 dark:border-slate-700 dark:bg-slate-900">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Carrinho</p>
-                                        <p className="mt-4 text-xl font-bold text-slate-950 dark:text-slate-100">0 itens</p>
-                                        <p className="mt-2 text-lg font-semibold text-gold-600 dark:text-gold-400">R$ 0,00</p>
+                                        <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Produtos Favoritos</p>
+                                        <p className="mt-4 text-xl font-bold text-slate-950 dark:text-slate-100">{stats.favorite_products.length} itens</p>
+                                        <Link href={route('client.favorites')} className="mt-2 inline-flex text-sm font-semibold text-gold-600 dark:text-gold-400 hover:text-gold-500">
+                                            Ver todos
+                                        </Link>
                                     </div>
                                     <div className="rounded-full bg-slate-200 p-3 dark:bg-slate-800">
-                                        <Package className="h-6 w-6 text-slate-600 dark:text-slate-300" />
+                                        <Heart className="h-6 w-6 text-slate-600 dark:text-slate-300" />
                                     </div>
                                 </div>
                             </div>
@@ -114,13 +121,13 @@ export default function Dashboard({ auth, stats }) {
                     <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/95">
                         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-6">
                             <div>
-                                <p className="text-sm uppercase tracking-[0.3em] font-medium text-gold-500">Recomendações</p>
+                                <p className="text-sm uppercase tracking-[0.3em] font-medium text-gold-500">Meus Favoritos</p>
                                 <h2 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-slate-100">
-                                    Produtos que você pode gostar
+                                    Acesse rapidamente
                                 </h2>
                             </div>
                             <Link href={route('client.favorites')} className="inline-flex items-center rounded-full bg-gold-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-gold-400">
-                                Ver Favoritos
+                                Ver Todos
                             </Link>
                         </div>
 
@@ -147,8 +154,11 @@ export default function Dashboard({ auth, stats }) {
                                         <p className="mt-1 text-xs text-gold-600 dark:text-gold-400">{product.category?.name}</p>
                                         <div className="mt-2 flex items-center justify-between">
                                             <span className="text-sm font-semibold text-slate-950 dark:text-slate-100">R$ {parseFloat(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                                            <button className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400">
-                                                <Heart className="h-3 w-3" />
+                                            <button 
+                                                onClick={() => toggleFavorite(product.id)}
+                                                className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400"
+                                            >
+                                                <Heart className="h-3 w-3 fill-current" />
                                             </button>
                                         </div>
                                     </div>

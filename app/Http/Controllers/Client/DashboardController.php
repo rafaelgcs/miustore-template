@@ -19,7 +19,7 @@ class DashboardController extends Controller
             'total_orders' => $user->orders()->count(),
             'total_spent' => $user->orders()->sum('total_amount'),
             'recent_orders' => $user->orders()->with('items.product')->latest()->take(3)->get(),
-            'favorite_products' => Product::where('is_active', true)->inRandomOrder()->take(4)->get(), // Simulando favoritos
+            'favorite_products' => $user->favorites()->with('category')->take(4)->get(),
         ];
 
         return Inertia::render('Client/Dashboard', [
@@ -34,7 +34,7 @@ class DashboardController extends Controller
         $orders = $user->orders()
             ->with(['items.product'])
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->get();
 
         return Inertia::render('Client/Orders', [
             'orders' => $orders,
@@ -43,17 +43,25 @@ class DashboardController extends Controller
 
     public function favorites()
     {
-        // Por enquanto, vamos mostrar produtos aleatórios como "favoritos"
-        // Em uma implementação real, você teria uma tabela de favoritos
-        $favorites = Product::where('is_active', true)
+        $user = auth()->user();
+        
+        $favorites = $user->favorites()
             ->with('category')
-            ->inRandomOrder()
-            ->take(12)
+            ->latest('favorites.created_at')
             ->get();
 
         return Inertia::render('Client/Favorites', [
             'favorites' => $favorites,
         ]);
+    }
+
+    public function toggleFavorite(Product $product)
+    {
+        $user = auth()->user();
+        
+        $user->favorites()->toggle($product->id);
+
+        return back();
     }
 
     public function cart()

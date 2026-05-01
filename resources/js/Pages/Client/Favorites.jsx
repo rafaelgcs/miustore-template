@@ -4,34 +4,18 @@ import { Head, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { Heart, ShoppingBag, Star, X } from 'lucide-react';
 
-const favorites = [
-    {
-        id: 1,
-        name: 'Colar em Ouro Rosé',
-        price: 'R$ 1.395',
-        image: null,
-        rating: 5.0,
-        category: 'Colares',
-    },
-    {
-        id: 2,
-        name: 'Brincos Diamante',
-        price: 'R$ 895',
-        image: null,
-        rating: 4.8,
-        category: 'Brincos',
-    },
-    {
-        id: 3,
-        name: 'Anel de Compromisso',
-        price: 'R$ 2.450',
-        image: null,
-        rating: 5.0,
-        category: 'Anéis',
-    },
-];
+import { useForm } from '@inertiajs/react';
+import { Heart, ShoppingBag, Star, X } from 'lucide-react';
 
-export default function Favorites({ auth }) {
+export default function Favorites({ auth, favorites }) {
+    const { post } = useForm();
+
+    const toggleFavorite = (productId) => {
+        post(route('client.favorites.toggle', productId), {
+            preserveScroll: true,
+        });
+    };
+
     return (
         <AuthenticatedLayout
             header={
@@ -83,11 +67,14 @@ export default function Favorites({ auth }) {
                                             </div>
                                         )}
                                     </div>
-                                    <button className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-slate-700 shadow-sm transition hover:bg-red-50 hover:text-red-600 dark:bg-slate-900/80 dark:text-slate-200">
+                                    <button 
+                                        onClick={() => toggleFavorite(product.id)}
+                                        className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/80 text-slate-700 shadow-sm transition hover:bg-red-50 hover:text-red-600 dark:bg-slate-900/80 dark:text-slate-200"
+                                    >
                                         <X className="h-4 w-4" />
                                     </button>
                                     <div className="absolute left-4 top-4 rounded-full border border-gold-500/30 bg-black/60 px-3 py-1 text-xs uppercase tracking-[0.24em] text-gold-200 shadow-lg shadow-black/40">
-                                        {product.category}
+                                        {product.category?.name}
                                     </div>
                                 </div>
 
@@ -96,15 +83,17 @@ export default function Favorites({ auth }) {
                                     <div className="mt-2 flex items-center gap-2">
                                         <div className="flex items-center gap-1">
                                             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{product.rating}</span>
+                                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">5.0</span>
                                         </div>
                                     </div>
                                     <div className="mt-4 flex items-center justify-between">
-                                        <span className="text-lg font-semibold text-slate-950 dark:text-slate-100">{product.price}</span>
-                                        <button className="inline-flex items-center rounded-full bg-gold-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-gold-400">
+                                        <span className="text-lg font-semibold text-slate-950 dark:text-slate-100">
+                                            R$ {parseFloat(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                        </span>
+                                        <Link href={route('products.show', product.slug)} className="inline-flex items-center rounded-full bg-gold-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-gold-400">
                                             <ShoppingBag className="mr-2 h-4 w-4" />
                                             Comprar
-                                        </button>
+                                        </Link>
                                     </div>
                                 </div>
                             </motion.article>
