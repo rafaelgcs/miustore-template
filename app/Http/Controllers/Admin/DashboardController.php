@@ -15,6 +15,18 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Generate mock data for the last 7 days of revenue
+        $revenueData = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('d/m');
+            // Mock random revenue for demonstration purposes
+            // In a real app, you would query: Order::whereDate('created_at', now()->subDays($i))->sum('total_amount')
+            $revenueData[] = [
+                'name' => $date,
+                'total' => rand(100, 1500),
+            ];
+        }
+
         $stats = [
             'total_products' => Product::where('is_active', true)->count(),
             'total_categories' => Category::count(),
@@ -27,6 +39,7 @@ class DashboardController extends Controller
                 ->orderBy('stock', 'asc')
                 ->take(5)
                 ->get(),
+            'revenue_data' => $revenueData,
         ];
 
         return Inertia::render('Admin/Dashboard', [
