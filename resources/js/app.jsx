@@ -19,20 +19,16 @@ createInertiaApp({
         const Page = pageModule.default ?? pageModule;
 
         return (props) => (
-            <>
+            <ThemeProvider>
                 <SeoHead />
                 <Page {...props} />
-            </>
+            </ThemeProvider>
         );
     },
     setup({ el, App, props }) {
         const root = createRoot(el);
 
-        root.render(
-            <ThemeProvider>
-                <App {...props} />
-            </ThemeProvider>,
-        );
+        root.render(<App {...props} />);
     },
     progress: {
         color: '#4B5563',

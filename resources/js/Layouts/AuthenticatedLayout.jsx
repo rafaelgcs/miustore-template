@@ -23,8 +23,8 @@ import {
 
 export default function AuthenticatedLayout({ header, children }) {
     const { auth, cart, notifications: rawNotifications } = usePage().props;
-    const notifications = (rawNotifications && !Array.isArray(rawNotifications)) 
-        ? rawNotifications 
+    const notifications = (rawNotifications && !Array.isArray(rawNotifications))
+        ? rawNotifications
         : { unread_count: 0 };
     const user = auth.user;
 
@@ -123,8 +123,8 @@ export default function AuthenticatedLayout({ header, children }) {
                             </Dropdown.Trigger>
 
                             <Dropdown.Content>
-                                <Dropdown.Link href={route('profile.edit')}>Profile</Dropdown.Link>
-                                <Dropdown.Link href={route('logout')} method="post" as="button">Log Out</Dropdown.Link>
+                                <Dropdown.Link href={route('profile.edit')}>Perfil</Dropdown.Link>
+                                <Dropdown.Link href={route('logout')} method="post" as="button">Desconectar</Dropdown.Link>
                             </Dropdown.Content>
                         </Dropdown>
                     </div>
@@ -159,7 +159,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             Carrinho ({usePage().props.cart.count})
                         </ResponsiveNavLink>
                         <ResponsiveNavLink method="post" href={route('logout')} as="button">
-                            Log Out
+                            Desconectar
                         </ResponsiveNavLink>
                     </div>
                     <div className="border-t border-slate-200/80 bg-white/95 px-4 py-4 dark:border-slate-800 dark:bg-slate-950/95">
@@ -200,11 +200,10 @@ export default function AuthenticatedLayout({ header, children }) {
                                     <Link
                                         key={link.name}
                                         href={link.href}
-                                        className={`flex items-center gap-3 rounded-3xl border px-4 py-3 text-sm font-semibold transition ${
-                                            link.active
-                                                ? 'border-gold-100 bg-gold-50 text-gold-700 shadow-sm shadow-gold-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100'
-                                                : 'border-slate-200 bg-white text-slate-700 hover:border-gold-200 hover:bg-gold-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200'
-                                        }`}
+                                        className={`flex items-center gap-3 rounded-3xl border px-4 py-3 text-sm font-semibold transition ${link.active
+                                            ? 'border-gold-100 bg-gold-50 text-gold-700 shadow-sm shadow-gold-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100'
+                                            : 'border-slate-200 bg-white text-slate-700 hover:border-gold-200 hover:bg-gold-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200'
+                                            }`}
                                     >
                                         <Icon className="h-5 w-5" />
                                         <span className="flex-1">{link.name}</span>
@@ -230,7 +229,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             </Link>
                         </div>
                     </aside>
-                    
+
                     <div className="min-w-0 flex-1">
                         {children}
                     </div>

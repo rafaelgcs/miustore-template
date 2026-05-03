@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class HomeSetting extends Model
 {
     protected $fillable = [
+        'primary_color',
         'hero_title',
         'hero_subtitle',
         'hero_cta_text',

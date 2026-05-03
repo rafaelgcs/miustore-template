@@ -41,7 +41,7 @@ export default function VerifyEmail({ status }) {
                         as="button"
                         className="rounded-md text-sm text-slate-600 underline hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:ring-offset-2 dark:text-slate-400 dark:hover:text-slate-100 dark:focus:ring-offset-neutral-950"
                     >
-                        Log Out
+                        Desconectar
                     </Link>
                 </div>
             </form>

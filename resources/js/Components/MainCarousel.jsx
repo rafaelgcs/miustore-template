@@ -92,13 +92,13 @@ export default function MainCarousel({ items }) {
                             >
                                 <h2 
                                     className={`text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl`}
-                                    style={{ color: currentItem.text_color === 'white' ? '#fff' : (currentItem.text_color === 'gold-500' ? '#d4af37' : '#000') }}
+                                    style={{ color: currentItem.text_color === 'white' ? '#fff' : (currentItem.text_color === 'gold-500' ? 'rgb(var(--primary-500))' : '#000') }}
                                 >
                                     {currentItem.title}
                                 </h2>
                                 <p 
                                     className="mt-6 text-lg leading-8 opacity-90 sm:text-xl"
-                                    style={{ color: currentItem.text_color === 'white' ? '#fff' : (currentItem.text_color === 'gold-500' ? '#d4af37' : '#000') }}
+                                    style={{ color: currentItem.text_color === 'white' ? '#fff' : (currentItem.text_color === 'gold-500' ? 'rgb(var(--primary-500))' : '#000') }}
                                 >
                                     {currentItem.subtitle}
                                 </p>

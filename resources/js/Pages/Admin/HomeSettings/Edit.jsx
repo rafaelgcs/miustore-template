@@ -5,6 +5,7 @@ import { Save, Layout, Sparkles, Heart, Truck, Info } from 'lucide-react';
 
 export default function Edit({ settings }) {
     const { data, setData, put, processing, errors } = useForm({
+        primary_color: settings.primary_color || 'gold',
         hero_title: settings.hero_title || '',
         hero_subtitle: settings.hero_subtitle || '',
         hero_cta_text: settings.hero_cta_text || '',
@@ -45,6 +46,78 @@ export default function Edit({ settings }) {
             <Head title="Configurações da Home" />
 
             <form onSubmit={handleSubmit} className="mx-auto max-w-5xl space-y-8 pb-12">
+                {/* Theme Color Selection */}
+                <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-950/95">
+                    <div className="flex items-center gap-3 mb-8">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gold-50 text-gold-600 dark:bg-gold-500/10 dark:text-gold-400">
+                            <Sparkles className="h-5 w-5" />
+                        </div>
+                        <h2 className="text-xl font-semibold text-slate-950 dark:text-slate-100">Paleta de Cores do Site</h2>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-5">
+                        {[
+                            { id: 'gold', name: 'Dourado Miú', color: '#d99712', class: 'bg-[#d99712]' },
+                            { id: 'rose', name: 'Rose Premium', color: '#e11d48', class: 'bg-[#e11d48]' },
+                            { id: 'emerald', name: 'Esmeralda Luxo', color: '#059669', class: 'bg-[#059669]' },
+                            { id: 'blue', name: 'Azul Safira', color: '#2563eb', class: 'bg-[#2563eb]' },
+                            { id: 'slate', name: 'Slate Moderno', color: '#475569', class: 'bg-[#475569]' },
+                        ].map((palette) => (
+                            <button
+                                key={palette.id}
+                                type="button"
+                                onClick={() => setData('primary_color', palette.id)}
+                                className={`group relative flex flex-col items-center gap-3 rounded-[1.5rem] border-2 p-4 transition ${
+                                    data.primary_color === palette.id
+                                        ? 'border-gold-500 bg-gold-50/50 dark:border-gold-500 dark:bg-gold-500/10'
+                                        : 'border-slate-100 hover:border-slate-200 dark:border-slate-800'
+                                }`}
+                            >
+                                <div className={`h-12 w-12 rounded-full shadow-inner ${palette.class}`} />
+                                <span className={`text-xs font-bold uppercase tracking-wider ${
+                                    data.primary_color === palette.id ? 'text-gold-700 dark:text-gold-400' : 'text-slate-500'
+                                }`}>
+                                    {palette.name}
+                                </span>
+                                {data.primary_color === palette.id && (
+                                    <div className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-gold-500 text-white shadow-lg">
+                                        <Save className="h-3 w-3" />
+                                    </div>
+                                )}
+                            </button>
+                        ))}
+
+                        {/* Custom Color Picker */}
+                        <div className={`group relative flex flex-col items-center gap-3 rounded-[1.5rem] border-2 p-4 transition ${
+                            data.primary_color.startsWith('#')
+                                ? 'border-gold-500 bg-gold-50/50 dark:border-gold-500 dark:bg-gold-500/10'
+                                : 'border-slate-100 hover:border-slate-200 dark:border-slate-800'
+                        }`}>
+                            <div className="relative h-12 w-12 overflow-hidden rounded-full shadow-inner border border-slate-200 dark:border-white/10">
+                                <input
+                                    type="color"
+                                    value={data.primary_color.startsWith('#') ? data.primary_color : '#d99712'}
+                                    onChange={(e) => setData('primary_color', e.target.value)}
+                                    className="absolute inset-[-10px] h-[calc(100%+20px)] w-[calc(100%+20px)] cursor-pointer border-none bg-transparent"
+                                />
+                            </div>
+                            <span className={`text-xs font-bold uppercase tracking-wider ${
+                                data.primary_color.startsWith('#') ? 'text-gold-700 dark:text-gold-400' : 'text-slate-500'
+                            }`}>
+                                Personalizada
+                            </span>
+                            {data.primary_color.startsWith('#') && (
+                                <div className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-gold-500 text-white shadow-lg">
+                                    <Save className="h-3 w-3" />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <p className="mt-4 text-xs text-slate-500 italic">
+                        * A alteração da paleta afetará botões, links, badges e elementos de destaque em todo o site.
+                    </p>
+                </div>
+
                 {/* Hero Fallback Section */}
                 <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-950/95">
                     <div className="flex items-center gap-3 mb-8">

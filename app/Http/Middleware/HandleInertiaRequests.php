@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\SeoSetting;
+use App\Models\HomeSetting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -72,6 +73,7 @@ class HandleInertiaRequests extends Middleware
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
             ],
+            'primaryColor' => HomeSetting::current()->primary_color ?? 'gold',
         ];
     }
 }

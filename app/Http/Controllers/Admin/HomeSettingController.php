@@ -19,6 +19,7 @@ class HomeSettingController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
+            'primary_color' => 'required|string|max:20',
             'hero_title' => 'nullable|string|max:255',
             'hero_subtitle' => 'nullable|string',
             'hero_cta_text' => 'nullable|string|max:50',
