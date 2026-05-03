@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\CarouselController;
 use App\Http\Controllers\Admin\CampaignController;
+use App\Http\Controllers\Admin\SeoSettingController;
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +40,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('products', AdminProductController::class)->only(['index', 'edit', 'update']);
         Route::resource('carousel', CarouselController::class)->except(['show']);
         Route::resource('campaigns', CampaignController::class)->except(['show']);
+        Route::get('/seo', [SeoSettingController::class, 'index'])->name('seo.index');
+        Route::put('/seo', [SeoSettingController::class, 'update'])->name('seo.update');
     });
 
     // Client Routes
@@ -49,6 +52,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/favorites/{product:id}', [ClientDashboardController::class, 'toggleFavorite'])->name('favorites.toggle');
         Route::get('/cart', function() { return redirect()->route('cart.index'); })->name('cart');
     });
+
+    Route::get('/seo', [SeoSettingController::class, 'index'])->name('seo.index');
+    Route::put('/seo', [SeoSettingController::class, 'update'])->name('seo.update');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

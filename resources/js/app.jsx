@@ -4,17 +4,27 @@ import './bootstrap';
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createRoot } from 'react-dom/client';
-import { ThemeProvider } from '@/Components/ThemeProvider';
+import ThemeProvider from './Components/ThemeProvider';
+import SeoHead from './Components/SeoHead';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: (name) =>
-        resolvePageComponent(
+    resolve: async (name) => {
+        const pageModule = await resolvePageComponent(
             `./Pages/${name}.jsx`,
             import.meta.glob('./Pages/**/*.jsx'),
-        ),
+        );
+        const Page = pageModule.default ?? pageModule;
+
+        return (props) => (
+            <>
+                <SeoHead />
+                <Page {...props} />
+            </>
+        );
+    },
     setup({ el, App, props }) {
         const root = createRoot(el);
 

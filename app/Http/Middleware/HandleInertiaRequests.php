@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\SeoSetting;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -36,6 +37,8 @@ class HandleInertiaRequests extends Middleware
             $cartCount = \App\Models\CartItem::where('session_id', session()->getId())->sum('quantity');
         }
 
+        $seoSetting = SeoSetting::current();
+
         return [
             ...parent::share($request),
             'auth' => [
@@ -43,6 +46,17 @@ class HandleInertiaRequests extends Middleware
             ],
             'cart' => [
                 'count' => $cartCount,
+            ],
+            'seo' => [
+                'site_title' => $seoSetting?->site_title,
+                'meta_description' => $seoSetting?->meta_description,
+                'meta_keywords' => $seoSetting?->meta_keywords,
+                'meta_image' => $seoSetting?->meta_image,
+                'google_site_verification' => $seoSetting?->google_site_verification,
+                'google_analytics_id' => $seoSetting?->google_analytics_id,
+                'google_tag_manager_id' => $seoSetting?->google_tag_manager_id,
+                'google_adsense_client' => $seoSetting?->google_adsense_client,
+                'robots' => $seoSetting?->robots,
             ],
             'flash' => [
                 'success' => $request->session()->get('success'),

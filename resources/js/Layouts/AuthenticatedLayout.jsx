@@ -25,8 +25,7 @@ export default function AuthenticatedLayout({ header, children }) {
     const adminLinks = [
         { name: 'Visão Geral', href: route('admin.dashboard'), icon: LayoutDashboard, active: route().current('admin.dashboard') },
         { name: 'Produtos', href: route('admin.products.index'), icon: ShoppingBag, active: route().current('admin.products.*') },
-        { name: 'Clientes', href: '#', icon: Users, active: false },
-        { name: 'Configurações', href: '#', icon: Settings, active: false },
+        { name: 'SEO', href: route('admin.seo.index'), icon: Settings, active: route().current('admin.seo.*') },
     ];
 
     const clientLinks = [
