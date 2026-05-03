@@ -47,7 +47,7 @@ export default function MainCarousel({ items }) {
     const currentItem = items[currentIndex];
 
     return (
-        <section className="relative h-[60vh] min-h-[500px] w-full overflow-hidden bg-slate-100 dark:bg-neutral-900 lg:h-[80vh]">
+        <section className="relative h-[60vh] min-h-[500px] md:min-h-[450px] w-full overflow-hidden bg-slate-100 dark:bg-neutral-900 lg:h-[65vh]">
             <AnimatePresence initial={false} custom={direction}>
                 <motion.div
                     key={currentIndex}
@@ -74,10 +74,10 @@ export default function MainCarousel({ items }) {
                                 className="h-full w-full object-cover"
                             />
                         </picture>
-                        
+
                         {/* Overlay for contrast */}
-                        <div 
-                            className="absolute inset-0 bg-black/30 dark:bg-black/40" 
+                        <div
+                            className="absolute inset-0 bg-black/30 dark:bg-black/40"
                             style={{ opacity: currentItem.overlay_opacity || 0.3 }}
                         />
                     </div>
@@ -90,13 +90,13 @@ export default function MainCarousel({ items }) {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3, duration: 0.5 }}
                             >
-                                <h2 
+                                <h2
                                     className={`text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl`}
                                     style={{ color: currentItem.text_color === 'white' ? '#fff' : (currentItem.text_color === 'gold-500' ? 'rgb(var(--primary-500))' : '#000') }}
                                 >
                                     {currentItem.title}
                                 </h2>
-                                <p 
+                                <p
                                     className="mt-6 text-lg leading-8 opacity-90 sm:text-xl"
                                     style={{ color: currentItem.text_color === 'white' ? '#fff' : (currentItem.text_color === 'gold-500' ? 'rgb(var(--primary-500))' : '#000') }}
                                 >
