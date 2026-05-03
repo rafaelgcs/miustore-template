@@ -26,7 +26,7 @@ class NavigationMenuController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|string|in:link,mega',
+            'type' => 'required|string|in:link,mega,top_bar',
             'url' => 'nullable|string',
             'content' => 'nullable|array',
             'order' => 'required|integer',
@@ -51,7 +51,7 @@ class NavigationMenuController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|string|in:link,mega',
+            'type' => 'required|string|in:link,mega,top_bar',
             'url' => 'nullable|string',
             'content' => 'nullable|array',
             'order' => 'required|integer',

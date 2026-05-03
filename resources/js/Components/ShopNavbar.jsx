@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { ShoppingCart, Search, User, MapPin, ChevronDown, Menu, X, ChevronUp } from 'lucide-react';
+import { ShoppingCart, Search, User, MapPin, ChevronDown, Menu, X, ChevronUp, Headphones, Accessibility, Truck, CreditCard, Smartphone, Info, Mail, Phone } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ThemeToggle from '@/Components/ThemeToggle';
+
+const ICON_MAP = {
+    Headphones, Accessibility, Truck, CreditCard, Smartphone, Info, Mail, Phone, MapPin, User, Search, ShoppingCart
+};
 
 export default function ShopNavbar() {
     const { auth, cart, navigation_menus = [] } = usePage().props;
@@ -40,10 +44,87 @@ export default function ShopNavbar() {
         }
     };
 
+    const topBarMenu = navigation_menus.find(m => m.type === 'top_bar' && m.is_active);
+    const [currentAvisoIndex, setCurrentAvisoIndex] = useState(0);
+
+    useEffect(() => {
+        if (topBarMenu?.content?.carousel?.length > 1) {
+            const timer = setInterval(() => {
+                setCurrentAvisoIndex(prev => (prev + 1) % topBarMenu.content.carousel.length);
+            }, 5000);
+            return () => clearInterval(timer);
+        }
+    }, [topBarMenu]);
+
+    const renderIcon = (iconName, className = "h-3.5 w-3.5") => {
+        if (!iconName) return null;
+        const IconComponent = ICON_MAP[iconName];
+        return IconComponent ? <IconComponent className={className} /> : null;
+    };
+
     return (
-        <header className="fixed inset-x-0 top-0 z-[100] w-full">
-            {/* Main Header with Glassmorphism */}
-            <div className="relative z-[110] bg-white dark:bg-black/90 backdrop-blur-xl border-b border-slate-200 dark:border-white/10 py-4 px-4 sm:px-6 lg:px-8">
+        <>
+            {/* Top Bar (Relative) */}
+            {topBarMenu && (
+                <div className="bg-neutral-950 dark:bg-black border-b border-white/5 py-2 px-4 sm:px-6 lg:px-8 overflow-hidden">
+                    <div className="mx-auto max-w-7xl grid grid-cols-3 items-center">
+                        {/* Left Link */}
+                        <div className="flex justify-start">
+                            {topBarMenu.content.left?.text && (
+                                <Link 
+                                    href={getUrl(topBarMenu.content.left.url)}
+                                    className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-gold-400 transition"
+                                >
+                                    {renderIcon(topBarMenu.content.left.icon)}
+                                    <span className="hidden sm:inline">{topBarMenu.content.left.text}</span>
+                                </Link>
+                            )}
+                        </div>
+
+                        {/* Center Carousel */}
+                        <div className="flex justify-center relative h-4">
+                            <AnimatePresence mode="wait">
+                                {topBarMenu.content.carousel?.map((aviso, idx) => (
+                                    idx === currentAvisoIndex && (
+                                        <motion.div
+                                            key={idx}
+                                            initial={{ opacity: 0, y: 10 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: -10 }}
+                                            transition={{ duration: 0.5 }}
+                                            className="absolute inset-0 flex justify-center items-center"
+                                        >
+                                            <Link 
+                                                href={getUrl(aviso.url)}
+                                                className="text-[10px] font-bold uppercase tracking-[0.1em] text-white hover:text-gold-400 transition text-center whitespace-nowrap"
+                                            >
+                                                {aviso.text}
+                                            </Link>
+                                        </motion.div>
+                                    )
+                                ))}
+                            </AnimatePresence>
+                        </div>
+
+                        {/* Right Link */}
+                        <div className="flex justify-end">
+                            {topBarMenu.content.right?.text && (
+                                <Link 
+                                    href={getUrl(topBarMenu.content.right.url)}
+                                    className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-gold-400 transition"
+                                >
+                                    <span className="hidden sm:inline">{topBarMenu.content.right.text}</span>
+                                    {renderIcon(topBarMenu.content.right.icon)}
+                                </Link>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <header className="sticky top-0 z-[100] w-full">
+                {/* Main Header with Glassmorphism */}
+                <div className="relative z-[110] bg-white dark:bg-black/90 backdrop-blur-xl border-b border-slate-200 dark:border-white/10 py-4 px-4 sm:px-6 lg:px-8">
                 <div className="mx-auto flex max-w-7xl items-center justify-between">
                     {/* Left: Logo */}
                     <Link href={route('home')} className="flex items-center gap-3 group">
@@ -284,6 +365,7 @@ export default function ShopNavbar() {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </header>
+            </header>
+        </>
     );
 }

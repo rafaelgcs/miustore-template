@@ -68,6 +68,7 @@ export default function Create({ auth }) {
                                     >
                                         <option value="link">Link Direto</option>
                                         <option value="mega">Mega Menu (Submenus)</option>
+                                        <option value="top_bar">Barra de Avisos (Topo)</option>
                                     </select>
                                 </div>
 
@@ -79,9 +80,10 @@ export default function Create({ auth }) {
                                         onChange={e => setData('url', e.target.value)}
                                         className="w-full rounded-md border-slate-300 dark:border-white/10 dark:bg-slate-800 dark:text-white focus:ring-gold-500 focus:border-gold-500 shadow-sm"
                                         placeholder="Ex: products.index ou /promocoes"
+                                        disabled={data.type === 'top_bar'}
                                     />
                                     <p className="text-[10px] text-slate-500 mt-1 flex items-center">
-                                        <Info className="h-3 w-3 mr-1" /> Use nomes de rotas (ex: home) ou URLs completas.
+                                        <Info className="h-3 w-3 mr-1" /> {data.type === 'top_bar' ? 'Não aplicável para Barra de Avisos.' : 'Use nomes de rotas (ex: home) ou URLs completas.'}
                                     </p>
                                 </div>
 
@@ -107,6 +109,138 @@ export default function Create({ auth }) {
                                     </label>
                                 </div>
                             </div>
+
+                            {data.type === 'top_bar' && (
+                                <div className="pt-6 border-t border-slate-100 dark:border-white/5 space-y-8">
+                                    <div className="bg-gold-50 dark:bg-gold-500/5 p-4 rounded-lg border border-gold-200 dark:border-gold-500/20">
+                                        <h4 className="font-bold text-gold-800 dark:text-gold-400 flex items-center">
+                                            <Info className="h-4 w-4 mr-2" /> Configuração da Barra de Avisos
+                                        </h4>
+                                        <p className="text-xs text-gold-700/70 dark:text-gold-400/70 mt-1">
+                                            A barra de avisos aparece acima do menu principal e é dividida em 3 partes.
+                                        </p>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        {/* Left Link */}
+                                        <div className="space-y-4 p-4 border border-slate-100 dark:border-white/5 rounded-xl">
+                                            <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400">Lado Esquerdo (Link)</h5>
+                                            <div className="space-y-3">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Texto (ex: Atendimento)"
+                                                    value={data.content.left?.text || ''}
+                                                    onChange={e => setData('content', { ...data.content, left: { ...data.content.left, text: e.target.value } })}
+                                                    className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    placeholder="URL ou Rota"
+                                                    value={data.content.left?.url || ''}
+                                                    onChange={e => setData('content', { ...data.content, left: { ...data.content.left, url: e.target.value } })}
+                                                    className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Nome do Ícone Lucide (ex: Headphones)"
+                                                    value={data.content.left?.icon || ''}
+                                                    onChange={e => setData('content', { ...data.content, left: { ...data.content.left, icon: e.target.value } })}
+                                                    className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Right Link */}
+                                        <div className="space-y-4 p-4 border border-slate-100 dark:border-white/5 rounded-xl">
+                                            <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400">Lado Direito (Link)</h5>
+                                            <div className="space-y-3">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Texto (ex: Acessibilidade)"
+                                                    value={data.content.right?.text || ''}
+                                                    onChange={e => setData('content', { ...data.content, right: { ...data.content.right, text: e.target.value } })}
+                                                    className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    placeholder="URL ou Rota"
+                                                    value={data.content.right?.url || ''}
+                                                    onChange={e => setData('content', { ...data.content, right: { ...data.content.right, url: e.target.value } })}
+                                                    className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Nome do Ícone Lucide (ex: Accessibility)"
+                                                    value={data.content.right?.icon || ''}
+                                                    onChange={e => setData('content', { ...data.content, right: { ...data.content.right, icon: e.target.value } })}
+                                                    className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        {/* Center Carousel */}
+                                        <div className="md:col-span-2 space-y-4 p-4 border border-slate-100 dark:border-white/5 rounded-xl">
+                                            <div className="flex justify-between items-center">
+                                                <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400">Centro (Carrossel de Avisos)</h5>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const carousel = [...(data.content.carousel || [])];
+                                                        carousel.push({ text: '', url: '' });
+                                                        setData('content', { ...data.content, carousel });
+                                                    }}
+                                                    className="text-[10px] font-bold text-gold-600 hover:text-gold-500 uppercase tracking-widest"
+                                                >
+                                                    + Adicionar Aviso
+                                                </button>
+                                            </div>
+                                            <div className="space-y-3">
+                                                {(data.content.carousel || []).map((item, index) => (
+                                                    <div key={index} className="flex gap-3 items-start bg-slate-50 dark:bg-white/5 p-3 rounded-lg relative group">
+                                                        <div className="flex-1 space-y-2">
+                                                            <input
+                                                                type="text"
+                                                                placeholder="Mensagem do aviso"
+                                                                value={item.text}
+                                                                onChange={e => {
+                                                                    const carousel = [...data.content.carousel];
+                                                                    carousel[index].text = e.target.value;
+                                                                    setData('content', { ...data.content, carousel });
+                                                                }}
+                                                                className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                                            />
+                                                            <input
+                                                                type="text"
+                                                                placeholder="URL opcional"
+                                                                value={item.url}
+                                                                onChange={e => {
+                                                                    const carousel = [...data.content.carousel];
+                                                                    carousel[index].url = e.target.value;
+                                                                    setData('content', { ...data.content, carousel });
+                                                                }}
+                                                                className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                                            />
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                const carousel = data.content.carousel.filter((_, i) => i !== index);
+                                                                setData('content', { ...data.content, carousel });
+                                                            }}
+                                                            className="p-1 text-slate-400 hover:text-red-500 transition"
+                                                        >
+                                                            <Info className="h-4 w-4 rotate-45" />
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                                {(data.content.carousel || []).length === 0 && (
+                                                    <p className="text-center py-4 text-xs text-slate-500 italic">Nenhum aviso adicionado ao carrossel.</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
 
                             {data.type === 'mega' && (
                                 <div className="pt-6 border-t border-slate-100 dark:border-white/5 space-y-4">
