@@ -161,16 +161,20 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                             {campaigns.map((campaign) => (
                                 <Link
                                     key={campaign.id}
-                                    href={campaign.link || route('products.index', { category: campaign.category.slug })}
+                                    href={campaign.link || (campaign.category ? route('products.index', { category: campaign.category.slug }) : route('products.index'))}
                                     className="group overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-6 transition hover:border-gold-400 hover:bg-slate-100 dark:hover:bg-white/10"
                                 >
                                     {campaign.image && (
                                         <div className="mb-5 overflow-hidden rounded-[1.5rem] bg-slate-200 dark:bg-black/10">
-                                            <img src={campaign.image} alt={campaign.title} className="h-56 w-full object-cover transition duration-500 group-hover:scale-105" />
+                                            <img 
+                                                src={campaign.image?.startsWith('http') ? campaign.image : `/storage/${campaign.image}`} 
+                                                alt={campaign.title} 
+                                                className="h-56 w-full object-cover transition duration-500 group-hover:scale-105" 
+                                            />
                                         </div>
                                     )}
                                     <div>
-                                        <p className="text-xs uppercase tracking-[0.32em] text-gold-600 dark:text-gold-200">{campaign.category.name}</p>
+                                        <p className="text-xs uppercase tracking-[0.32em] text-gold-600 dark:text-gold-200">{campaign.category?.name || 'Geral'}</p>
                                         <h3 className="mt-3 text-2xl font-semibold text-black dark:text-white">{campaign.title}</h3>
                                         <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">{campaign.subtitle}</p>
                                         <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-gold-600 dark:text-gold-300">

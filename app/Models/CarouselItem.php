@@ -18,6 +18,7 @@ class CarouselItem extends Model
         'overlay_opacity',
         'order',
         'active',
+        'only_image',
     ];
 
     public function product()

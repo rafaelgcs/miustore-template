@@ -19,6 +19,11 @@ import {
     ShoppingCart,
     Image as ImageIcon,
     Layout,
+    Megaphone,
+    Folder,
+    Layers,
+    Tag,
+    Ticket,
 } from 'lucide-react';
 
 export default function AuthenticatedLayout({ header, children }) {
@@ -36,8 +41,13 @@ export default function AuthenticatedLayout({ header, children }) {
         { name: 'Produtos', href: route('admin.products.index'), icon: ShoppingBag, active: route().current('admin.products.*') },
         { name: 'Banners', href: route('admin.carousel.index'), icon: ImageIcon, active: route().current('admin.carousel.*') },
         { name: 'Página Inicial', href: route('admin.home-settings.edit'), icon: Layout, active: route().current('admin.home-settings.*') },
+        { name: 'Campanhas', href: route('admin.campaigns.index'), icon: Megaphone, active: route().current('admin.campaigns.*') },
         { name: 'Navegação', href: route('admin.navigation.index'), icon: CheckCircle, active: route().current('admin.navigation.*') },
         { name: 'Biblioteca', href: route('admin.media.index'), icon: ImageIcon, active: route().current('admin.media.*') },
+        { name: 'Categorias', href: route('admin.categories.index'), icon: Folder, active: route().current('admin.categories.*') },
+        { name: 'Coleções', href: route('admin.collections.index'), icon: Layers, active: route().current('admin.collections.*') },
+        { name: 'Promoções', href: route('admin.promotions.index'), icon: Tag, active: route().current('admin.promotions.*') },
+        { name: 'Cupons', href: route('admin.coupons.index'), icon: Ticket, active: route().current('admin.coupons.*') },
         { name: 'Notificações', href: route('admin.notifications'), icon: Bell, active: route().current('admin.notifications'), badge: notifications.unread_count },
         { name: 'SEO', href: route('admin.seo.index'), icon: Settings, active: route().current('admin.seo.*') },
     ];
@@ -149,7 +159,7 @@ export default function AuthenticatedLayout({ header, children }) {
                     </div>
                 </div>
 
-                <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' md:hidden'}>
+                <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' md:hidden overflow-y-auto max-h-[80vh]'}>
                     <div className="space-y-1 border-t border-slate-200/80 bg-white/95 px-4 py-3 dark:border-slate-800 dark:bg-slate-950/95">
                         {links.map((link) => (
                             <ResponsiveNavLink key={link.name} href={link.href} active={link.active}>
@@ -179,8 +189,8 @@ export default function AuthenticatedLayout({ header, children }) {
 
             <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                 <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
-                    <aside className="hidden rounded-[2rem] border border-slate-200/80 bg-white/90 p-6 shadow-[0_30px_100px_-60px_rgba(15,23,42,0.5)] backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90 dark:shadow-none xl:block xl:sticky xl:top-24 xl:h-fit">
-                        <div className="flex items-center gap-3 pb-6 border-b border-slate-200/70 dark:border-slate-800">
+                    <aside className="hidden rounded-[2rem] border border-slate-200/80 bg-white/90 p-6 shadow-[0_30px_100px_-60px_rgba(15,23,42,0.5)] backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90 dark:shadow-none xl:block xl:sticky xl:top-24 xl:h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
+                        <div className="flex items-center gap-3 pb-6 border-b border-slate-200/70 dark:border-slate-800 sticky top-0 bg-white/90 dark:bg-slate-950/90 z-10">
                             <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20">
                                 {user.is_admin ? 'R' : user.name.charAt(0).toUpperCase()}
                             </div>
@@ -218,7 +228,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             })}
                         </nav>
 
-                        <div className="mt-8 border-t border-slate-200/70 pt-5 dark:border-slate-800">
+                        <div className="mt-8 border-t border-slate-200/70 pt-5 dark:border-slate-800 sticky bottom-0 bg-white/90 dark:bg-slate-950/90 z-10">
                             <Link
                                 method="post"
                                 href={route('logout')}

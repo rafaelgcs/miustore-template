@@ -56,4 +56,9 @@ class Product extends Model
     {
         return $this->hasMany(ProductMovement::class);
     }
+
+    public function collections()
+    {
+        return $this->belongsToMany(Collection::class);
+    }
 }

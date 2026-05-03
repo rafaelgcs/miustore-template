@@ -16,6 +16,7 @@ export default function Create() {
         overlay_opacity: 0.3,
         order: 0,
         active: true,
+        only_image: false,
     });
 
     const handleSubmit = (e) => {
@@ -183,6 +184,20 @@ export default function Create() {
                                             className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${data.active ? 'bg-gold-500' : 'bg-slate-200 dark:bg-slate-700'}`}
                                         >
                                             <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${data.active ? 'translate-x-5' : 'translate-x-0'}`} />
+                                        </button>
+                                    </div>
+
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Apenas Imagem</label>
+                                            <p className="text-[10px] text-slate-500">Oculta textos e torna o banner inteiro clicável</p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setData('only_image', !data.only_image)}
+                                            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${data.only_image ? 'bg-gold-500' : 'bg-slate-200 dark:bg-slate-700'}`}
+                                        >
+                                            <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${data.only_image ? 'translate-x-5' : 'translate-x-0'}`} />
                                         </button>
                                     </div>
                                 </div>

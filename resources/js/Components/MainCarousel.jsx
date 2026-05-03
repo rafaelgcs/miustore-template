@@ -64,56 +64,77 @@ export default function MainCarousel({ items }) {
                 >
                     {/* Background Image */}
                     <div className="absolute inset-0 h-full w-full">
-                        <picture>
-                            {currentItem.mobile_image && (
-                                <source media="(max-width: 768px)" srcSet={currentItem.mobile_image} />
-                            )}
-                            <img
-                                src={currentItem.image}
-                                alt={currentItem.title}
-                                className="h-full w-full object-cover"
-                            />
-                        </picture>
-
-                        {/* Overlay for contrast */}
-                        <div
-                            className="absolute inset-0 bg-black/30 dark:bg-black/40"
-                            style={{ opacity: currentItem.overlay_opacity || 0.3 }}
-                        />
+                        {currentItem.only_image ? (
+                            <Link href={currentItem.button_url || '/produtos'} className="block h-full w-full">
+                                <picture>
+                                    {currentItem.mobile_image && (
+                                        <source media="(max-width: 768px)" srcSet={currentItem.mobile_image} />
+                                    )}
+                                    <img
+                                        src={currentItem.image}
+                                        alt={currentItem.title}
+                                        className="h-full w-full object-cover"
+                                    />
+                                </picture>
+                                <div
+                                    className="absolute inset-0 bg-black/30 dark:bg-black/40"
+                                    style={{ opacity: currentItem.overlay_opacity || 0.3 }}
+                                />
+                            </Link>
+                        ) : (
+                            <>
+                                <picture>
+                                    {currentItem.mobile_image && (
+                                        <source media="(max-width: 768px)" srcSet={currentItem.mobile_image} />
+                                    )}
+                                    <img
+                                        src={currentItem.image}
+                                        alt={currentItem.title}
+                                        className="h-full w-full object-cover"
+                                    />
+                                </picture>
+                                <div
+                                    className="absolute inset-0 bg-black/30 dark:bg-black/40"
+                                    style={{ opacity: currentItem.overlay_opacity || 0.3 }}
+                                />
+                            </>
+                        )}
                     </div>
 
                     {/* Content */}
-                    <div className="relative mx-auto flex h-full max-w-7xl items-center px-4 sm:px-6 lg:px-8">
-                        <div className="max-w-2xl">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3, duration: 0.5 }}
-                            >
-                                <h2
-                                    className={`text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl`}
-                                    style={{ color: currentItem.text_color === 'white' ? '#fff' : (currentItem.text_color === 'gold-500' ? 'rgb(var(--primary-500))' : '#000') }}
+                    {!currentItem.only_image && (
+                        <div className="relative mx-auto flex h-full max-w-7xl items-center px-4 sm:px-6 lg:px-8">
+                            <div className="max-w-2xl">
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.3, duration: 0.5 }}
                                 >
-                                    {currentItem.title}
-                                </h2>
-                                <p
-                                    className="mt-6 text-lg leading-8 opacity-90 sm:text-xl"
-                                    style={{ color: currentItem.text_color === 'white' ? '#fff' : (currentItem.text_color === 'gold-500' ? 'rgb(var(--primary-500))' : '#000') }}
-                                >
-                                    {currentItem.subtitle}
-                                </p>
-                                <div className="mt-10 flex items-center gap-x-6">
-                                    <Link
-                                        href={currentItem.button_url || '/produtos'}
-                                        className="inline-flex items-center gap-2 rounded-full bg-gold-500 px-8 py-4 text-sm font-bold text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400"
+                                    <h2
+                                        className={`text-4xl font-bold tracking-tight sm:text-6xl lg:text-7xl`}
+                                        style={{ color: currentItem.text_color === 'white' ? '#fff' : (currentItem.text_color === 'gold-500' ? 'rgb(var(--primary-500))' : '#000') }}
                                     >
-                                        {currentItem.button_text || 'Ver agora'}
-                                        <ArrowRight className="h-4 w-4" />
-                                    </Link>
-                                </div>
-                            </motion.div>
+                                        {currentItem.title}
+                                    </h2>
+                                    <p
+                                        className="mt-6 text-lg leading-8 opacity-90 sm:text-xl"
+                                        style={{ color: currentItem.text_color === 'white' ? '#fff' : (currentItem.text_color === 'gold-500' ? 'rgb(var(--primary-500))' : '#000') }}
+                                    >
+                                        {currentItem.subtitle}
+                                    </p>
+                                    <div className="mt-10 flex items-center gap-x-6">
+                                        <Link
+                                            href={currentItem.button_url || '/produtos'}
+                                            className="inline-flex items-center gap-2 rounded-full bg-gold-500 px-8 py-4 text-sm font-bold text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400"
+                                        >
+                                            {currentItem.button_text || 'Ver agora'}
+                                            <ArrowRight className="h-4 w-4" />
+                                        </Link>
+                                    </div>
+                                </motion.div>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </motion.div>
             </AnimatePresence>
 

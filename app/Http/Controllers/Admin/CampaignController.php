@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Campaign;
+use App\Models\Category;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
 
 class CampaignController extends Controller
 {
@@ -20,42 +23,70 @@ class CampaignController extends Controller
 
     public function create()
     {
-        return Inertia::render('Admin/Campaigns/Create');
+        return Inertia::render('Admin/Campaigns/Create', [
+            'categories' => Category::all(),
+            'products' => Product::where('is_active', true)->get(),
+        ]);
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'image' => 'nullable|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
+            'image' => 'required|image|max:5120', // 5MB limit
+            'link' => 'nullable|string|max:255',
+            'category_id' => 'nullable|exists:categories,id',
+            'product_id' => 'nullable|exists:products,id',
             'order' => 'nullable|integer',
             'active' => 'boolean',
         ]);
 
-        Campaign::create($request->only(['category_id', 'product_id', 'title', 'subtitle', 'image', 'link', 'order', 'active']));
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('campaigns', 'public');
+            $validated['image'] = $path;
+        }
 
-        return redirect()->route('admin.campaigns.index');
+        Campaign::create($validated);
+
+        return redirect()->route('admin.campaigns.index')->with('success', 'Campanha criada com sucesso.');
     }
 
     public function edit(Campaign $campaign)
     {
         return Inertia::render('Admin/Campaigns/Edit', [
             'campaign' => $campaign,
+            'categories' => Category::all(),
+            'products' => Product::where('is_active', true)->get(),
         ]);
     }
 
     public function update(Request $request, Campaign $campaign)
     {
-        $request->validate([
+        $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'image' => 'nullable|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
+            'image' => 'nullable|image|max:5120',
+            'link' => 'nullable|string|max:255',
+            'category_id' => 'nullable|exists:categories,id',
+            'product_id' => 'nullable|exists:products,id',
             'order' => 'nullable|integer',
             'active' => 'boolean',
         ]);
 
-        $campaign->update($request->only(['category_id', 'product_id', 'title', 'subtitle', 'image', 'link', 'order', 'active']));
+        if ($request->hasFile('image')) {
+            if ($campaign->image) {
+                Storage::disk('public')->delete($campaign->image);
+            }
+            $path = $request->file('image')->store('campaigns', 'public');
+            $validated['image'] = $path;
+        } else {
+            unset($validated['image']);
+        }
 
-        return redirect()->route('admin.campaigns.index');
+        $campaign->update($validated);
+
+        return redirect()->route('admin.campaigns.index')->with('success', 'Campanha atualizada com sucesso.');
     }
 
     public function destroy(Campaign $campaign)

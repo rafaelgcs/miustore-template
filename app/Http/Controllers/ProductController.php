@@ -13,6 +13,7 @@ class ProductController extends Controller
     {
         $search = $request->query('search');
         $categorySlug = $request->query('category');
+        $collectionSlug = $request->query('collection');
         $type = $request->query('type');
         $color = $request->query('color');
 
@@ -47,6 +48,12 @@ class ProductController extends Controller
             });
         }
 
+        if ($collectionSlug) {
+            $productsQuery->whereHas('collections', function ($query) use ($collectionSlug) {
+                $query->where('slug', $collectionSlug);
+            });
+        }
+
         if ($type) {
             $productsQuery->where('type', $type);
         }
@@ -67,6 +74,7 @@ class ProductController extends Controller
             'filters' => [
                 'search' => $search,
                 'category' => $categorySlug,
+                'collection' => $collectionSlug,
                 'type' => $type,
                 'color' => $color,
             ],
