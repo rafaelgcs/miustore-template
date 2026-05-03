@@ -1,70 +1,134 @@
-import React from 'react';
-import { Head, Link } from '@inertiajs/react';
+import React, { useState } from 'react';
+import { Head, Link, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+    Plus, 
+    Search, 
+    Filter, 
+    Edit2, 
+    Package, 
+    Tag, 
+    Layers, 
+    Hash, 
+    Database,
+    CheckCircle2,
+    XCircle
+} from 'lucide-react';
 
-export default function Index({ products }) {
+export default function Index({ products, filters = {} }) {
+    const [search, setSearch] = useState(filters.search || '');
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        router.get(route('admin.products.index'), { search }, { preserveState: true });
+    };
+
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <h1 className="text-3xl font-semibold text-slate-950 dark:text-slate-100">Produtos</h1>
-                        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Gerencie tipos, tamanhos, cores e customizações dos produtos.</p>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Produtos</h1>
+                        <p className="mt-1 text-slate-500 dark:text-slate-400">
+                            Gerencie o inventário, tipos e customizações da sua loja.
+                        </p>
                     </div>
                 </div>
             }
         >
             <Head title="Produtos" />
 
-            <div className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
-                <div className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/95">
-                    <div className="flex items-center justify-between gap-4 pb-4">
-                        <div>
-                            <p className="text-sm uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400">Produtos ativos</p>
-                            <h2 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-slate-100">Lista de produtos</h2>
-                        </div>
-                    </div>
+            <div className="space-y-6">
+                {/* Search and Actions */}
+                <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                    <form onSubmit={handleSearch} className="relative w-full max-w-md">
+                        <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                        <input
+                            type="text"
+                            placeholder="Buscar produtos..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="h-12 w-full rounded-full border-slate-200 bg-white pl-11 pr-4 text-sm transition-all focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
+                        />
+                    </form>
+                </div>
 
-                    <div className="mt-6 overflow-x-auto">
-                        <table className="min-w-full text-left text-sm text-slate-600 dark:text-slate-300">
-                            <thead className="border-b border-slate-200/80 text-slate-900 dark:border-slate-700 dark:text-slate-100">
-                                <tr>
-                                    <th className="px-4 py-3">Nome</th>
-                                    <th className="px-4 py-3">Categoria</th>
-                                    <th className="px-4 py-3">Tipo</th>
-                                    <th className="px-4 py-3">SKU</th>
-                                    <th className="px-4 py-3">Estoque</th>
-                                    <th className="px-4 py-3">Ativo</th>
-                                    <th className="px-4 py-3">Ação</th>
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="overflow-hidden rounded-[2.5rem] border border-slate-200/80 bg-white/80 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90"
+                >
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="border-b border-slate-200 dark:border-slate-800">
+                                    <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Produto</th>
+                                    <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Categoria/Tipo</th>
+                                    <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">SKU</th>
+                                    <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Estoque</th>
+                                    <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Status</th>
+                                    <th className="px-6 py-5 text-right text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Ação</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
                                 {products.data.map((product) => (
-                                    <tr key={product.id} className="border-b border-slate-200/80 transition-colors hover:bg-slate-50/50 dark:border-slate-800 dark:hover:bg-white/5">
-                                        <td className="px-4 py-4 font-medium text-slate-900 dark:text-slate-100">{product.name}</td>
-                                        <td className="px-4 py-4">{product.category?.name}</td>
-                                        <td className="px-4 py-4">
-                                            <span className="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-800 dark:bg-slate-800 dark:text-slate-300">
-                                                {product.type || 'Padrão'}
-                                            </span>
+                                    <tr key={product.id} className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/5">
+                                        <td className="px-6 py-5">
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800">
+                                                    <Package className="h-5 w-5 text-slate-500" />
+                                                </div>
+                                                <div className="font-bold text-slate-900 dark:text-white">
+                                                    {product.name}
+                                                </div>
+                                            </div>
                                         </td>
-                                        <td className="px-4 py-4 text-slate-500 dark:text-slate-400">{product.sku || '-'}</td>
-                                        <td className="px-4 py-4">
-                                            <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${product.stock > 10 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}`}>
-                                                {product.stock} un
-                                            </span>
+                                        <td className="px-6 py-5">
+                                            <div className="flex flex-col gap-1">
+                                                <div className="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-400">
+                                                    <Tag className="h-3.5 w-3.5" />
+                                                    {product.category?.name || 'Sem categoria'}
+                                                </div>
+                                                <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                                                    <Layers className="h-3 w-3" />
+                                                    {product.type || 'Padrão'}
+                                                </div>
+                                            </div>
                                         </td>
-                                        <td className="px-4 py-4">
-                                            <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${product.is_active ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' : 'bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-400'}`}>
-                                                {product.is_active ? 'Ativo' : 'Inativo'}
-                                            </span>
+                                        <td className="px-6 py-5">
+                                            <div className="flex items-center gap-1.5 text-sm font-mono text-slate-500">
+                                                <Hash className="h-3.5 w-3.5" />
+                                                {product.sku || '-'}
+                                            </div>
                                         </td>
-                                        <td className="px-4 py-4">
+                                        <td className="px-6 py-5">
+                                            <div className="flex items-center gap-2">
+                                                <Database className="h-4 w-4 text-slate-400" />
+                                                <span className={`text-sm font-bold ${product.stock <= 5 ? 'text-red-500' : 'text-slate-700 dark:text-slate-300'}`}>
+                                                    {product.stock} un
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-5">
+                                            {product.is_active ? (
+                                                <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-700 dark:bg-green-500/10 dark:text-green-400">
+                                                    <CheckCircle2 className="h-3.5 w-3.5" />
+                                                    Ativo
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                                                    <XCircle className="h-3.5 w-3.5" />
+                                                    Inativo
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-5 text-right">
                                             <Link
                                                 href={route('admin.products.edit', { product: product.id })}
-                                                className="inline-flex items-center justify-center rounded-full bg-gold-500 px-4 py-1.5 text-xs font-semibold text-neutral-950 transition hover:bg-gold-400 hover:shadow-md hover:shadow-gold-500/20"
+                                                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400 hover:scale-110 active:scale-95"
                                             >
-                                                Editar
+                                                <Edit2 className="h-4 w-4" />
                                             </Link>
                                         </td>
                                     </tr>
@@ -72,25 +136,35 @@ export default function Index({ products }) {
                             </tbody>
                         </table>
                     </div>
+                </motion.div>
 
-                    {products.last_page > 1 && (
-                        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-500 dark:text-slate-400">
-                            <span>Página {products.current_page} de {products.last_page}</span>
-                            <div className="flex flex-wrap gap-2">
-                                {products.prev_page_url ? (
-                                    <Link href={products.prev_page_url} className="rounded-full border border-slate-200 px-4 py-2 hover:border-gold-400 dark:border-slate-700">
-                                        Anterior
-                                    </Link>
-                                ) : null}
-                                {products.next_page_url ? (
-                                    <Link href={products.next_page_url} className="rounded-full border border-slate-200 px-4 py-2 hover:border-gold-400 dark:border-slate-700">
-                                        Próxima
-                                    </Link>
-                                ) : null}
-                            </div>
+                {/* Pagination */}
+                {products.last_page > 1 && (
+                    <div className="flex justify-center mt-8">
+                        <div className="flex items-center gap-2 bg-white/80 dark:bg-slate-900/50 p-2 rounded-full border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
+                            {products.links.map((link, index) => (
+                                <React.Fragment key={index}>
+                                    {link.url ? (
+                                        <Link
+                                            href={link.url}
+                                            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 font-bold text-sm ${
+                                                link.active
+                                                    ? 'bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20 scale-110'
+                                                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+                                            }`}
+                                            dangerouslySetInnerHTML={{ __html: link.label }}
+                                        />
+                                    ) : (
+                                        <span
+                                            className="w-10 h-10 flex items-center justify-center rounded-full text-slate-300 dark:text-slate-600 font-bold text-sm cursor-not-allowed"
+                                            dangerouslySetInnerHTML={{ __html: link.label }}
+                                        />
+                                    )}
+                                </React.Fragment>
+                            ))}
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
         </AuthenticatedLayout>
     );

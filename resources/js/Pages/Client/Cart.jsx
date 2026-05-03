@@ -6,7 +6,7 @@ import GuestLayout from '@/Layouts/GuestLayout';
 import { useState } from 'react';
 
 export default function Cart({ auth, cartItems }) {
-    const { patch, delete: destroy } = useForm();
+    const { patch, delete: destroy, post, processing } = useForm();
 
     const updateQuantity = (id, quantity) => {
         if (quantity < 1) return;
@@ -163,9 +163,13 @@ export default function Cart({ auth, cartItems }) {
                                 </div>
                             </div>
 
-                            <button className="mt-8 w-full flex items-center justify-center gap-3 rounded-full bg-gold-500 py-4 text-sm font-bold text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400 hover:shadow-gold-500/40">
+                            <button 
+                                onClick={() => post(route('client.orders.store'))}
+                                disabled={processing || cartItems.length === 0}
+                                className="mt-8 w-full flex items-center justify-center gap-3 rounded-full bg-gold-500 py-4 text-sm font-bold text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400 hover:shadow-gold-500/40 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
                                 <CreditCard className="h-5 w-5" />
-                                Finalizar Compra
+                                {auth.user ? 'Finalizar Compra' : 'Entre para Comprar'}
                             </button>
 
                             <div className="mt-6 flex flex-col gap-3">

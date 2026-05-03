@@ -8,6 +8,10 @@ class Order extends Model
 {
     protected $fillable = ['user_id', 'status', 'total_amount'];
 
+    protected $casts = [
+        'total_amount' => 'decimal:2',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -16,5 +20,10 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
     }
 }

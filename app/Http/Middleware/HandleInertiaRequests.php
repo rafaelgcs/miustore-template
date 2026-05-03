@@ -31,8 +31,12 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $cartCount = 0;
+        $unreadNotificationsCount = 0;
         if (auth()->check()) {
             $cartCount = \App\Models\CartItem::where('user_id', auth()->id())->sum('quantity');
+            $unreadNotificationsCount = \App\Models\Notification::where('user_id', auth()->id())
+                ->where('read', false)
+                ->count();
         } else {
             $cartCount = \App\Models\CartItem::where('session_id', session()->getId())->sum('quantity');
         }
@@ -46,6 +50,9 @@ class HandleInertiaRequests extends Middleware
             ],
             'cart' => [
                 'count' => $cartCount,
+            ],
+            'notifications' => [
+                'unread_count' => $unreadNotificationsCount,
             ],
             'seo' => [
                 'site_title' => $seoSetting?->site_title,
