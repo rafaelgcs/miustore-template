@@ -13,6 +13,9 @@ class CarouselItem extends Model
         'button_url',
         'product_id',
         'image',
+        'mobile_image',
+        'text_color',
+        'overlay_opacity',
         'order',
         'active',
     ];

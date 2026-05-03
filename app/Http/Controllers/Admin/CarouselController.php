@@ -28,11 +28,14 @@ class CarouselController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'image' => 'nullable|string|max:255',
+            'mobile_image' => 'nullable|string|max:255',
+            'text_color' => 'nullable|string|max:20',
+            'overlay_opacity' => 'nullable|numeric|min:0|max:1',
             'order' => 'nullable|integer',
             'active' => 'boolean',
         ]);
 
-        CarouselItem::create($request->only(['title', 'subtitle', 'button_text', 'button_url', 'product_id', 'image', 'order', 'active']));
+        CarouselItem::create($request->only(['title', 'subtitle', 'button_text', 'button_url', 'product_id', 'image', 'mobile_image', 'text_color', 'overlay_opacity', 'order', 'active']));
 
         return redirect()->route('admin.carousel.index');
     }
@@ -49,11 +52,14 @@ class CarouselController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'image' => 'nullable|string|max:255',
+            'mobile_image' => 'nullable|string|max:255',
+            'text_color' => 'nullable|string|max:20',
+            'overlay_opacity' => 'nullable|numeric|min:0|max:1',
             'order' => 'nullable|integer',
             'active' => 'boolean',
         ]);
 
-        $carousel->update($request->only(['title', 'subtitle', 'button_text', 'button_url', 'product_id', 'image', 'order', 'active']));
+        $carousel->update($request->only(['title', 'subtitle', 'button_text', 'button_url', 'product_id', 'image', 'mobile_image', 'text_color', 'overlay_opacity', 'order', 'active']));
 
         return redirect()->route('admin.carousel.index');
     }

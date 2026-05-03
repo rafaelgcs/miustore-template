@@ -4,6 +4,8 @@ import { ShoppingBag, Star, ArrowRight, Search, Heart, ShoppingCart } from 'luci
 import ThemeToggle from '@/Components/ThemeToggle';
 import AddToCartButton from '@/Components/AddToCartButton';
 import ShopNavbar from '@/Components/ShopNavbar';
+import MainCarousel from '@/Components/MainCarousel';
+import * as LucideIcons from 'lucide-react';
 
 const sections = [
     {
@@ -20,7 +22,7 @@ const sections = [
     },
 ];
 
-export default function Index({ featuredProducts, categories, newArrivals, carouselItems, campaigns, filters, auth, userFavorites = [] }) {
+export default function Index({ featuredProducts, categories, newArrivals, carouselItems, campaigns, filters, auth, homeSettings, userFavorites = [] }) {
     const { post } = useForm();
     const isLoggedIn = !!auth?.user;
     const selectedCategory = filters?.category ?? '';
@@ -41,131 +43,111 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
 
             <ShopNavbar />
 
-            <main className="pt-36">
-                <section className="relative overflow-hidden px-4 pb-20 pt-16 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 dark:from-slate-900/50 to-white dark:to-neutral-950">
-                    <div className="absolute -right-24 top-0 h-[420px] w-[420px] rounded-full bg-gold-500/10 blur-3xl" />
-                    <div className="absolute left-1/2 top-24 h-[260px] w-[260px] -translate-x-1/2 rounded-full bg-gold-400/5 dark:bg-white/5 blur-3xl" />
-                    <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-                        <div className="relative z-10">
-                            <span className="inline-flex rounded-full border border-gold-300 dark:border-gold-500/20 bg-gold-50 dark:bg-white/5 px-4 py-2 text-sm uppercase tracking-[0.28em] text-gold-700 dark:text-gold-200 shadow-sm shadow-gold-500/10">
-                                Novidade</span>
-                            <motion.h2
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.7 }}
-                                className="mt-8 max-w-3xl text-5xl font-semibold tracking-tight text-black dark:text-white sm:text-6xl"
-                            >
-                                Joias refinadas para ocasiões inesquecíveis.
-                            </motion.h2>
-                            <motion.p
-                                initial={{ opacity: 0, y: 30 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.7, delay: 0.1 }}
-                                className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300"
-                            >
-                                Descubra peças com acabamento premium, atenção aos detalhes e embalagens especiais para presente.
-                            </motion.p>
+            <main className="">
+                {carouselItems.length > 0 ? (
+                    <MainCarousel items={carouselItems} />
+                ) : (
+                    <section className="relative overflow-hidden px-4 pb-20 pt-16 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 dark:from-slate-900/50 to-white dark:to-neutral-950">
+                        <div className="absolute -right-24 top-0 h-[420px] w-[420px] rounded-full bg-gold-500/10 blur-3xl" />
+                        <div className="absolute left-1/2 top-24 h-[260px] w-[260px] -translate-x-1/2 rounded-full bg-gold-400/5 dark:bg-white/5 blur-3xl" />
+                        <div className="mx-auto grid max-w-7xl gap-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+                            <div className="relative z-10">
+                                <span className="inline-flex rounded-full border border-gold-300 dark:border-gold-500/20 bg-gold-50 dark:bg-white/5 px-4 py-2 text-sm uppercase tracking-[0.28em] text-gold-700 dark:text-gold-200 shadow-sm shadow-gold-500/10">
+                                    Novidade</span>
+                                <motion.h2
+                                    initial={{ opacity: 0, y: 30 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.7 }}
+                                    className="mt-8 max-w-3xl text-5xl font-semibold tracking-tight text-black dark:text-white sm:text-6xl"
+                                >
+                                    {homeSettings?.hero_title}
+                                </motion.h2>
+                                <motion.p
+                                    initial={{ opacity: 0, y: 30 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.7, delay: 0.1 }}
+                                    className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300"
+                                >
+                                    {homeSettings?.hero_subtitle}
+                                </motion.p>
 
-                            <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
-                                <Link href={route('products.index')} className="inline-flex items-center justify-center gap-2 rounded-full bg-gold-500 px-6 py-3 text-sm font-semibold text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400 hover:shadow-gold-500/40">
-                                    Ver Produtos
-                                    <ArrowRight className="h-4 w-4" />
-                                </Link>
-                                <Link href="#colecoes" className="inline-flex items-center justify-center rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-6 py-3 text-sm text-slate-700 dark:text-slate-200 transition hover:border-gold-400 hover:bg-slate-200 dark:hover:bg-white/10 dark:hover:text-white">
-                                    Conheça a coleção
-                                </Link>
-                            </div>
-
-                            <form method="get" action={route('products.index')} className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-                                <input
-                                    name="search"
-                                    defaultValue={searchValue}
-                                    placeholder="Buscar joias, coleções ou estilos"
-                                    className="min-w-0 flex-1 rounded-full border border-slate-300 dark:border-white/20 bg-white dark:bg-white/10 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:border-gold-400 dark:focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/20"
-                                />
-                                <input type="hidden" name="category" value={selectedCategory} />
-                                <button type="submit" className="inline-flex items-center justify-center rounded-full bg-gold-500 px-6 py-3 text-sm font-semibold text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400 hover:shadow-gold-500/40">
-                                    Buscar
-                                </button>
-                            </form>
-
-                            <div className="mt-14 grid gap-4 sm:grid-cols-3">
-                                {sections.map((section) => (
-                                    <div key={section.title} className="rounded-3xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-5 text-slate-700 dark:text-slate-200 shadow-md dark:shadow-xl shadow-slate-200/5 dark:shadow-black/10">
-                                        <h3 className="text-base font-semibold text-black dark:text-white">{section.title}</h3>
-                                        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{section.subtitle}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="relative">
-                            <div className="absolute inset-x-0 top-0 h-full rounded-[2rem] bg-gradient-to-br from-slate-100 dark:from-white/10 via-transparent to-transparent blur-2xl" />
-                            <div className="relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-8 shadow-lg dark:shadow-2xl shadow-slate-200/30 dark:shadow-black/20">
-                                <div className="grid gap-6 sm:grid-cols-2">
-                                    <div className="rounded-[1.75rem] bg-gradient-to-br from-slate-100 dark:from-white/10 to-slate-50 dark:to-white/5 p-6 shadow-md dark:shadow-lg shadow-slate-200/20 dark:shadow-black/30">
-                                        <div className="flex h-20 items-center justify-center rounded-3xl bg-white dark:bg-neutral-950/80 text-slate-900 dark:text-white shadow-lg shadow-slate-200/30 dark:shadow-black/30">
-                                            <span className="text-4xl font-semibold">∞</span>
-                                        </div>
-                                        <p className="mt-6 text-sm text-slate-600 dark:text-slate-300">Colar em ouro rosé com fecho delicado e ondas fluidas.</p>
-                                        <div className="mt-5 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
-                                            <span>R$ 1.395</span>
-                                            <span className="rounded-full border border-gold-300 dark:border-gold-500/30 bg-gold-50 dark:bg-gold-500/10 px-3 py-1 text-gold-700 dark:text-gold-200">Novo</span>
-                                        </div>
-                                    </div>
-                                    <div className="rounded-[1.75rem] bg-gradient-to-br from-slate-100 dark:from-white/10 to-slate-50 dark:to-white/5 p-6 shadow-md dark:shadow-lg shadow-slate-200/20 dark:shadow-black/30">
-                                        <div className="flex h-20 items-center justify-center rounded-3xl bg-white dark:bg-neutral-950/80 text-slate-900 dark:text-white shadow-lg shadow-slate-200/30 dark:shadow-black/30">
-                                            <span className="text-4xl font-semibold">✦</span>
-                                        </div>
-                                        <p className="mt-6 text-sm text-slate-600 dark:text-slate-300">Brincos com acabamento polido e brilho sutil.</p>
-                                        <div className="mt-5 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
-                                            <span>R$ 895</span>
-                                            <span className="rounded-full border border-gold-300 dark:border-gold-500/30 bg-gold-50 dark:bg-gold-500/10 px-3 py-1 text-gold-700 dark:text-gold-200">Best seller</span>
-                                        </div>
-                                    </div>
+                                <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
+                                    <Link href={homeSettings?.hero_cta_url || '/produtos'} className="inline-flex items-center justify-center gap-2 rounded-full bg-gold-500 px-6 py-3 text-sm font-semibold text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400 hover:shadow-gold-500/40">
+                                        {homeSettings?.hero_cta_text}
+                                        <LucideIcons.ArrowRight className="h-4 w-4" />
+                                    </Link>
+                                    <Link href={homeSettings?.hero_secondary_cta_url || '#'} className="inline-flex items-center justify-center rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-6 py-3 text-sm text-slate-700 dark:text-slate-200 transition hover:border-gold-400 hover:bg-slate-200 dark:hover:bg-white/10 dark:hover:text-white">
+                                        {homeSettings?.hero_secondary_cta_text}
+                                    </Link>
                                 </div>
-                                <div className="mt-6 rounded-[1.75rem] bg-gradient-to-br from-slate-900 dark:from-black/60 to-slate-800 dark:to-transparent p-8 backdrop-blur-2xl">
-                                    <p className="text-xs uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Atendimento personalizado</p>
-                                    <h3 className="mt-5 text-3xl font-semibold text-black dark:text-white">Consultoria de presente</h3>
-                                    <p className="mt-4 text-sm leading-7 text-slate-700 dark:text-slate-300">Combinações feitas para momentos especiais com entrega em embalagem premium.</p>
+
+                                <form method="get" action={route('products.index')} className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                                    <input
+                                        name="search"
+                                        defaultValue={searchValue}
+                                        placeholder="Buscar joias, coleções ou estilos"
+                                        className="min-w-0 flex-1 rounded-full border border-slate-300 dark:border-white/20 bg-white dark:bg-white/10 px-4 py-3 text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-400 focus:border-gold-400 dark:focus:border-gold-400 focus:outline-none focus:ring-2 focus:ring-gold-400/20"
+                                    />
+                                    <input type="hidden" name="category" value={selectedCategory} />
+                                    <button type="submit" className="inline-flex items-center justify-center rounded-full bg-gold-500 px-6 py-3 text-sm font-semibold text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400 hover:shadow-gold-500/40">
+                                        Buscar
+                                    </button>
+                                </form>
+
+                                <div className="mt-14 grid gap-4 sm:grid-cols-3">
+                                    {homeSettings?.features?.map((section) => {
+                                        const IconComponent = LucideIcons[section.icon] || LucideIcons.Sparkles;
+                                        return (
+                                            <div key={section.title} className="rounded-3xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-5 text-slate-700 dark:text-slate-200 shadow-md dark:shadow-xl shadow-slate-200/5 dark:shadow-black/10 transition hover:border-gold-400">
+                                                <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-xl bg-gold-100 dark:bg-gold-500/10 text-gold-600 dark:text-gold-400">
+                                                    <IconComponent className="h-4 w-4" />
+                                                </div>
+                                                <h3 className="text-base font-semibold text-black dark:text-white">{section.title}</h3>
+                                                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{section.subtitle}</p>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </section>
 
-                <section id="destaque-carrossel" className="px-4 pb-20 sm:px-6 lg:px-8 bg-slate-50 dark:bg-transparent">
-                    <div className="mx-auto max-w-7xl">
-                        <div className="flex items-center justify-between gap-4">
-                            <div>
-                                <p className="text-sm uppercase tracking-[0.32em] text-gold-600 dark:text-gold-200">Destaque</p>
-                                <h2 className="mt-3 text-3xl font-semibold text-black dark:text-white sm:text-4xl">Campanhas em destaque</h2>
-                            </div>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">Promoções e histórias de produto com imagens inspiradoras.</p>
-                        </div>
-
-                        <div className="mt-8 grid gap-6 lg:grid-cols-3">
-                            {carouselItems.map((item, index) => (
-                                <div key={item.id} className="group relative overflow-hidden rounded-[2rem] bg-white/5 shadow-2xl shadow-black/20 transition hover:-translate-y-1">
-                                    {item.image && (
-                                        <img src={item.image} alt={item.title} className="h-72 w-full object-cover" />
-                                    )}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                                    <div className="relative p-8">
-                                        <p className="text-sm uppercase tracking-[0.32em] text-gold-200">{item.subtitle}</p>
-                                        <h3 className="mt-3 text-3xl font-semibold text-white">{item.title}</h3>
-                                        <Link href={item.button_url || (item.product_id ? route('products.index', { search: item.title }) : '/')} className="mt-6 inline-flex items-center gap-2 rounded-full bg-gold-500 px-5 py-3 text-sm font-semibold text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400">
-                                            {item.button_text || 'Ver agora'}
-                                            <ArrowRight className="h-4 w-4" />
-                                        </Link>
+                            <div className="relative">
+                                <div className="absolute inset-x-0 top-0 h-full rounded-[2rem] bg-gradient-to-br from-slate-100 dark:from-white/10 via-transparent to-transparent blur-2xl" />
+                                <div className="relative overflow-hidden rounded-[2rem] border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-8 shadow-lg dark:shadow-2xl shadow-slate-200/30 dark:shadow-black/20">
+                                    <div className="grid gap-6 sm:grid-cols-2">
+                                        <div className="rounded-[1.75rem] bg-gradient-to-br from-slate-100 dark:from-white/10 to-slate-50 dark:to-white/5 p-6 shadow-md dark:shadow-lg shadow-slate-200/20 dark:shadow-black/30">
+                                            <div className="flex h-20 items-center justify-center rounded-3xl bg-white dark:bg-neutral-950/80 text-slate-900 dark:text-white shadow-lg shadow-slate-200/30 dark:shadow-black/30">
+                                                <span className="text-4xl font-semibold">∞</span>
+                                            </div>
+                                            <p className="mt-6 text-sm text-slate-600 dark:text-slate-300">Colar em ouro rosé com fecho delicado e ondas fluidas.</p>
+                                            <div className="mt-5 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+                                                <span>R$ 1.395</span>
+                                                <span className="rounded-full border border-gold-300 dark:border-gold-500/30 bg-gold-50 dark:bg-gold-500/10 px-3 py-1 text-gold-700 dark:text-gold-200">Novo</span>
+                                            </div>
+                                        </div>
+                                        <div className="rounded-[1.75rem] bg-gradient-to-br from-slate-100 dark:from-white/10 to-slate-50 dark:to-white/5 p-6 shadow-md dark:shadow-lg shadow-slate-200/20 dark:shadow-black/30">
+                                            <div className="flex h-20 items-center justify-center rounded-3xl bg-white dark:bg-neutral-950/80 text-slate-900 dark:text-white shadow-lg shadow-slate-200/30 dark:shadow-black/30">
+                                                <span className="text-4xl font-semibold">✦</span>
+                                            </div>
+                                            <p className="mt-6 text-sm text-slate-600 dark:text-slate-300">Brincos com acabamento polido e brilho sutil.</p>
+                                            <div className="mt-5 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+                                                <span>R$ 895</span>
+                                                <span className="rounded-full border border-gold-300 dark:border-gold-500/30 bg-gold-50 dark:bg-gold-500/10 px-3 py-1 text-gold-700 dark:text-gold-200">Best seller</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="mt-6 rounded-[1.75rem] bg-gradient-to-br from-slate-900 dark:from-black/60 to-slate-800 dark:to-transparent p-8 backdrop-blur-2xl">
+                                        <p className="text-xs uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">Atendimento personalizado</p>
+                                        <h3 className="mt-5 text-3xl font-semibold text-black dark:text-white">Consultoria de presente</h3>
+                                        <p className="mt-4 text-sm leading-7 text-slate-700 dark:text-slate-300">Combinações feitas para momentos especiais com entrega em embalagem premium.</p>
                                     </div>
                                 </div>
-                            ))}
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                )}
 
-                <section id="campanhas" className="px-4 pb-24 sm:px-6 lg:px-8 bg-white dark:bg-transparent">
+
+                <section id="campanhas" className="pt-20 px-4 pb-24 sm:px-6 lg:px-8 bg-white dark:bg-transparent">
                     <div className="mx-auto max-w-7xl">
                         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                             <div>
@@ -279,7 +261,7 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                                         <div className="mt-2 flex items-center justify-between">
                                             <span className="text-sm font-semibold text-gold-600 dark:text-gold-300">R$ {parseFloat(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                                             <div className="flex items-center gap-2">
-                                                <button 
+                                                <button
                                                     onClick={() => toggleFavorite(product.id)}
                                                     className={`inline-flex h-8 w-8 items-center justify-center rounded-full border transition ${userFavorites.includes(product.id) ? 'bg-red-500 border-red-500 text-white' : 'border-slate-300 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:border-red-400 hover:text-red-500'}`}
                                                 >
@@ -355,7 +337,7 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                                                 Detalhes
                                             </Link>
                                             <div className="flex items-center gap-2">
-                                                <button 
+                                                <button
                                                     onClick={() => toggleFavorite(product.id)}
                                                     className={`inline-flex h-12 w-12 items-center justify-center rounded-full border transition ${userFavorites.includes(product.id) ? 'bg-red-500 border-red-500 text-white shadow-lg shadow-red-500/20' : 'border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-slate-200 hover:border-red-400 hover:text-red-500'}`}
                                                 >

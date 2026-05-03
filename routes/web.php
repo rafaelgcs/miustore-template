@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\SeoSettingController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\NavigationMenuController;
+use App\Http\Controllers\Admin\HomeSettingController;
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -53,6 +54,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/notifications/unread-count', [OrderController::class, 'getUnreadCount'])->name('notifications.unreadCount');
         Route::get('/seo', [SeoSettingController::class, 'index'])->name('seo.index');
         Route::put('/seo', [SeoSettingController::class, 'update'])->name('seo.update');
+        Route::get('/home-settings', [HomeSettingController::class, 'edit'])->name('home-settings.edit');
+        Route::put('/home-settings', [HomeSettingController::class, 'update'])->name('home-settings.update');
         Route::resource('navigation', NavigationMenuController::class)->except(['show']);
     });
 
@@ -66,9 +69,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/favorites/{product:id}', [ClientDashboardController::class, 'toggleFavorite'])->name('favorites.toggle');
         Route::get('/cart', function() { return redirect()->route('cart.index'); })->name('cart');
     });
-
-    Route::get('/seo', [SeoSettingController::class, 'index'])->name('seo.index');
-    Route::put('/seo', [SeoSettingController::class, 'update'])->name('seo.update');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

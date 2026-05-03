@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\CarouselItem;
 use App\Models\Campaign;
+use App\Models\HomeSetting;
 
 class ShopController extends Controller
 {
@@ -75,6 +76,7 @@ class ShopController extends Controller
                 'search' => $search,
                 'category' => $categorySlug,
             ],
+            'homeSettings' => HomeSetting::current(),
         ]);
     }
 }

@@ -17,6 +17,8 @@ import {
     Bell,
     CheckCircle,
     ShoppingCart,
+    Image as ImageIcon,
+    Layout,
 } from 'lucide-react';
 
 export default function AuthenticatedLayout({ header, children }) {
@@ -32,6 +34,8 @@ export default function AuthenticatedLayout({ header, children }) {
         { name: 'Visão Geral', href: route('admin.dashboard'), icon: LayoutDashboard, active: route().current('admin.dashboard') },
         { name: 'Pedidos', href: route('admin.orders.index'), icon: ShoppingBag, active: route().current('admin.orders.*') },
         { name: 'Produtos', href: route('admin.products.index'), icon: ShoppingBag, active: route().current('admin.products.*') },
+        { name: 'Banners', href: route('admin.carousel.index'), icon: ImageIcon, active: route().current('admin.carousel.*') },
+        { name: 'Página Inicial', href: route('admin.home-settings.edit'), icon: Layout, active: route().current('admin.home-settings.*') },
         { name: 'Navegação', href: route('admin.navigation.index'), icon: CheckCircle, active: route().current('admin.navigation.*') },
         { name: 'Notificações', href: route('admin.notifications'), icon: Bell, active: route().current('admin.notifications'), badge: notifications.unread_count },
         { name: 'SEO', href: route('admin.seo.index'), icon: Settings, active: route().current('admin.seo.*') },
