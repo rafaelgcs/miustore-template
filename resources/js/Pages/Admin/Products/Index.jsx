@@ -13,7 +13,8 @@ import {
     Hash, 
     Database,
     CheckCircle2,
-    XCircle
+    XCircle,
+    History
 } from 'lucide-react';
 
 export default function Index({ products, filters = {} }) {
@@ -124,12 +125,22 @@ export default function Index({ products, filters = {} }) {
                                             )}
                                         </td>
                                         <td className="px-6 py-5 text-right">
-                                            <Link
-                                                href={route('admin.products.edit', product)}
-                                                className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400 hover:scale-110 active:scale-95"
-                                            >
-                                                <Edit2 className="h-4 w-4" />
-                                            </Link>
+                                            <div className="flex justify-end gap-2">
+                                                <Link
+                                                    href={route('admin.products.history', product)}
+                                                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition hover:bg-slate-200 hover:scale-110 active:scale-95 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
+                                                    title="Ver Histórico"
+                                                >
+                                                    <History className="h-4 w-4" />
+                                                </Link>
+                                                <Link
+                                                    href={route('admin.products.edit', product)}
+                                                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400 hover:scale-110 active:scale-95"
+                                                    title="Editar"
+                                                >
+                                                    <Edit2 className="h-4 w-4" />
+                                                </Link>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

@@ -51,4 +51,9 @@ class Product extends Model
     {
         return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
     }
+
+    public function movements()
+    {
+        return $this->hasMany(ProductMovement::class);
+    }
 }

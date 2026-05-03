@@ -39,6 +39,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::resource('products', AdminProductController::class)->only(['index', 'edit', 'update']);
+        Route::get('/products/{product}/history', [AdminProductController::class, 'history'])->name('products.history');
+        Route::get('/products/{product}/history/export', [AdminProductController::class, 'exportHistory'])->name('products.history.export');
+        Route::get('/products/{product}/history/pdf', [AdminProductController::class, 'exportPdf'])->name('products.history.pdf');
         Route::resource('carousel', CarouselController::class)->except(['show']);
         Route::resource('campaigns', CampaignController::class)->except(['show']);
         Route::resource('orders', OrderController::class)->only(['index', 'show']);
