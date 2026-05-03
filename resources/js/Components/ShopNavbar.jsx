@@ -153,7 +153,7 @@ export default function ShopNavbar() {
                         
                         <Link
                             href={route('products.index')}
-                            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/10 transition group"
+                            className="hidden lg:inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/10 transition group"
                         >
                             <Search className="h-5 w-5 group-hover:scale-110 transition" />
                         </Link>
@@ -188,6 +188,22 @@ export default function ShopNavbar() {
                         </button>
                     </div>
                 </div>
+
+                {/* Mobile Search Bar - Premium Pattern */}
+                <div className="mt-4 lg:hidden">
+                    <form action={route('products.index')} method="GET" className="relative group">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <Search className="h-4 w-4 text-slate-400 group-focus-within:text-gold-500 transition-colors duration-300" />
+                        </div>
+                        <input
+                            type="text"
+                            name="search"
+                            autoComplete="off"
+                            placeholder="O que você está procurando?"
+                            className="block w-full bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-xl py-3 pl-11 pr-4 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500/50 transition-all duration-300"
+                        />
+                    </form>
+                </div>
             </div>
 
             {/* Categories Bar */}
@@ -203,7 +219,7 @@ export default function ShopNavbar() {
             >
                 <div className="mx-auto flex max-w-7xl items-center justify-center">
                     <ul className="flex items-center gap-10 h-14">
-                        {navigation_menus.map((cat) => (
+                        {navigation_menus.filter(m => m.type !== 'top_bar').map((cat) => (
                             <li 
                                 key={cat.id} 
                                 className="h-full flex items-center"
@@ -304,7 +320,7 @@ export default function ShopNavbar() {
                         </div>
                         <div className="flex-1 overflow-y-auto p-6">
                             <ul className="space-y-4">
-                                {navigation_menus.map((cat) => (
+                                {navigation_menus.filter(m => m.type !== 'top_bar').map((cat) => (
                                     <li key={cat.id} className="border-b border-slate-50 dark:border-white/5 pb-4 last:border-0">
                                         <div className="flex items-center justify-between">
                                             <Link 
