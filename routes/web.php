@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\SeoSettingController;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\NavigationMenuController;
 use App\Http\Controllers\Admin\HomeSettingController;
+use App\Http\Controllers\Admin\MediaController;
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -57,6 +58,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/home-settings', [HomeSettingController::class, 'edit'])->name('home-settings.edit');
         Route::put('/home-settings', [HomeSettingController::class, 'update'])->name('home-settings.update');
         Route::resource('navigation', NavigationMenuController::class)->except(['show']);
+
+        // Media Library
+        Route::get('/media', [MediaController::class, 'index'])->name('media.index');
+        Route::post('/media/upload', [MediaController::class, 'upload'])->name('media.upload');
+        Route::post('/media/folders', [MediaController::class, 'storeFolder'])->name('media.folders.store');
+        Route::put('/media/{media}', [MediaController::class, 'update'])->name('media.update');
+        Route::delete('/media/{media}', [MediaController::class, 'destroy'])->name('media.destroy');
+        Route::delete('/media/folders/{folder}', [MediaController::class, 'destroyFolder'])->name('media.folders.destroy');
     });
 
     // Client Routes
