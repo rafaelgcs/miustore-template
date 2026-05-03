@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ShoppingBag, Star, ArrowRight, Search, Heart, ShoppingCart } from 'lucide-react';
 import ThemeToggle from '@/Components/ThemeToggle';
 import AddToCartButton from '@/Components/AddToCartButton';
+import ShopNavbar from '@/Components/ShopNavbar';
 
 const sections = [
     {
@@ -38,66 +39,9 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
         <div className="min-h-screen bg-white dark:bg-neutral-950 text-slate-900 dark:text-slate-100 font-sans">
             <Head title="Miu Store" />
 
-            <nav className="fixed inset-x-0 top-0 z-50 border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black/70 backdrop-blur-xl">
-                <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20">
-                            M
-                        </div>
-                        <div>
-                            <p className="text-xs uppercase tracking-[0.32em] text-slate-400 dark:text-slate-400">Miu Store</p>
-                            <h1 className="text-lg font-semibold tracking-wide text-black dark:text-white">Joias & Bem-estar</h1>
-                        </div>
-                    </div>
-                    <div className="hidden items-center gap-8 md:flex">
-                        <Link href={route('products.index')} className="text-sm text-slate-600 dark:text-slate-300 hover:text-gold-600 dark:hover:text-gold-400 transition font-medium">Produtos</Link>
-                        <Link href="#colecoes" className="text-sm text-slate-600 dark:text-slate-300 hover:text-gold-600 dark:hover:text-gold-400 transition font-medium">Coleções</Link>
-                        <Link href="#destaques" className="text-sm text-slate-600 dark:text-slate-300 hover:text-gold-600 dark:hover:text-gold-400 transition font-medium">Destaques</Link>
-                        <Link href="#contato" className="text-sm text-slate-600 dark:text-slate-300 hover:text-gold-600 dark:hover:text-gold-400 transition font-medium">Contato</Link>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <ThemeToggle />
-                        <Link
-                            href={route('products.index')}
-                            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/10 transition"
-                            aria-label="Buscar produtos"
-                            title="Buscar produtos"
-                        >
-                            <Search className="h-5 w-5" />
-                        </Link>
-                        <Link
-                            href={route('cart.index')}
-                            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/10 transition"
-                        >
-                            <ShoppingCart className="h-5 w-5" />
-                            {usePage().props.cart?.count > 0 && (
-                                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gold-500 text-[10px] font-bold text-neutral-950 shadow-lg shadow-gold-500/20">
-                                    {usePage().props.cart.count}
-                                </span>
-                            )}
-                        </Link>
+            <ShopNavbar />
 
-                        {isLoggedIn ? (
-                            <>
-                                <Link href={route('client.dashboard')} className="hidden rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-4 py-2 text-sm text-slate-600 dark:text-slate-200 transition hover:bg-slate-200 dark:hover:bg-white/10 md:inline-flex">
-                                    Minha Conta
-                                </Link>
-                            </>
-                        ) : (
-                            <>
-                                <Link href={route('login')} className="hidden rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-4 py-2 text-sm text-slate-600 dark:text-slate-200 transition hover:bg-slate-200 dark:hover:bg-white/10 md:inline-flex">
-                                    Entrar
-                                </Link>
-                            </>
-                        )}
-                        <Link href={route('register')} className="inline-flex items-center rounded-full bg-gold-500 px-5 py-2.5 text-sm font-semibold text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400">
-                            Comprar
-                        </Link>
-                    </div>
-                </div>
-            </nav>
-
-            <main className="pt-28">
+            <main className="pt-36">
                 <section className="relative overflow-hidden px-4 pb-20 pt-16 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50 dark:from-slate-900/50 to-white dark:to-neutral-950">
                     <div className="absolute -right-24 top-0 h-[420px] w-[420px] rounded-full bg-gold-500/10 blur-3xl" />
                     <div className="absolute left-1/2 top-24 h-[260px] w-[260px] -translate-x-1/2 rounded-full bg-gold-400/5 dark:bg-white/5 blur-3xl" />

@@ -3,6 +3,7 @@ import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { ArrowRight, Heart, ShoppingBag, ZoomIn, ShoppingCart } from 'lucide-react';
 import ThemeToggle from '@/Components/ThemeToggle';
 import AddToCartButton from '@/Components/AddToCartButton';
+import ShopNavbar from '@/Components/ShopNavbar';
 
 export default function ProductShow({ product, isFavorited }) {
     const { post } = useForm();
@@ -29,39 +30,9 @@ export default function ProductShow({ product, isFavorited }) {
                 {product.meta_keywords && <meta name="keywords" content={product.meta_keywords} />}
             </Head>
 
-            <nav className="fixed inset-x-0 top-0 z-50 border-b border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-black/70 backdrop-blur-xl">
-                <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-                    <Link href={route('home')} className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20">
-                            R
-                        </div>
-                        <h1 className="text-lg font-semibold tracking-wide text-black dark:text-white">Joias & Bem-estar</h1>
-                    </Link>
-                     <div className="flex items-center gap-3">
-                         <ThemeToggle />
-                         <Link
-                            href={route('cart.index')}
-                            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-200 transition hover:border-gold-400 dark:hover:text-white"
-                        >
-                            <ShoppingCart className="h-5 w-5" />
-                            {usePage().props.cart?.count > 0 && (
-                                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gold-500 text-[9px] font-bold text-neutral-950 shadow-lg shadow-gold-500/20">
-                                    {usePage().props.cart.count}
-                                </span>
-                            )}
-                        </Link>
-                         <Link
-                             href={route('products.index')}
-                             className="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-5 py-2 text-sm text-slate-700 dark:text-slate-200 transition hover:border-gold-400 dark:hover:text-white"
-                         >
-                             Voltar ao catálogo
-                             <ArrowRight className="h-4 w-4" />
-                         </Link>
-                     </div>
-                </div>
-            </nav>
+            <ShopNavbar />
 
-            <section className="px-4 py-10 sm:px-6 lg:px-8 pt-24 bg-slate-50/50 dark:bg-transparent">
+            <section className="px-4 py-10 sm:px-6 lg:px-8 pt-36 bg-slate-50/50 dark:bg-transparent">
                 <div className="mx-auto max-w-7xl">
                     <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                         <div>

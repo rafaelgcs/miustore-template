@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\CarouselController;
 use App\Http\Controllers\Admin\CampaignController;
 use App\Http\Controllers\Admin\SeoSettingController;
 use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\NavigationMenuController;
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -52,6 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/notifications/unread-count', [OrderController::class, 'getUnreadCount'])->name('notifications.unreadCount');
         Route::get('/seo', [SeoSettingController::class, 'index'])->name('seo.index');
         Route::put('/seo', [SeoSettingController::class, 'update'])->name('seo.update');
+        Route::resource('navigation', NavigationMenuController::class)->except(['show']);
     });
 
     // Client Routes

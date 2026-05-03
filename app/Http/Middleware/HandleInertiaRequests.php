@@ -65,6 +65,9 @@ class HandleInertiaRequests extends Middleware
                 'google_adsense_client' => $seoSetting?->google_adsense_client,
                 'robots' => $seoSetting?->robots,
             ],
+            'navigation_menus' => \App\Models\NavigationMenu::where('is_active', true)
+                ->orderBy('order')
+                ->get(),
             'flash' => [
                 'success' => $request->session()->get('success'),
                 'error' => $request->session()->get('error'),
