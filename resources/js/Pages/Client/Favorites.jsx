@@ -1,11 +1,9 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { Heart, ShoppingBag, Star, X } from 'lucide-react';
-
-import { useForm } from '@inertiajs/react';
-import { Heart, ShoppingBag, Star, X } from 'lucide-react';
+import { Heart, ShoppingBag, Star, X, ShoppingCart } from 'lucide-react';
+import AddToCartButton from '@/Components/AddToCartButton';
 
 export default function Favorites({ auth, favorites }) {
     const { post } = useForm();
@@ -29,8 +27,17 @@ export default function Favorites({ auth, favorites }) {
                         </p>
                     </div>
                     <div className="flex flex-wrap gap-3 text-sm text-slate-500 dark:text-slate-400">
+                        <button 
+                            onClick={() => {
+                                const url = route('favorites.shared', auth.user.id);
+                                navigator.clipboard.writeText(window.location.origin + url);
+                                alert('Link da lista de favoritos copiado para a área de transferência!');
+                            }}
+                            className="inline-flex items-center rounded-full bg-gold-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-gold-400"
+                        >
+                            Compartilhar Lista
+                        </button>
                         <span className="rounded-full bg-slate-100 px-3 py-2 dark:bg-slate-900">Favoritos: {favorites.length}</span>
-                        <span className="rounded-full bg-slate-100 px-3 py-2 dark:bg-slate-900">Cliente: {auth.user.name}</span>
                     </div>
                 </div>
             }
@@ -90,10 +97,10 @@ export default function Favorites({ auth, favorites }) {
                                         <span className="text-lg font-semibold text-slate-950 dark:text-slate-100">
                                             R$ {parseFloat(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                         </span>
-                                        <Link href={route('products.show', product.slug)} className="inline-flex items-center rounded-full bg-gold-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-gold-400">
-                                            <ShoppingBag className="mr-2 h-4 w-4" />
-                                            Comprar
-                                        </Link>
+                                        <AddToCartButton product={product} className="inline-flex items-center rounded-full bg-gold-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-gold-400">
+                                            <ShoppingCart className="mr-2 h-4 w-4" />
+                                            Adicionar
+                                        </AddToCartButton>
                                     </div>
                                 </div>
                             </motion.article>

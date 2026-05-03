@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { ArrowRight, Heart, ShoppingBag, ZoomIn } from 'lucide-react';
+import { ArrowRight, Heart, ShoppingBag, ZoomIn, ShoppingCart } from 'lucide-react';
 import ThemeToggle from '@/Components/ThemeToggle';
+import AddToCartButton from '@/Components/AddToCartButton';
 
 export default function ProductShow({ product, isFavorited }) {
     const { post } = useForm();
@@ -32,16 +33,27 @@ export default function ProductShow({ product, isFavorited }) {
                         </div>
                         <h1 className="text-lg font-semibold tracking-wide text-black dark:text-white">Joias & Bem-estar</h1>
                     </Link>
-                    <div className="flex items-center gap-3">
-                        <ThemeToggle />
-                        <Link
-                            href={route('products.index')}
-                            className="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-5 py-2 text-sm text-slate-700 dark:text-slate-200 transition hover:border-gold-400 dark:hover:text-white"
+                     <div className="flex items-center gap-3">
+                         <ThemeToggle />
+                         <Link
+                            href={route('cart.index')}
+                            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-200 transition hover:border-gold-400 dark:hover:text-white"
                         >
-                            Voltar ao catálogo
-                            <ArrowRight className="h-4 w-4" />
+                            <ShoppingCart className="h-5 w-5" />
+                            {usePage().props.cart?.count > 0 && (
+                                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gold-500 text-[9px] font-bold text-neutral-950 shadow-lg shadow-gold-500/20">
+                                    {usePage().props.cart.count}
+                                </span>
+                            )}
                         </Link>
-                    </div>
+                         <Link
+                             href={route('products.index')}
+                             className="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-5 py-2 text-sm text-slate-700 dark:text-slate-200 transition hover:border-gold-400 dark:hover:text-white"
+                         >
+                             Voltar ao catálogo
+                             <ArrowRight className="h-4 w-4" />
+                         </Link>
+                     </div>
                 </div>
             </nav>
 
@@ -169,12 +181,16 @@ export default function ProductShow({ product, isFavorited }) {
                                     </div>
                                 )}
 
-                                <div className="mt-8 grid gap-3">
-                                    <button className="inline-flex items-center justify-center gap-2 rounded-full bg-gold-500 px-5 py-4 text-sm font-semibold text-neutral-950 transition hover:bg-gold-400">
-                                        <ShoppingBag className="h-4 w-4" />
+                                 <div className="mt-8 grid gap-3">
+                                     <AddToCartButton 
+                                        product={product} 
+                                        options={{ size: selectedSize, color: selectedColor }}
+                                        className="inline-flex items-center justify-center gap-2 rounded-full bg-gold-500 px-5 py-4 text-sm font-semibold text-neutral-950 transition hover:bg-gold-400"
+                                     >
+                                        <ShoppingCart className="h-4 w-4" />
                                         Adicionar ao carrinho
-                                    </button>
-                                    <button 
+                                     </AddToCartButton>
+                                     <button 
                                         onClick={toggleFavorite}
                                         className={`inline-flex items-center justify-center gap-2 rounded-full border px-5 py-4 text-sm font-semibold transition ${isFavorited ? 'bg-red-500 border-red-500 text-white shadow-lg shadow-red-500/20' : 'border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-200 hover:border-red-400 hover:text-red-500'}`}
                                     >

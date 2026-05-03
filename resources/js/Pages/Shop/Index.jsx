@@ -1,7 +1,8 @@
-import { useForm } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Star, ArrowRight, Search, Heart, ShoppingCart } from 'lucide-react';
 import ThemeToggle from '@/Components/ThemeToggle';
+import AddToCartButton from '@/Components/AddToCartButton';
 
 const sections = [
     {
@@ -64,11 +65,20 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                         >
                             <Search className="h-5 w-5" />
                         </Link>
+                        <Link
+                            href={route('cart.index')}
+                            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/10 transition"
+                        >
+                            <ShoppingCart className="h-5 w-5" />
+                            {usePage().props.cart?.count > 0 && (
+                                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gold-500 text-[10px] font-bold text-neutral-950 shadow-lg shadow-gold-500/20">
+                                    {usePage().props.cart.count}
+                                </span>
+                            )}
+                        </Link>
+
                         {isLoggedIn ? (
                             <>
-                                <Link href={route('client.cart')} className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-white/10 transition">
-                                    <ShoppingCart className="h-5 w-5" />
-                                </Link>
                                 <Link href={route('client.dashboard')} className="hidden rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-4 py-2 text-sm text-slate-600 dark:text-slate-200 transition hover:bg-slate-200 dark:hover:bg-white/10 md:inline-flex">
                                     Minha Conta
                                 </Link>
@@ -331,9 +341,9 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                                                 >
                                                     <Heart className={`h-4 w-4 ${userFavorites.includes(product.id) ? 'fill-current' : ''}`} />
                                                 </button>
-                                                <Link href={route('client.cart')} className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400">
+                                                <AddToCartButton product={product} className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400">
                                                     <ShoppingBag className="h-4 w-4" />
-                                                </Link>
+                                                </AddToCartButton>
                                             </div>
                                         </div>
                                     </div>
@@ -407,9 +417,9 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                                                 >
                                                     <Heart className={`h-5 w-5 ${userFavorites.includes(product.id) ? 'fill-current' : ''}`} />
                                                 </button>
-                                                <Link href={route('client.cart')} className="inline-flex h-12 min-w-[3rem] items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400">
+                                                <AddToCartButton product={product} className="inline-flex h-12 min-w-[3rem] items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400">
                                                     <ShoppingBag className="h-5 w-5" />
-                                                </Link>
+                                                </AddToCartButton>
                                             </div>
                                         </div>
                                     </motion.article>

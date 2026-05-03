@@ -1,188 +1,224 @@
-import React, { useState } from 'react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShoppingBag, Trash2, Minus, Plus, ArrowLeft, ShoppingCart, CreditCard } from 'lucide-react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link } from '@inertiajs/react';
-import { motion } from 'framer-motion';
-import { ShoppingBag, Minus, Plus, Trash2, CreditCard, Truck } from 'lucide-react';
+import GuestLayout from '@/Layouts/GuestLayout';
+import { useState } from 'react';
 
-const cartItems = [
-    {
-        id: 1,
-        name: 'Colar em Ouro Rosé',
-        price: 1395,
-        quantity: 1,
-        image: null,
-        category: 'Colares',
-    },
-    {
-        id: 2,
-        name: 'Brincos Diamante',
-        price: 895,
-        quantity: 2,
-        image: null,
-        category: 'Brincos',
-    },
-];
+export default function Cart({ auth, cartItems }) {
+    const { patch, delete: destroy } = useForm();
 
-export default function Cart({ auth }) {
-    const [items, setItems] = useState(cartItems);
-
-    const updateQuantity = (id, newQuantity) => {
-        if (newQuantity < 1) return;
-        setItems(items.map(item =>
-            item.id === id ? { ...item, quantity: newQuantity } : item
-        ));
+    const updateQuantity = (id, quantity) => {
+        if (quantity < 1) return;
+        patch(route('cart.update', id), {
+            quantity: quantity,
+        }, {
+            preserveScroll: true,
+        });
     };
 
     const removeItem = (id) => {
-        setItems(items.filter(item => item.id !== id));
+        destroy(route('cart.remove', id), {
+            preserveScroll: true,
+        });
     };
 
-    const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const shipping = subtotal > 500 ? 0 : 29.90;
+    const subtotal = cartItems.reduce((acc, item) => acc + (parseFloat(item.product.price) * item.quantity), 0);
+    const shipping = subtotal > 500 ? 0 : 25.00;
     const total = subtotal + shipping;
 
-    return (
-        <AuthenticatedLayout
-            header={
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                        <h1 className="text-3xl font-semibold text-slate-950 dark:text-slate-100">
-                            Carrinho de Compras
-                        </h1>
-                        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                            Revise seus produtos antes de finalizar a compra.
-                        </p>
-                    </div>
-                    <div className="flex flex-wrap gap-3 text-sm text-slate-500 dark:text-slate-400">
-                        <span className="rounded-full bg-slate-100 px-3 py-2 dark:bg-slate-900">{items.length} item(s) no carrinho</span>
-                        <span className="rounded-full bg-slate-100 px-3 py-2 dark:bg-slate-900">Cliente: {auth.user.name}</span>
-                    </div>
+    const CartContent = (
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between mb-8">
+                <div>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Meu Carrinho</h1>
+                    <p className="mt-2 text-slate-600 dark:text-slate-400">
+                        {cartItems.length} {cartItems.length === 1 ? 'item selecionado' : 'itens selecionados'}
+                    </p>
                 </div>
-            }
-        >
-            <Head title="Carrinho de Compras" />
+                <Link
+                    href={route('products.index')}
+                    className="inline-flex items-center gap-2 text-sm font-medium text-gold-600 hover:text-gold-500 transition"
+                >
+                    <ArrowLeft className="h-4 w-4" />
+                    Continuar comprando
+                </Link>
+            </div>
 
-            <div className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
-                {items.length === 0 ? (
-                    <div className="rounded-[2rem] border border-slate-200/80 bg-white p-12 text-center shadow-sm dark:border-slate-800 dark:bg-slate-950/95">
-                        <ShoppingBag className="mx-auto h-16 w-16 text-slate-400" />
-                        <h3 className="mt-4 text-xl font-semibold text-slate-950 dark:text-slate-100">Seu carrinho está vazio</h3>
-                        <p className="mt-2 text-slate-600 dark:text-slate-400">Adicione produtos para começar suas compras.</p>
-                        <Link href={route('home')} className="mt-6 inline-flex items-center rounded-full bg-gold-500 px-6 py-3 text-sm font-semibold text-neutral-950 transition hover:bg-gold-400">
-                            Continuar comprando
-                        </Link>
+            {cartItems.length === 0 ? (
+                <div className="rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 p-20 text-center backdrop-blur-xl">
+                    <div className="flex justify-center mb-6">
+                        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gold-100 dark:bg-gold-500/10 text-gold-600 dark:text-gold-200">
+                            <ShoppingCart className="h-10 w-10" />
+                        </div>
                     </div>
-                ) : (
-                    <div className="grid gap-8 lg:grid-cols-[1fr_400px]">
-                        <div className="space-y-6">
-                            {items.map((item, index) => (
-                                <motion.article
+                    <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Seu carrinho está vazio</h2>
+                    <p className="mt-4 text-slate-600 dark:text-slate-400 max-w-md mx-auto">
+                        Parece que você ainda não adicionou nada ao seu carrinho. Explore nossa coleção e encontre a joia perfeita.
+                    </p>
+                    <Link
+                        href={route('products.index')}
+                        className="mt-8 inline-flex items-center rounded-full bg-gold-500 px-8 py-3 text-sm font-semibold text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400"
+                    >
+                        Ver Produtos
+                    </Link>
+                </div>
+            ) : (
+                <div className="grid gap-8 lg:grid-cols-3">
+                    <div className="lg:col-span-2 space-y-4">
+                        <AnimatePresence>
+                            {cartItems.map((item) => (
+                                <motion.div
                                     key={item.id}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/95"
+                                    exit={{ opacity: 0, x: -20 }}
+                                    className="group relative flex flex-col sm:flex-row gap-6 rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/5 p-6 shadow-sm backdrop-blur-xl transition hover:border-gold-300/50 dark:hover:border-gold-500/30"
                                 >
-                                    <div className="flex gap-6">
-                                        <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-[1.5rem] bg-slate-100 dark:bg-slate-800">
-                                            {item.image ? (
-                                                <img src={item.image} alt={item.name} className="h-full w-full rounded-[1.5rem] object-cover" />
-                                            ) : (
-                                                <ShoppingBag className="h-8 w-8 text-slate-400" />
-                                            )}
+                                    <div className="h-32 w-32 flex-shrink-0 overflow-hidden rounded-2xl bg-slate-100 dark:bg-white/5">
+                                        {item.product.image ? (
+                                            <img
+                                                src={item.product.image}
+                                                alt={item.product.name}
+                                                className="h-full w-full object-cover"
+                                            />
+                                        ) : (
+                                            <div className="flex h-full items-center justify-center text-slate-400">
+                                                <ShoppingBag className="h-8 w-8" />
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="flex flex-1 flex-col justify-between">
+                                        <div className="flex justify-between gap-4">
+                                            <div>
+                                                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                                                    {item.product.name}
+                                                </h3>
+                                                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 line-clamp-1">
+                                                    {item.product.description}
+                                                </p>
+                                            </div>
+                                            <p className="text-lg font-bold text-gold-600 dark:text-gold-400">
+                                                R$ {parseFloat(item.product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                            </p>
                                         </div>
 
-                                        <div className="flex-1">
-                                            <div className="flex items-start justify-between">
-                                                <div>
-                                                    <h3 className="text-lg font-semibold text-slate-950 dark:text-slate-100">{item.name}</h3>
-                                                    <p className="text-sm text-slate-600 dark:text-slate-400">{item.category}</p>
-                                                </div>
+                                        <div className="mt-4 flex items-center justify-between">
+                                            <div className="flex items-center rounded-full border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 p-1">
                                                 <button
-                                                    onClick={() => removeItem(item.id)}
-                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-400 transition hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/50"
+                                                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                    className="flex h-8 w-8 items-center justify-center rounded-full text-slate-500 hover:bg-white dark:hover:bg-white/10 hover:text-gold-600 transition"
                                                 >
-                                                    <Trash2 className="h-4 w-4" />
+                                                    <Minus className="h-4 w-4" />
+                                                </button>
+                                                <span className="w-10 text-center text-sm font-semibold text-slate-900 dark:text-white">
+                                                    {item.quantity}
+                                                </span>
+                                                <button
+                                                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                    className="flex h-8 w-8 items-center justify-center rounded-full text-slate-500 hover:bg-white dark:hover:bg-white/10 hover:text-gold-600 transition"
+                                                >
+                                                    <Plus className="h-4 w-4" />
                                                 </button>
                                             </div>
 
-                                            <div className="mt-4 flex items-center justify-between">
-                                                <div className="flex items-center gap-3">
-                                                    <button
-                                                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400"
-                                                    >
-                                                        <Minus className="h-4 w-4" />
-                                                    </button>
-                                                    <span className="w-8 text-center text-sm font-medium text-slate-950 dark:text-slate-100">{item.quantity}</span>
-                                                    <button
-                                                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                        className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400"
-                                                    >
-                                                        <Plus className="h-4 w-4" />
-                                                    </button>
-                                                </div>
-                                                <span className="text-lg font-semibold text-slate-950 dark:text-slate-100">
-                                                    R$ {(item.price * item.quantity).toFixed(2)}
-                                                </span>
-                                            </div>
+                                            <button
+                                                onClick={() => removeItem(item.id)}
+                                                className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 dark:border-white/10 text-slate-400 hover:border-red-300 hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20 transition"
+                                                title="Remover item"
+                                            >
+                                                <Trash2 className="h-5 w-5" />
+                                            </button>
                                         </div>
                                     </div>
-                                </motion.article>
+                                </motion.div>
                             ))}
-                        </div>
+                        </AnimatePresence>
+                    </div>
 
-                        <div className="space-y-6">
-                            <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/95">
-                                <h3 className="text-lg font-semibold text-slate-950 dark:text-slate-100">Resumo do pedido</h3>
-
-                                <div className="mt-6 space-y-3">
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-slate-600 dark:text-slate-400">Subtotal</span>
-                                        <span className="text-slate-950 dark:text-slate-100">R$ {subtotal.toFixed(2)}</span>
-                                    </div>
-                                    <div className="flex justify-between text-sm">
-                                        <span className="text-slate-600 dark:text-slate-400">Frete</span>
-                                        <span className="text-slate-950 dark:text-slate-100">
-                                            {shipping === 0 ? 'Grátis' : `R$ ${shipping.toFixed(2)}`}
-                                        </span>
-                                    </div>
-                                    <div className="border-t border-slate-200 pt-3 dark:border-slate-800">
-                                        <div className="flex justify-between text-lg font-semibold">
-                                            <span className="text-slate-950 dark:text-slate-100">Total</span>
-                                            <span className="text-slate-950 dark:text-slate-100">R$ {total.toFixed(2)}</span>
-                                        </div>
-                                    </div>
+                    <div className="lg:col-span-1">
+                        <div className="sticky top-24 rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/5 p-8 shadow-xl backdrop-blur-xl">
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">Resumo do Pedido</h3>
+                            
+                            <div className="space-y-4">
+                                <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                                    <span>Subtotal</span>
+                                    <span>R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                                 </div>
-
-                                <button className="mt-6 w-full rounded-full bg-gold-500 py-3 text-sm font-semibold text-neutral-950 transition hover:bg-gold-400">
-                                    Finalizar compra
-                                </button>
+                                <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                                    <span>Frete</span>
+                                    <span>{shipping === 0 ? 'Grátis' : `R$ ${shipping.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`}</span>
+                                </div>
+                                {shipping > 0 && (
+                                    <p className="text-xs text-gold-600 dark:text-gold-400">
+                                        Adicione mais R$ {(500 - subtotal).toLocaleString('pt-BR', { minimumFractionDigits: 2 })} para frete grátis!
+                                    </p>
+                                )}
+                                <div className="pt-4 border-t border-slate-200 dark:border-white/10 flex justify-between text-xl font-bold text-slate-900 dark:text-white">
+                                    <span>Total</span>
+                                    <span className="text-gold-600 dark:text-gold-400">
+                                        R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                    </span>
+                                </div>
                             </div>
 
-                            <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/95">
-                                <div className="flex items-center gap-3">
-                                    <Truck className="h-5 w-5 text-slate-600 dark:text-slate-400" />
-                                    <span className="text-sm font-medium text-slate-950 dark:text-slate-100">Frete grátis</span>
-                                </div>
-                                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                                    Para compras acima de R$ 500,00
-                                </p>
-                            </div>
+                            <button className="mt-8 w-full flex items-center justify-center gap-3 rounded-full bg-gold-500 py-4 text-sm font-bold text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400 hover:shadow-gold-500/40">
+                                <CreditCard className="h-5 w-5" />
+                                Finalizar Compra
+                            </button>
 
-                            <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/95">
-                                <div className="flex items-center gap-3">
-                                    <CreditCard className="h-5 w-5 text-slate-600 dark:text-slate-400" />
-                                    <span className="text-sm font-medium text-slate-950 dark:text-slate-100">Pagamento seguro</span>
+                            <div className="mt-6 flex flex-col gap-3">
+                                <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500/10 text-green-500">
+                                        ✓
+                                    </div>
+                                    Pagamento 100% Seguro
                                 </div>
-                                <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-                                    Aceitamos cartão, PIX e boleto
-                                </p>
+                                <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500/10 text-green-500">
+                                        ✓
+                                    </div>
+                                    Troca Grátis em até 30 dias
+                                </div>
                             </div>
                         </div>
                     </div>
-                )}
-            </div>
-        </AuthenticatedLayout>
+                </div>
+            )}
+        </div>
+    );
+
+    if (auth.user) {
+        return (
+            <AuthenticatedLayout
+                user={auth.user}
+                header={<h2 className="text-xl font-semibold leading-tight text-slate-800 dark:text-slate-200">Carrinho</h2>}
+            >
+                <Head title="Carrinho" />
+                <div className="py-2">
+                    {CartContent}
+                </div>
+            </AuthenticatedLayout>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-white dark:bg-neutral-950 text-slate-900 dark:text-slate-100 font-sans">
+            <Head title="Carrinho - Miu Store" />
+            <nav className="border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-black/70 backdrop-blur-xl px-4 py-4 sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-7xl flex items-center justify-between">
+                    <Link href="/" className="flex items-center gap-3">
+                        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20">
+                            M
+                        </div>
+                        <h1 className="text-lg font-semibold tracking-wide text-black dark:text-white">Miu Store</h1>
+                    </Link>
+                </div>
+            </nav>
+            <main className="pt-8">
+                {CartContent}
+            </main>
+        </div>
     );
 }

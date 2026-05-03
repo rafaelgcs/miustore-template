@@ -1,6 +1,7 @@
-import { Head, Link, useForm } from '@inertiajs/react';
-import { Search, ArrowRight, ShoppingBag, Heart } from 'lucide-react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Search, ArrowRight, ShoppingBag, Heart, ShoppingCart } from 'lucide-react';
 import ThemeToggle from '@/Components/ThemeToggle';
+import AddToCartButton from '@/Components/AddToCartButton';
 
 export default function Products({ products, categories, types, filters, auth, userFavorites = [] }) {
     const { post } = useForm();
@@ -31,8 +32,19 @@ export default function Products({ products, categories, types, filters, auth, u
                     </Link>
                     <div className="flex items-center gap-3">
                         <ThemeToggle />
+                        <Link
+                            href={route('cart.index')}
+                            className="relative inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-slate-200 transition hover:border-gold-400 dark:hover:text-white"
+                        >
+                            <ShoppingCart className="h-5 w-5" />
+                            {usePage().props.cart?.count > 0 && (
+                                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gold-500 text-[9px] font-bold text-neutral-950 shadow-lg shadow-gold-500/20">
+                                    {usePage().props.cart.count}
+                                </span>
+                            )}
+                        </Link>
                         <Link href={route('home')} className="inline-flex items-center gap-2 rounded-full border border-slate-300 dark:border-white/10 bg-slate-100 dark:bg-white/5 px-5 py-2 text-sm text-slate-700 dark:text-slate-200 transition hover:border-gold-400 dark:hover:text-white">
-                            Voltar à Home
+                            Voltar
                             <ArrowRight className="h-4 w-4" />
                         </Link>
                     </div>
@@ -198,7 +210,9 @@ export default function Products({ products, categories, types, filters, auth, u
                                                 >
                                                     <Heart className={`h-4.5 w-4.5 ${userFavorites.includes(product.id) ? 'fill-current' : ''}`} />
                                                 </button>
-                                                <ArrowRight className="h-5 w-5 text-gold-600 dark:text-gold-300" />
+                                                <AddToCartButton product={product} className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400">
+                                                    <ShoppingBag className="h-4.5 w-4.5" />
+                                                </AddToCartButton>
                                             </div>
                                         </div>
                                     </div>

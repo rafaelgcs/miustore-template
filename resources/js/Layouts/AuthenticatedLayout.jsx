@@ -14,6 +14,7 @@ import {
     Heart,
     User,
     Package,
+    ShoppingCart,
 } from 'lucide-react';
 
 export default function AuthenticatedLayout({ header, children }) {
@@ -60,6 +61,17 @@ export default function AuthenticatedLayout({ header, children }) {
 
                     <div className="hidden items-center gap-3 md:flex">
                         <ThemeToggle />
+                        <Link
+                            href={route('cart.index')}
+                            className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200/80 bg-white/80 text-slate-700 shadow-sm backdrop-blur-xl transition hover:border-gold-300 hover:bg-gold-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-gold-500/50 dark:hover:bg-gold-500/10"
+                        >
+                            <ShoppingCart className="h-5 w-5" />
+                            {usePage().props.cart.count > 0 && (
+                                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gold-500 text-[10px] font-bold text-neutral-950 shadow-lg shadow-gold-500/20">
+                                    {usePage().props.cart.count}
+                                </span>
+                            )}
+                        </Link>
                         <Dropdown>
                             <Dropdown.Trigger>
                                 <span className="inline-flex rounded-md">
@@ -118,6 +130,9 @@ export default function AuthenticatedLayout({ header, children }) {
                                 {link.name}
                             </ResponsiveNavLink>
                         ))}
+                        <ResponsiveNavLink href={route('cart.index')} active={route().current('cart.index')}>
+                            Carrinho ({usePage().props.cart.count})
+                        </ResponsiveNavLink>
                         <ResponsiveNavLink method="post" href={route('logout')} as="button">
                             Log Out
                         </ResponsiveNavLink>

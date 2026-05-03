@@ -1,4 +1,7 @@
-import { useForm } from '@inertiajs/react';
+import React from 'react';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { motion } from 'framer-motion';
 import { ShoppingBag, Heart, Star, Package } from 'lucide-react';
 
 export default function Dashboard({ auth, stats }) {
@@ -121,18 +124,18 @@ export default function Dashboard({ auth, stats }) {
                     <div className="rounded-[2rem] border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-950/95">
                         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-6">
                             <div>
-                                <p className="text-sm uppercase tracking-[0.3em] font-medium text-gold-500">Meus Favoritos</p>
+                                <p className="text-sm uppercase tracking-[0.3em] font-medium text-gold-500">Recomendado para você</p>
                                 <h2 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-slate-100">
-                                    Acesse rapidamente
+                                    Baseado no seu perfil
                                 </h2>
                             </div>
-                            <Link href={route('client.favorites')} className="inline-flex items-center rounded-full bg-gold-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-gold-400">
-                                Ver Todos
+                            <Link href={route('products.index')} className="inline-flex items-center rounded-full bg-gold-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-gold-400">
+                                Ver Catálogo Completo
                             </Link>
                         </div>
 
                         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                            {stats.favorite_products.map((product, index) => (
+                            {stats.recommended_products.map((product, index) => (
                                 <motion.div
                                     key={product.id}
                                     initial={{ opacity: 0, y: 12 }}
@@ -156,9 +159,9 @@ export default function Dashboard({ auth, stats }) {
                                             <span className="text-sm font-semibold text-slate-950 dark:text-slate-100">R$ {parseFloat(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                                             <button 
                                                 onClick={() => toggleFavorite(product.id)}
-                                                className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400"
+                                                className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition hover:bg-gold-500 hover:text-neutral-950 dark:bg-slate-800 dark:text-slate-500"
                                             >
-                                                <Heart className="h-3 w-3 fill-current" />
+                                                <Heart className="h-3 w-3" />
                                             </button>
                                         </div>
                                     </div>

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\User;
 
 class DashboardController extends Controller
 {
@@ -15,11 +16,20 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
+        // Recomendações: Produtos aleatórios que não estão nos favoritos
+        $favoriteIds = $user->favorites()->pluck('products.id');
+        $recommended = Product::with('category')
+            ->whereNotIn('id', $favoriteIds)
+            ->inRandomOrder()
+            ->take(4)
+            ->get();
+
         $stats = [
             'total_orders' => $user->orders()->count(),
             'total_spent' => $user->orders()->sum('total_amount'),
             'recent_orders' => $user->orders()->with('items.product')->latest()->take(3)->get(),
             'favorite_products' => $user->favorites()->with('category')->take(4)->get(),
+            'recommended_products' => $recommended,
         ];
 
         return Inertia::render('Client/Dashboard', [
@@ -55,6 +65,19 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function sharedFavorites(User $user)
+    {
+        $favorites = $user->favorites()
+            ->with('category')
+            ->latest('favorites.created_at')
+            ->get();
+
+        return Inertia::render('Client/SharedFavorites', [
+            'user' => $user->only(['name']),
+            'favorites' => $favorites,
+        ]);
+    }
+
     public function toggleFavorite(Product $product)
     {
         $user = auth()->user();
@@ -62,15 +85,5 @@ class DashboardController extends Controller
         $user->favorites()->toggle($product->id);
 
         return back();
-    }
-
-    public function cart()
-    {
-        // Por enquanto, carrinho vazio
-        // Em uma implementação real, você teria uma tabela de carrinho
-        return Inertia::render('Client/Cart', [
-            'cart' => [],
-            'total' => 0,
-        ]);
     }
 }
