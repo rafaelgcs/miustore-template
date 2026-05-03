@@ -23,7 +23,11 @@ export default function ProductShow({ product, isFavorited }) {
 
     return (
         <div className="min-h-screen bg-white dark:bg-neutral-950 text-slate-900 dark:text-slate-100 font-sans">
-            <Head title={product.name} />
+            <Head>
+                <title>{product.meta_title || product.name}</title>
+                {product.meta_description && <meta name="description" content={product.meta_description} />}
+                {product.meta_keywords && <meta name="keywords" content={product.meta_keywords} />}
+            </Head>
 
             <nav className="fixed inset-x-0 top-0 z-50 border-b border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-black/70 backdrop-blur-xl">
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">

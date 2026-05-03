@@ -21,6 +21,9 @@ class Product extends Model
         'customization_options',
         'image',
         'is_active',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
     ];
 
     protected $casts = [

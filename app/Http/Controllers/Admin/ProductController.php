@@ -49,6 +49,9 @@ class ProductController extends Controller
             'available_sizes' => 'nullable|string',
             'available_colors' => 'nullable|string',
             'customization_options' => 'nullable|string',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string',
+            'meta_keywords' => 'nullable|string|max:255',
         ]);
 
         $product->update([
@@ -66,6 +69,9 @@ class ProductController extends Controller
             'available_sizes' => $this->explodeLines($data['available_sizes'] ?? ''),
             'available_colors' => $this->explodeLines($data['available_colors'] ?? ''),
             'customization_options' => $this->explodeLines($data['customization_options'] ?? ''),
+            'meta_title' => $data['meta_title'] ?? null,
+            'meta_description' => $data['meta_description'] ?? null,
+            'meta_keywords' => $data['meta_keywords'] ?? null,
         ]);
 
         return redirect()->route('admin.products.index')->with('success', 'Produto atualizado com sucesso.');
