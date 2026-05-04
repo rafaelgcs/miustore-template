@@ -17,6 +17,16 @@ class ProductController extends Controller
         $type = $request->query('type');
         $color = $request->query('color');
 
+        $currentCollection = null;
+        if ($collectionSlug) {
+            $currentCollection = \App\Models\Collection::where('slug', $collectionSlug)->first();
+        }
+
+        $currentCategory = null;
+        if ($categorySlug) {
+            $currentCategory = Category::where('slug', $categorySlug)->first();
+        }
+
         $categories = Category::withCount('products')
             ->having('products_count', '>', 0)
             ->orderBy('name')
@@ -71,6 +81,8 @@ class ProductController extends Controller
             'categories' => $categories,
             'types' => $types,
             'userFavorites' => $userFavorites,
+            'currentCollection' => $currentCollection,
+            'currentCategory' => $currentCategory,
             'filters' => [
                 'search' => $search,
                 'category' => $categorySlug,
