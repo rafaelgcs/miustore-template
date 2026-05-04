@@ -24,6 +24,7 @@ class Product extends Model
         'meta_title',
         'meta_description',
         'meta_keywords',
+        'size_guide',
     ];
 
     protected $casts = [
@@ -65,5 +66,25 @@ class Product extends Model
     public function images()
     {
         return $this->hasMany(ProductImage::class)->orderBy('sort_order');
+    }
+
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        return round($this->reviews()->where('status', 'approved')->avg('rating') ?: 0, 1);
+    }
+
+    public function getReviewsCountAttribute()
+    {
+        return $this->reviews()->where('status', 'approved')->count();
     }
 }

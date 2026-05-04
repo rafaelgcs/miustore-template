@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\CollectionController;
 use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
+use App\Http\Controllers\ShippingController;
+use App\Http\Controllers\ProductReviewController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -33,6 +35,10 @@ Route::get('/carrinho', [CartController::class, 'index'])->name('cart.index');
 Route::post('/carrinho/adicionar/{product:id}', [CartController::class, 'add'])->name('cart.add');
 Route::patch('/carrinho/atualizar/{cartItem}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/carrinho/remover/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
+
+// Shipping & Reviews
+Route::post('/shipping/calculate', [ShippingController::class, 'calculate'])->name('shipping.calculate');
+Route::post('/products/{product}/reviews', [ProductReviewController::class, 'store'])->name('products.reviews.store');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {

@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { Search, ArrowRight, ShoppingBag, Heart, ShoppingCart, ChevronDown, ChevronUp, Filter, X } from 'lucide-react';
+import { Search, ArrowRight, ShoppingBag, Heart, ShoppingCart, ChevronDown, ChevronUp, Filter, X, Star } from 'lucide-react';
 import ThemeToggle from '@/Components/ThemeToggle';
 import AddToCartButton from '@/Components/AddToCartButton';
 import ShopNavbar from '@/Components/ShopNavbar';
+import Footer from '@/Components/Footer';
 
 export default function Products({ products, categories, types, filters, auth, userFavorites = [], currentCollection = null, currentCategory = null }) {
     const { post } = useForm();
@@ -259,6 +260,13 @@ export default function Products({ products, categories, types, filters, auth, u
                                         <div className="absolute left-4 top-4 rounded-full bg-white/90 dark:bg-black/80 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-black dark:text-white backdrop-blur-md">
                                             {product.category?.name}
                                         </div>
+
+                                        {product.reviews_count > 0 && (
+                                            <div className="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-black/60 px-2 py-1 text-[10px] font-bold text-white backdrop-blur-md">
+                                                <Star className="h-2.5 w-2.5 fill-gold-500 text-gold-500" />
+                                                {product.average_rating}
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="flex flex-1 flex-col p-4">
@@ -326,6 +334,8 @@ export default function Products({ products, categories, types, filters, auth, u
                     )}
                 </div>
             </section>
+
+            <Footer />
         </div>
     );
 }

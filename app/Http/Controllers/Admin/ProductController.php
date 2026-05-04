@@ -28,7 +28,7 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::orderBy('name')->get();
-        $product->load('images');
+        $product->load(['images', 'variants']);
 
         return Inertia::render('Admin/Products/Edit', [
             'product' => $product,
@@ -60,6 +60,12 @@ class ProductController extends Controller
             'images.*.url' => 'required|string',
             'images.*.is_main' => 'boolean',
             'images.*.sort_order' => 'integer',
+            'size_guide' => 'nullable|string',
+            'variants' => 'nullable|array',
+            'variants.*.attributes' => 'required|array',
+            'variants.*.price' => 'nullable|numeric|min:0',
+            'variants.*.stock' => 'required|integer|min:0',
+            'variants.*.sku' => 'nullable|string|max:255',
         ]);
 
         $oldStock = $product->stock;
@@ -83,6 +89,7 @@ class ProductController extends Controller
             'meta_title' => $data['meta_title'] ?? null,
             'meta_description' => $data['meta_description'] ?? null,
             'meta_keywords' => $data['meta_keywords'] ?? null,
+            'size_guide' => $data['size_guide'] ?? null,
         ]);
 
         // Sync images
@@ -98,6 +105,19 @@ class ProductController extends Controller
                 if ($img['is_main']) {
                     $product->update(['image' => $img['url']]);
                 }
+            }
+        }
+
+        // Sync variants
+        if ($request->has('variants')) {
+            $product->variants()->delete();
+            foreach ($data['variants'] as $variant) {
+                $product->variants()->create([
+                    'attributes' => $variant['attributes'],
+                    'price' => $variant['price'] ?? null,
+                    'stock' => $variant['stock'] ?? 0,
+                    'sku' => $variant['sku'] ?? null,
+                ]);
             }
         }
 

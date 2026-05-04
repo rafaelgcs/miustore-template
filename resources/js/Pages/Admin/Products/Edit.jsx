@@ -2,12 +2,31 @@ import React, { useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
+import {
     Key,
     Plus,
     Trash2,
     Star,
-    Image as ImageIcon
+    Image as ImageIcon,
+    Layers,
+    Info,
+    Package,
+    Palette,
+    Globe,
+    Type,
+    Search,
+    Hash,
+    Truck,
+    Maximize,
+    Settings,
+    FileText,
+    Save,
+    ArrowLeft,
+    ChevronDown,
+    ChevronUp,
+    GripVertical,
+    Scissors,
+    Tag
 } from 'lucide-react';
 
 export default function Edit({ product, categories }) {
@@ -32,7 +51,33 @@ export default function Edit({ product, categories }) {
         meta_description: product.meta_description || '',
         meta_keywords: product.meta_keywords || '',
         images: product.images || [],
+        size_guide: product.size_guide || '',
+        variants: product.variants || [],
     });
+
+    const addVariant = () => {
+        setData('variants', [...data.variants, {
+            attributes: { size: '', color: '' },
+            price: null,
+            stock: 0,
+            sku: ''
+        }]);
+    };
+
+    const removeVariant = (index) => {
+        setData('variants', data.variants.filter((_, i) => i !== index));
+    };
+
+    const updateVariant = (index, field, value) => {
+        const newVariants = [...data.variants];
+        if (field.includes('.')) {
+            const [parent, child] = field.split('.');
+            newVariants[index][parent][child] = value;
+        } else {
+            newVariants[index][field] = value;
+        }
+        setData('variants', newVariants);
+    };
 
     const addImage = () => {
         setData('images', [...data.images, { url: '', is_main: data.images.length === 0, sort_order: data.images.length }]);
@@ -70,6 +115,7 @@ export default function Edit({ product, categories }) {
         { id: 'general', label: 'Informações Gerais', icon: Info },
         { id: 'images', label: 'Imagens', icon: ImageIcon },
         { id: 'inventory', label: 'Estoque & Preço', icon: Package },
+        { id: 'variants', label: 'Variações de Preço', icon: Layers },
         { id: 'customization', label: 'Customização', icon: Palette },
         { id: 'seo', label: 'SEO & Meta', icon: Globe },
     ];
@@ -106,11 +152,10 @@ export default function Edit({ product, categories }) {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-bold transition-all ${
-                                    activeTab === tab.id
+                                className={`flex w-full items-center gap-3 rounded-2xl px-4 py-3.5 text-sm font-bold transition-all ${activeTab === tab.id
                                         ? 'bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20 scale-[1.02]'
                                         : 'text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/5'
-                                }`}
+                                    }`}
                             >
                                 <tab.icon className={`h-5 w-5 ${activeTab === tab.id ? 'text-neutral-950' : 'text-slate-400'}`} />
                                 {tab.label}
@@ -268,13 +313,12 @@ export default function Edit({ product, categories }) {
 
                                         <div className="grid gap-6 sm:grid-cols-2">
                                             {data.images.map((image, index) => (
-                                                <div 
+                                                <div
                                                     key={index}
-                                                    className={`group relative rounded-[2rem] border p-4 transition-all ${
-                                                        image.is_main 
-                                                            ? 'border-gold-500 bg-gold-500/5 ring-1 ring-gold-500' 
+                                                    className={`group relative rounded-[2rem] border p-4 transition-all ${image.is_main
+                                                            ? 'border-gold-500 bg-gold-500/5 ring-1 ring-gold-500'
                                                             : 'border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/50'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     <div className="aspect-square mb-4 overflow-hidden rounded-2xl bg-white dark:bg-slate-800">
                                                         {image.url ? (
@@ -301,11 +345,10 @@ export default function Edit({ product, categories }) {
                                                             <button
                                                                 type="button"
                                                                 onClick={() => setMainImage(index)}
-                                                                className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition ${
-                                                                    image.is_main
+                                                                className={`flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition ${image.is_main
                                                                         ? 'bg-gold-500 text-neutral-950'
                                                                         : 'bg-white text-slate-600 hover:bg-slate-100 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
-                                                                }`}
+                                                                    }`}
                                                             >
                                                                 <Star className={`h-3.5 w-3.5 ${image.is_main ? 'fill-current' : ''}`} />
                                                                 {image.is_main ? 'Principal' : 'Tornar Principal'}
@@ -418,6 +461,115 @@ export default function Edit({ product, categories }) {
                                     </motion.div>
                                 )}
 
+                                {activeTab === 'variants' && (
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        className="space-y-6"
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <div>
+                                                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Variações de Produto</h3>
+                                                <p className="text-sm text-slate-500 dark:text-slate-400">Defina preços e estoques específicos para combinações de tamanho e cor.</p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={addVariant}
+                                                className="inline-flex items-center gap-2 rounded-full bg-gold-500/10 px-4 py-2 text-sm font-bold text-gold-600 transition hover:bg-gold-500/20 dark:text-gold-400"
+                                            >
+                                                <Plus className="h-4 w-4" />
+                                                Adicionar Variação
+                                            </button>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            {data.variants.map((variant, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="grid gap-4 rounded-2xl border border-slate-200 bg-slate-50/50 p-6 dark:border-slate-800 dark:bg-white/5 sm:grid-cols-5 items-end"
+                                                >
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tamanho</label>
+                                                        <select
+                                                            value={variant.attributes.size}
+                                                            onChange={(e) => updateVariant(index, 'attributes.size', e.target.value)}
+                                                            className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                                                        >
+                                                            <option value="">Nenhum</option>
+                                                            {data.available_sizes.split('\n').filter(Boolean).map(s => (
+                                                                <option key={s} value={s}>{s}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Cor</label>
+                                                        <select
+                                                            value={variant.attributes.color}
+                                                            onChange={(e) => updateVariant(index, 'attributes.color', e.target.value)}
+                                                            className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                                                        >
+                                                            <option value="">Nenhuma</option>
+                                                            {data.available_colors.split('\n').filter(Boolean).map(c => (
+                                                                <option key={c} value={c}>{c}</option>
+                                                            ))}
+                                                        </select>
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Preço (R$)</label>
+                                                        <input
+                                                            type="number"
+                                                            step="0.01"
+                                                            value={variant.price || ''}
+                                                            onChange={(e) => updateVariant(index, 'price', e.target.value)}
+                                                            placeholder={data.price}
+                                                            className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                                                        />
+                                                    </div>
+
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Estoque</label>
+                                                        <input
+                                                            type="number"
+                                                            value={variant.stock}
+                                                            onChange={(e) => updateVariant(index, 'stock', e.target.value)}
+                                                            className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                                                        />
+                                                    </div>
+
+                                                    <div className="flex gap-2">
+                                                        <div className="flex-1 space-y-2">
+                                                            <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">SKU</label>
+                                                            <input
+                                                                type="text"
+                                                                value={variant.sku || ''}
+                                                                onChange={(e) => updateVariant(index, 'sku', e.target.value)}
+                                                                className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                                                            />
+                                                        </div>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeVariant(index)}
+                                                            className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10 text-red-500 transition hover:bg-red-500 hover:text-white"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+
+                                            {data.variants.length === 0 && (
+                                                <div className="rounded-[2rem] border-2 border-dashed border-slate-200 p-12 text-center dark:border-slate-800">
+                                                    <Layers className="mx-auto h-10 w-10 text-slate-300 dark:text-slate-700" />
+                                                    <p className="mt-4 text-sm text-slate-500">Nenhuma variação de preço definida. O preço base será usado para todas as combinações.</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                )}
+
                                 {activeTab === 'customization' && (
                                     <motion.div
                                         initial={{ opacity: 0 }}
@@ -457,14 +609,14 @@ export default function Edit({ product, categories }) {
 
                                         <div className="space-y-2">
                                             <label className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300">
-                                                <Settings className="h-4 w-4 text-gold-500" />
-                                                Opções de Customização (uma por linha)
+                                                <Scissors className="h-4 w-4 text-gold-500" />
+                                                Guia de Tamanhos (Markdown ou HTML permitido)
                                             </label>
                                             <textarea
-                                                value={data.customization_options}
-                                                onChange={(e) => setData('customization_options', e.target.value)}
-                                                rows={4}
-                                                placeholder="Gravação de iniciais&#10;Embalagem para presente"
+                                                value={data.size_guide}
+                                                onChange={(e) => setData('size_guide', e.target.value)}
+                                                rows={10}
+                                                placeholder="Tabela de medidas ou instruções detalhadas..."
                                                 className="w-full rounded-[2rem] border-slate-200 bg-slate-50/50 px-6 py-4 text-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
                                             />
                                         </div>

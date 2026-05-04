@@ -1,0 +1,50 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('products', function (Blueprint $table) {
+            $table->longText('size_guide')->nullable()->after('description');
+        });
+
+        Schema::create('product_variants', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->json('attributes');
+            $table->decimal('price', 12, 2)->nullable();
+            $table->integer('stock')->default(0);
+            $table->string('sku')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('product_reviews', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->integer('rating');
+            $table->text('comment')->nullable();
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('approved');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('product_reviews');
+        Schema::dropIfExists('product_variants');
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropColumn('size_guide');
+        });
+    }
+};

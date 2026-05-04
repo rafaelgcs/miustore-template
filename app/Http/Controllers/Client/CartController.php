@@ -25,6 +25,7 @@ class CartController extends Controller
             'options' => 'nullable|array',
         ]);
 
+        $options = $request->input('options', []);
         $query = CartItem::where('product_id', $product->id);
 
         if (auth()->check()) {
@@ -33,7 +34,10 @@ class CartController extends Controller
             $query->where('session_id', session()->getId());
         }
 
-        $cartItem = $query->first();
+        // Check for same options
+        $cartItem = $query->get()->filter(function($item) use ($options) {
+            return $item->options == $options;
+        })->first();
 
         if ($cartItem) {
             $cartItem->increment('quantity', $request->input('quantity', 1));
@@ -43,7 +47,7 @@ class CartController extends Controller
                 'session_id' => auth()->check() ? null : session()->getId(),
                 'product_id' => $product->id,
                 'quantity' => $request->input('quantity', 1),
-                'options' => $request->input('options'),
+                'options' => $options,
             ]);
         }
 
@@ -92,9 +96,17 @@ class CartController extends Controller
 
     private function getCartItems()
     {
+        $query = CartItem::with(['product.variants', 'product.category']);
+        
         if (auth()->check()) {
-            return CartItem::where('user_id', auth()->id())->with('product')->get();
+            $items = $query->where('user_id', auth()->id())->get();
+        } else {
+            $items = $query->where('session_id', session()->getId())->get();
         }
-        return CartItem::where('session_id', session()->getId())->with('product')->get();
+
+        return $items->map(function($item) {
+            $item->append(['price', 'total']);
+            return $item;
+        });
     }
 }

@@ -77,7 +77,9 @@ class ProductController extends Controller
         $userFavorites = auth()->check() ? auth()->user()->favorites()->pluck('product_id')->toArray() : [];
 
         return Inertia::render('Shop/Products', [
-            'products' => $products,
+            'products' => $products->through(function ($product) {
+                return $product->append(['average_rating', 'reviews_count']);
+            }),
             'categories' => $categories,
             'types' => $types,
             'userFavorites' => $userFavorites,
@@ -95,12 +97,24 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        $product->load(['category', 'images']);
+        $product->load(['category', 'images', 'variants', 'reviews.user' => function($query) {
+            $query->where('status', 'approved')->latest();
+        }]);
+        $product->append(['average_rating', 'reviews_count']);
+        
         $isFavorited = auth()->check() ? auth()->user()->favorites()->where('product_id', $product->id)->exists() : false;
+
+        $relatedProducts = Product::where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->where('is_active', true)
+            ->limit(4)
+            ->get()
+            ->each->append(['average_rating', 'reviews_count']);
 
         return Inertia::render('Shop/ProductShow', [
             'product' => $product,
             'isFavorited' => $isFavorited,
+            'relatedProducts' => $relatedProducts,
         ]);
     }
 }
