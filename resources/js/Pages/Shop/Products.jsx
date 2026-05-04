@@ -5,12 +5,14 @@ import ThemeToggle from '@/Components/ThemeToggle';
 import AddToCartButton from '@/Components/AddToCartButton';
 import ShopNavbar from '@/Components/ShopNavbar';
 import Footer from '@/Components/Footer';
+import ProductOptionsModal from '@/Components/ProductOptionsModal';
 
 export default function Products({ products, categories, types, filters, auth, userFavorites = [], currentCollection = null, currentCategory = null }) {
     const { post } = useForm();
     const productList = products.data || [];
     const isLoggedIn = !!auth?.user;
     const [isFiltersExpanded, setIsFiltersExpanded] = useState(false);
+    const [selectedProductForOptions, setSelectedProductForOptions] = useState(null);
 
     const toggleFavorite = (productId) => {
         if (!isLoggedIn) {
@@ -98,7 +100,7 @@ export default function Products({ products, categories, types, filters, auth, u
                                         <select
                                             name="category"
                                             defaultValue={filters.category || ''}
-                                            className="mt-1 w-full bg-transparent text-sm font-medium text-slate-900 dark:text-slate-100 outline-none appearance-none"
+                                            className="mt-1 w-full bg-transparent text-sm font-medium text-slate-900 dark:text-slate-100 outline-none border-none appearance-none cursor-pointer shadow-md rounded-xl"
                                         >
                                             <option value="">Todas as categorias</option>
                                             {categories.map((category) => (
@@ -107,7 +109,7 @@ export default function Products({ products, categories, types, filters, auth, u
                                                 </option>
                                             ))}
                                         </select>
-                                        <ChevronDown className="absolute right-4 bottom-4 h-4 w-4 text-slate-400 pointer-events-none" />
+                                        {/* <ChevronDown className="absolute right-4 bottom-4 h-4 w-4 text-slate-400 pointer-events-none" /> */}
                                     </label>
                                 </div>
 
@@ -117,7 +119,7 @@ export default function Products({ products, categories, types, filters, auth, u
                                         <select
                                             name="type"
                                             defaultValue={filters.type || ''}
-                                            className="mt-1 w-full bg-transparent text-sm font-medium text-slate-900 dark:text-slate-100 outline-none appearance-none"
+                                            className="mt-1 w-full bg-transparent text-sm font-medium text-slate-900 dark:text-slate-100 outline-none border-none appearance-none cursor-pointer shadow-md rounded-xl"
                                         >
                                             <option value="">Todos os tipos</option>
                                             {types.map((type) => (
@@ -126,7 +128,7 @@ export default function Products({ products, categories, types, filters, auth, u
                                                 </option>
                                             ))}
                                         </select>
-                                        <ChevronDown className="absolute right-4 bottom-4 h-4 w-4 text-slate-400 pointer-events-none" />
+                                        {/* <ChevronDown className="absolute right-4 bottom-4 h-4 w-4 text-slate-400 pointer-events-none" /> */}
                                     </label>
                                 </div>
 
@@ -137,7 +139,7 @@ export default function Products({ products, categories, types, filters, auth, u
                                             name="color"
                                             defaultValue={filters.color}
                                             placeholder="Ex: Ouro, Prata"
-                                            className="mt-1 w-full bg-transparent text-sm font-medium text-slate-900 dark:text-slate-100 outline-none"
+                                            className="mt-1 w-full bg-transparent text-sm font-medium text-slate-900 dark:text-slate-100 outline-none border-none shadow-md rounded-xl"
                                         />
                                     </label>
                                 </div>
@@ -189,7 +191,7 @@ export default function Products({ products, categories, types, filters, auth, u
                                         </div>
                                     )}
                                 </div>
-                                
+
                                 {activeFiltersCount > 0 && (
                                     <Link
                                         href={route('products.index')}
@@ -255,7 +257,7 @@ export default function Products({ products, categories, types, filters, auth, u
                                                 <ShoppingBag className="h-16 w-16" />
                                             </div>
                                         )}
-                                        
+
                                         {/* Floating Badge */}
                                         <div className="absolute left-4 top-4 rounded-full bg-white/90 dark:bg-black/80 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-black dark:text-white backdrop-blur-md">
                                             {product.category?.name}
@@ -275,7 +277,7 @@ export default function Products({ products, categories, types, filters, auth, u
                                                 {product.name}
                                             </h3>
                                         </div>
-                                        
+
                                         <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                                             {product.description}
                                         </p>
@@ -287,9 +289,9 @@ export default function Products({ products, categories, types, filters, auth, u
                                                     R$ {parseFloat(product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                                 </span>
                                             </div>
-                                            
+
                                             <div className="flex items-center gap-2">
-                                                <button 
+                                                <button
                                                     onClick={(e) => {
                                                         e.preventDefault();
                                                         toggleFavorite(product.id);
@@ -298,7 +300,11 @@ export default function Products({ products, categories, types, filters, auth, u
                                                 >
                                                     <Heart className={`h-5 w-5 ${userFavorites.includes(product.id) ? 'fill-current' : ''}`} />
                                                 </button>
-                                                <AddToCartButton product={product} className="flex h-11 w-11 items-center justify-center rounded-full bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20 transition-all duration-300 hover:bg-gold-400 hover:scale-110 active:scale-95">
+                                                <AddToCartButton
+                                                    product={product}
+                                                    onShowOptions={setSelectedProductForOptions}
+                                                    className="flex h-11 w-11 items-center justify-center rounded-full bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20 transition-all duration-300 hover:bg-gold-400 hover:scale-110 active:scale-95"
+                                                >
                                                     <ShoppingCart className="h-5 w-5" />
                                                 </AddToCartButton>
                                             </div>
@@ -318,7 +324,7 @@ export default function Products({ products, categories, types, filters, auth, u
                             ) : (
                                 <span className="flex h-12 items-center rounded-full border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-slate-900/50 px-8 text-sm font-bold text-slate-400">Anterior</span>
                             )}
-                            
+
                             <div className="flex h-12 items-center rounded-full bg-slate-100 dark:bg-white/5 px-6 text-sm font-bold text-black dark:text-white">
                                 {products.current_page} / {products.last_page}
                             </div>
@@ -336,6 +342,12 @@ export default function Products({ products, categories, types, filters, auth, u
             </section>
 
             <Footer />
+
+            <ProductOptionsModal
+                product={selectedProductForOptions}
+                isOpen={!!selectedProductForOptions}
+                onClose={() => setSelectedProductForOptions(null)}
+            />
         </div>
     );
 }

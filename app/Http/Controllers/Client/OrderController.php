@@ -20,7 +20,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $user = auth()->user();
-        $cartItems = CartItem::where('user_id', $user->id)->with('product')->get();
+        $cartItems = CartItem::where('user_id', $user->id)->with(['product.variants'])->get();
 
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Seu carrinho está vazio.');
@@ -29,7 +29,7 @@ class OrderController extends Controller
         return DB::transaction(function () use ($user, $cartItems) {
             // Calculate total amount
             $subtotal = $cartItems->reduce(function ($acc, $item) {
-                return $acc + ($item->product->price * $item->quantity);
+                return $acc + ($item->final_price * $item->quantity);
             }, 0);
             
             $shipping = $subtotal > 500 ? 0 : 25.00;
@@ -48,7 +48,7 @@ class OrderController extends Controller
                     'order_id' => $order->id,
                     'product_id' => $cartItem->product_id,
                     'quantity' => $cartItem->quantity,
-                    'price' => $cartItem->product->price,
+                    'price' => $cartItem->final_price,
                     'options' => $cartItem->options,
                 ]);
             }

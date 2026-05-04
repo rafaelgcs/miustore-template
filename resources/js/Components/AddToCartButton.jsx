@@ -1,12 +1,24 @@
 import React, { useEffect } from 'react';
 import { router } from '@inertiajs/react';
 import { ShoppingCart, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
-export default function AddToCartButton({ product, quantity = 1, options = null, className = "", children }) {
+export default function AddToCartButton({ product, quantity = 1, options = null, className = "", onShowOptions = null, onSuccess = null, children }) {
     const [processing, setProcessing] = React.useState(false);
 
     const submit = (e) => {
         e.preventDefault();
+        
+        // Validate size if product has available sizes
+        if (product.available_sizes?.length > 0 && (!options || !options.size)) {
+            if (onShowOptions) {
+                onShowOptions(product);
+                return;
+            }
+            toast.error('Por favor, selecione um tamanho antes de adicionar ao carrinho.');
+            return;
+        }
+
         setProcessing(true);
         
         router.post(route('cart.add', product.id), {
@@ -16,6 +28,7 @@ export default function AddToCartButton({ product, quantity = 1, options = null,
             preserveScroll: true,
             onSuccess: () => {
                 setProcessing(false);
+                if (onSuccess) onSuccess();
             },
             onError: () => {
                 setProcessing(false);

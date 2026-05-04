@@ -31,6 +31,7 @@ import {
     Tooltip, 
     ResponsiveContainer 
 } from 'recharts';
+import Pagination from '@/Components/Pagination';
 
 const typeStyles = {
     sale: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-400',
@@ -260,7 +261,7 @@ export default function ProductHistory({ product, movements, chartData }) {
                                 <tr className="border-b border-slate-200 dark:border-slate-800">
                                     <th className="px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Data / Hora</th>
                                     <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Tipo</th>
-                                    <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 text-center">Quant.</th>
+                                    <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 text-center">Quant..</th>
                                     <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 text-center">Estoque</th>
                                     <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Descrição</th>
                                     <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Responsável</th>
@@ -348,33 +349,7 @@ export default function ProductHistory({ product, movements, chartData }) {
                     </div>
                 </motion.div>
 
-                {/* Pagination */}
-                {movements.last_page > 1 && (
-                    <div className="flex justify-center mt-8">
-                        <div className="flex items-center gap-2 bg-white/80 dark:bg-slate-900/50 p-2 rounded-full border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
-                            {movements.links.map((link, index) => (
-                                <React.Fragment key={index}>
-                                    {link.url ? (
-                                        <Link
-                                            href={link.url}
-                                            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 font-bold text-sm ${
-                                                link.active
-                                                    ? 'bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20 scale-110'
-                                                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-                                            }`}
-                                            dangerouslySetInnerHTML={{ __html: link.label }}
-                                        />
-                                    ) : (
-                                        <span
-                                            className="w-10 h-10 flex items-center justify-center rounded-full text-slate-300 dark:text-slate-600 font-bold text-sm cursor-not-allowed"
-                                            dangerouslySetInnerHTML={{ __html: link.label }}
-                                        />
-                                    )}
-                                </React.Fragment>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                <Pagination links={movements.links} />
             </div>
         </AuthenticatedLayout>
     );

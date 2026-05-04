@@ -23,7 +23,7 @@ export default function Cart({ auth, cartItems }) {
         });
     };
 
-    const subtotal = cartItems.reduce((acc, item) => acc + (parseFloat(item.product.price) * item.quantity), 0);
+    const subtotal = cartItems.reduce((acc, item) => acc + (parseFloat(item.final_price) * item.quantity), 0);
     const shipping = subtotal > 500 ? 0 : 25.00;
     const total = subtotal + shipping;
 
@@ -98,9 +98,23 @@ export default function Cart({ auth, cartItems }) {
                                                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 line-clamp-1">
                                                     {item.product.description}
                                                 </p>
+                                                {(item.options?.size || item.options?.color) && (
+                                                    <div className="mt-2 flex flex-wrap gap-2">
+                                                        {item.options.size && (
+                                                            <span className="inline-flex items-center rounded-lg bg-slate-100 dark:bg-white/5 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">
+                                                                Tamanho: {item.options.size}
+                                                            </span>
+                                                        )}
+                                                        {item.options.color && (
+                                                            <span className="inline-flex items-center rounded-lg bg-slate-100 dark:bg-white/5 px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400">
+                                                                Cor: {item.options.color}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </div>
                                             <p className="text-lg font-bold text-gold-600 dark:text-gold-400">
-                                                R$ {parseFloat(item.product.price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                                R$ {parseFloat(item.final_price).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                             </p>
                                         </div>
 

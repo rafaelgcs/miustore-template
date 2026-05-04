@@ -13,10 +13,17 @@ use Illuminate\Support\Facades\DB;
 
 class PromotionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Promotion::query();
+
+        if ($request->has('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
         return Inertia::render('Admin/Promotions/Index', [
-            'promotions' => Promotion::orderBy('created_at', 'desc')->get()
+            'promotions' => $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString(),
+            'filters' => $request->only(['search']),
         ]);
     }
 

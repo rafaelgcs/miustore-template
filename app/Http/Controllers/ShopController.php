@@ -23,7 +23,7 @@ class ShopController extends Controller
             ->get();
 
         $productsQuery = Product::where('is_active', true)
-            ->with('category');
+            ->with(['category', 'variants']);
 
         if ($search) {
             $productsQuery->where(function ($query) use ($search) {
@@ -44,7 +44,7 @@ class ShopController extends Controller
         $featuredProducts = $productsQuery->latest()->take(8)->get();
 
         $newArrivals = Product::where('is_active', true)
-            ->with('category')
+            ->with(['category', 'variants'])
             ->latest()
             ->take(4)
             ->get();

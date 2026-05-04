@@ -1,15 +1,27 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import { Plus, Edit2, Trash2, Search, Tag, Calendar, CheckCircle2, XCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Pagination from '@/Components/Pagination';
 
-export default function Index({ auth, promotions }) {
-    const [searchTerm, setSearchTerm] = useState('');
+export default function Index({ auth, promotions, filters = {} }) {
+    const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const { delete: destroy } = useForm();
 
-    const filteredPromotions = promotions.filter(promotion =>
-        promotion.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const handleSearch = (e) => {
+        if (e) e.preventDefault();
+        router.get(route('admin.promotions.index'), { search: searchTerm }, { preserveState: true });
+    };
+
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (searchTerm !== (filters.search || '')) {
+                handleSearch();
+            }
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
 
     const handleDelete = (id) => {
         if (confirm('Tem certeza que deseja excluir esta promoção?')) {
@@ -47,13 +59,15 @@ export default function Index({ auth, promotions }) {
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="relative flex-1 max-w-md">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                        <input
-                            type="text"
-                            placeholder="Buscar promoções..."
-                            className="w-full rounded-2xl border-slate-200 bg-white/50 pl-10 pr-4 py-2.5 text-sm backdrop-blur-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-950/50"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                        <form onSubmit={handleSearch}>
+                            <input
+                                type="text"
+                                placeholder="Buscar promoções..."
+                                className="w-full rounded-2xl border-slate-200 bg-white/50 pl-10 pr-4 py-2.5 text-sm backdrop-blur-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-950/50"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </form>
                     </div>
                     <Link
                         href={route('admin.promotions.create')}
@@ -79,7 +93,7 @@ export default function Index({ auth, promotions }) {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-200/50 dark:divide-white/5">
-                                {filteredPromotions.map((promotion) => (
+                                {promotions.data.map((promotion) => (
                                     <tr key={promotion.id} className="group hover:bg-slate-50/50 dark:hover:bg-white/5 transition-colors">
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
@@ -146,7 +160,7 @@ export default function Index({ auth, promotions }) {
                                         </td>
                                     </tr>
                                 ))}
-                                {filteredPromotions.length === 0 && (
+                                {promotions.data.length === 0 && (
                                     <tr>
                                         <td colSpan="6" className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
                                             Nenhuma promoção encontrada.
@@ -157,6 +171,8 @@ export default function Index({ auth, promotions }) {
                         </table>
                     </div>
                 </div>
+
+                <Pagination links={promotions.links} />
             </div>
         </AuthenticatedLayout>
     );

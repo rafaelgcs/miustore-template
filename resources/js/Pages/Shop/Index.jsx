@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Star, ArrowRight, Search, Heart, ShoppingCart } from 'lucide-react';
@@ -5,6 +6,8 @@ import ThemeToggle from '@/Components/ThemeToggle';
 import AddToCartButton from '@/Components/AddToCartButton';
 import ShopNavbar from '@/Components/ShopNavbar';
 import MainCarousel from '@/Components/MainCarousel';
+import ProductOptionsModal from '@/Components/ProductOptionsModal';
+import Footer from '@/Components/Footer';
 import * as LucideIcons from 'lucide-react';
 
 const sections = [
@@ -27,6 +30,7 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
     const isLoggedIn = !!auth?.user;
     const selectedCategory = filters?.category ?? '';
     const searchValue = filters?.search ?? '';
+    const [selectedProductForOptions, setSelectedProductForOptions] = useState(null);
 
     const toggleFavorite = (productId) => {
         if (!isLoggedIn) {
@@ -271,7 +275,11 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                                                 >
                                                     <Heart className={`h-4 w-4 ${userFavorites.includes(product.id) ? 'fill-current' : ''}`} />
                                                 </button>
-                                                <AddToCartButton product={product} className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400">
+                                                <AddToCartButton 
+                                                    product={product} 
+                                                    onShowOptions={setSelectedProductForOptions}
+                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400"
+                                                >
                                                     <ShoppingBag className="h-4 w-4" />
                                                 </AddToCartButton>
                                             </div>
@@ -347,7 +355,11 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                                                 >
                                                     <Heart className={`h-5 w-5 ${userFavorites.includes(product.id) ? 'fill-current' : ''}`} />
                                                 </button>
-                                                <AddToCartButton product={product} className="inline-flex h-12 min-w-[3rem] items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400">
+                                                <AddToCartButton 
+                                                    product={product} 
+                                                    onShowOptions={setSelectedProductForOptions}
+                                                    className="inline-flex h-12 min-w-[3rem] items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400"
+                                                >
                                                     <ShoppingBag className="h-5 w-5" />
                                                 </AddToCartButton>
                                             </div>
@@ -359,6 +371,14 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                     </div>
                 </section>
             </main>
+
+            <Footer />
+
+            <ProductOptionsModal 
+                product={selectedProductForOptions}
+                isOpen={!!selectedProductForOptions}
+                onClose={() => setSelectedProductForOptions(null)}
+            />
         </div>
     );
 }

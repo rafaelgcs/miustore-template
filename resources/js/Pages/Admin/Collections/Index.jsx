@@ -1,15 +1,27 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import { Plus, Edit2, Trash2, Search, Layers, Package } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import Pagination from '@/Components/Pagination';
 
-export default function Index({ auth, collections }) {
-    const [searchTerm, setSearchTerm] = useState('');
+export default function Index({ auth, collections, filters = {} }) {
+    const [searchTerm, setSearchTerm] = useState(filters.search || '');
     const { delete: destroy } = useForm();
 
-    const filteredCollections = collections.filter(collection =>
-        collection.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const handleSearch = (e) => {
+        if (e) e.preventDefault();
+        router.get(route('admin.collections.index'), { search: searchTerm }, { preserveState: true });
+    };
+
+    // Debounce search
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (searchTerm !== (filters.search || '')) {
+                handleSearch();
+            }
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
 
     const handleDelete = (id) => {
         if (confirm('Tem certeza que deseja excluir esta coleção?')) {
@@ -29,13 +41,15 @@ export default function Index({ auth, collections }) {
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="relative flex-1 max-w-md">
                         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                        <input
-                            type="text"
-                            placeholder="Buscar coleções..."
-                            className="w-full rounded-2xl border-slate-200 bg-white/50 pl-10 pr-4 py-2.5 text-sm backdrop-blur-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-950/50"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                        <form onSubmit={handleSearch}>
+                            <input
+                                type="text"
+                                placeholder="Buscar coleções..."
+                                className="w-full rounded-2xl border-slate-200 bg-white/50 pl-10 pr-4 py-2.5 text-sm backdrop-blur-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-950/50"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </form>
                     </div>
                     <Link
                         href={route('admin.collections.create')}
@@ -48,7 +62,7 @@ export default function Index({ auth, collections }) {
 
                 {/* Collections Grid */}
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {filteredCollections.map((collection) => (
+                    {collections.data.map((collection) => (
                         <div key={collection.id} className="group relative overflow-hidden rounded-[2.5rem] border border-slate-200/80 bg-white/80 p-6 shadow-xl backdrop-blur-xl transition hover:border-gold-300 dark:border-white/10 dark:bg-slate-950/80 dark:hover:border-gold-500/50">
                             <div className="mb-4 flex items-center justify-between">
                                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-500/10 text-gold-600 dark:text-gold-500">
@@ -89,7 +103,7 @@ export default function Index({ auth, collections }) {
                     ))}
                 </div>
 
-                {filteredCollections.length === 0 && (
+                {collections.data.length === 0 && (
                     <div className="flex flex-col items-center justify-center rounded-[3rem] border border-dashed border-slate-300 p-12 text-center dark:border-slate-700">
                         <Layers className="mb-4 h-12 w-12 text-slate-300 dark:text-slate-700" />
                         <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100">Nenhuma coleção encontrada</h3>
@@ -103,6 +117,8 @@ export default function Index({ auth, collections }) {
                         </Link>
                     </div>
                 )}
+
+                <Pagination links={collections.links} />
             </div>
         </AuthenticatedLayout>
     );

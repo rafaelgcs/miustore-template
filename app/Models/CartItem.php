@@ -28,7 +28,7 @@ class CartItem extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function getPriceAttribute()
+    public function getFinalPriceAttribute()
     {
         $product = $this->product;
         if (!$product) return 0;
@@ -36,22 +36,29 @@ class CartItem extends Model
         $options = $this->options;
         if (!$options) return $product->price;
 
-        // Eager load variants if not loaded
-        if (!$product->relationLoaded('variants')) {
-            $product->load('variants');
+        $query = $product->variants();
+
+        $hasSizes = !empty($product->available_sizes);
+        $hasColors = !empty($product->available_colors);
+
+        if ($hasSizes && !empty($options['size'])) {
+            $query->where(function($q) use ($options) {
+                $q->whereJsonContains('attributes->size', (string)$options['size'])
+                  ->orWhereJsonContains('attributes->size', (int)$options['size']);
+            });
         }
 
-        $variant = $product->variants->filter(function($v) use ($options) {
-            $attr = $v->attributes;
-            return ($attr['size'] ?? null) == ($options['size'] ?? null) &&
-                   ($attr['color'] ?? null) == ($options['color'] ?? null);
-        })->first();
+        if ($hasColors && !empty($options['color'])) {
+            $query->whereJsonContains('attributes->color', $options['color']);
+        }
+
+        $variant = $query->first();
 
         return $variant ? ($variant->price ?? $product->price) : $product->price;
     }
 
     public function getTotalAttribute()
     {
-        return $this->price * $this->quantity;
+        return $this->final_price * $this->quantity;
     }
 }

@@ -39,7 +39,7 @@ class ProductController extends Controller
             ->pluck('type');
 
         $productsQuery = Product::where('is_active', true)
-            ->with('category');
+            ->with(['category', 'variants']);
 
         if ($search) {
             $productsQuery->where(function ($query) use ($search) {
@@ -107,6 +107,7 @@ class ProductController extends Controller
         $relatedProducts = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('is_active', true)
+            ->with(['category', 'variants'])
             ->limit(4)
             ->get()
             ->each->append(['average_rating', 'reviews_count']);

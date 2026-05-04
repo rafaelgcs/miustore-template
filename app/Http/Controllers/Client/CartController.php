@@ -105,7 +105,7 @@ class CartController extends Controller
         }
 
         return $items->map(function($item) {
-            $item->append(['price', 'total']);
+            $item->append(['final_price', 'total']);
             return $item;
         });
     }

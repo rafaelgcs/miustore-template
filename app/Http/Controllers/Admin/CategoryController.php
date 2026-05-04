@@ -10,10 +10,18 @@ use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Category::query();
+
+        if ($request->has('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('slug', 'like', '%' . $request->search . '%');
+        }
+
         return Inertia::render('Admin/Categories/Index', [
-            'categories' => Category::orderBy('name')->get()
+            'categories' => $query->orderBy('name')->paginate(10)->withQueryString(),
+            'filters' => $request->only(['search']),
         ]);
     }
 

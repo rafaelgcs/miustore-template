@@ -10,10 +10,17 @@ use Inertia\Inertia;
 
 class CouponController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Coupon::query()->with('promotion');
+
+        if ($request->has('search')) {
+            $query->where('code', 'like', '%' . $request->search . '%');
+        }
+
         return Inertia::render('Admin/Coupons/Index', [
-            'coupons' => Coupon::with('promotion')->get()
+            'coupons' => $query->latest()->paginate(10)->withQueryString(),
+            'filters' => $request->only(['search']),
         ]);
     }
 

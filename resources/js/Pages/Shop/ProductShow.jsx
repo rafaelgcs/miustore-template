@@ -61,7 +61,7 @@ export default function ProductShow({ product, isFavorited, relatedProducts = []
     const { auth } = usePage().props;
     const isLoggedIn = !!auth?.user;
     
-    const [selectedSize, setSelectedSize] = useState(product.available_sizes?.[0] || '');
+    const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState(product.available_colors?.[0] || '');
     const [activeImage, setActiveImage] = useState(0);
     const [isZooming, setIsZooming] = useState(false);
@@ -78,8 +78,8 @@ export default function ProductShow({ product, isFavorited, relatedProducts = []
     });
 
     const activeVariant = product.variants?.find(v => 
-        (v.attributes.size === selectedSize || (!v.attributes.size && !selectedSize)) && 
-        (v.attributes.color === selectedColor || (!v.attributes.color && !selectedColor))
+        (v.attributes.size == selectedSize || (!v.attributes.size && !selectedSize)) && 
+        (v.attributes.color == selectedColor || (!v.attributes.color && !selectedColor))
     );
 
     const displayPrice = activeVariant?.price || product.price;

@@ -16,6 +16,7 @@ import {
     XCircle,
     History
 } from 'lucide-react';
+import Pagination from '@/Components/Pagination';
 
 export default function Index({ products, filters = {} }) {
     const [search, setSearch] = useState(filters.search || '');
@@ -156,33 +157,7 @@ export default function Index({ products, filters = {} }) {
                     </div>
                 </motion.div>
 
-                {/* Pagination */}
-                {products.last_page > 1 && (
-                    <div className="flex justify-center mt-8">
-                        <div className="flex items-center gap-2 bg-white/80 dark:bg-slate-900/50 p-2 rounded-full border border-slate-200 dark:border-slate-800 backdrop-blur-xl">
-                            {products.links.map((link, index) => (
-                                <React.Fragment key={index}>
-                                    {link.url ? (
-                                        <Link
-                                            href={link.url}
-                                            className={`w-10 h-10 flex items-center justify-center rounded-full transition-all duration-300 font-bold text-sm ${
-                                                link.active
-                                                    ? 'bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20 scale-110'
-                                                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
-                                            }`}
-                                            dangerouslySetInnerHTML={{ __html: link.label }}
-                                        />
-                                    ) : (
-                                        <span
-                                            className="w-10 h-10 flex items-center justify-center rounded-full text-slate-300 dark:text-slate-600 font-bold text-sm cursor-not-allowed"
-                                            dangerouslySetInnerHTML={{ __html: link.label }}
-                                        />
-                                    )}
-                                </React.Fragment>
-                            ))}
-                        </div>
-                    </div>
-                )}
+                <Pagination links={products.links} />
             </div>
         </AuthenticatedLayout>
     );

@@ -11,10 +11,18 @@ use Illuminate\Support\Str;
 
 class CollectionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Collection::query()->withCount('products');
+
+        if ($request->has('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('slug', 'like', '%' . $request->search . '%');
+        }
+
         return Inertia::render('Admin/Collections/Index', [
-            'collections' => Collection::withCount('products')->get()
+            'collections' => $query->orderBy('name')->paginate(10)->withQueryString(),
+            'filters' => $request->only(['search']),
         ]);
     }
 
