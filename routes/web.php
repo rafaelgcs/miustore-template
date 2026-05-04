@@ -51,7 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Admin Routes
     Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-        Route::resource('products', AdminProductController::class)->only(['index', 'edit', 'update']);
+        Route::resource('products', AdminProductController::class)->except(['show']);
         Route::get('/products/{product}/history', [AdminProductController::class, 'history'])->name('products.history');
         Route::get('/products/{product}/history/export', [AdminProductController::class, 'exportHistory'])->name('products.history.export');
         Route::get('/products/{product}/history/pdf', [AdminProductController::class, 'exportPdf'])->name('products.history.pdf');

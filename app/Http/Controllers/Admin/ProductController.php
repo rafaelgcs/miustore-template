@@ -25,6 +25,110 @@ class ProductController extends Controller
         ]);
     }
 
+    public function create()
+    {
+        $categories = Category::orderBy('name')->get();
+
+        return Inertia::render('Admin/Products/Create', [
+            'categories' => $categories,
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'name' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:products,slug',
+            'type' => 'nullable|string|max:255',
+            'material' => 'nullable|string|max:255',
+            'sku' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+            'stock' => 'required|integer|min:0',
+            'image' => 'nullable|string|max:255',
+            'is_active' => 'boolean',
+            'available_sizes' => 'nullable|string',
+            'available_colors' => 'nullable|string',
+            'customization_options' => 'nullable|string',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string',
+            'meta_keywords' => 'nullable|string|max:255',
+            'images' => 'nullable|array',
+            'images.*.url' => 'required|string',
+            'images.*.is_main' => 'boolean',
+            'images.*.sort_order' => 'integer',
+            'size_guide' => 'nullable|string',
+            'variants' => 'nullable|array',
+            'variants.*.attributes' => 'required|array',
+            'variants.*.price' => 'nullable|numeric|min:0',
+            'variants.*.stock' => 'required|integer|min:0',
+            'variants.*.sku' => 'nullable|string|max:255',
+        ]);
+
+        $product = Product::create([
+            'category_id' => $data['category_id'],
+            'name' => $data['name'],
+            'slug' => $data['slug'],
+            'type' => $data['type'] ?? null,
+            'material' => $data['material'] ?? null,
+            'sku' => $data['sku'] ?? null,
+            'description' => $data['description'] ?? null,
+            'price' => $data['price'],
+            'stock' => $data['stock'],
+            'image' => $data['image'] ?? null,
+            'is_active' => $request->boolean('is_active'),
+            'available_sizes' => $this->explodeLines($data['available_sizes'] ?? ''),
+            'available_colors' => $this->explodeLines($data['available_colors'] ?? ''),
+            'customization_options' => $this->explodeLines($data['customization_options'] ?? ''),
+            'meta_title' => $data['meta_title'] ?? null,
+            'meta_description' => $data['meta_description'] ?? null,
+            'meta_keywords' => $data['meta_keywords'] ?? null,
+            'size_guide' => $data['size_guide'] ?? null,
+        ]);
+
+        // Sync images
+        if ($request->has('images')) {
+            foreach ($data['images'] as $img) {
+                $product->images()->create([
+                    'url' => $img['url'],
+                    'is_main' => $img['is_main'] ?? false,
+                    'sort_order' => $img['sort_order'] ?? 0,
+                ]);
+
+                if ($img['is_main']) {
+                    $product->update(['image' => $img['url']]);
+                }
+            }
+        }
+
+        // Sync variants
+        if ($request->has('variants')) {
+            foreach ($data['variants'] as $variant) {
+                $product->variants()->create([
+                    'attributes' => $variant['attributes'],
+                    'price' => $variant['price'] ?? null,
+                    'stock' => $variant['stock'] ?? 0,
+                    'sku' => $variant['sku'] ?? null,
+                ]);
+            }
+        }
+
+        if ($product->stock > 0) {
+            ProductMovement::create([
+                'product_id' => $product->id,
+                'user_id' => auth()->id(),
+                'type' => 'addition',
+                'quantity' => $product->stock,
+                'old_stock' => 0,
+                'new_stock' => $product->stock,
+                'description' => 'Estoque inicial na criação do produto',
+            ]);
+        }
+
+        return redirect()->route('admin.products.index')->with('success', 'Produto criado com sucesso.');
+    }
+
     public function edit(Product $product)
     {
         $categories = Category::orderBy('name')->get();

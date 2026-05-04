@@ -1,7 +1,8 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, Link } from '@inertiajs/react';
-import { Save, ArrowLeft, Info } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Save, ArrowLeft, Info, Plus, Trash2, Layout, Type, Globe, Hash, CheckCircle2 } from 'lucide-react';
 
 export default function Create({ auth }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -10,7 +11,10 @@ export default function Create({ auth }) {
         url: '',
         content: {
             columns: [],
-            featured: { image: '', title: '', description: '' }
+            featured: { image: '', title: '', description: '' },
+            left: { text: '', url: '', icon: '' },
+            right: { text: '', url: '', icon: '' },
+            carousel: []
         },
         order: 0,
         is_active: true,
@@ -23,246 +27,284 @@ export default function Create({ auth }) {
 
     return (
         <AuthenticatedLayout
-            user={auth.user}
-            header={<h2 className="font-semibold text-xl text-slate-800 dark:text-slate-200 leading-tight">Novo Item de Menu</h2>}
+            header={
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-1">
+                            <Link href={route('admin.navigation.index')} className="hover:text-gold-500 transition-colors">Navegação</Link>
+                            <span>/</span>
+                            <span>Novo Item</span>
+                        </div>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Novo Item de Menu</h1>
+                    </div>
+                    <Link
+                        href={route('admin.navigation.index')}
+                        className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm transition hover:border-gold-400 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800/50"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        Voltar à lista
+                    </Link>
+                </div>
+            }
         >
             <Head title="Criar Menu" />
 
-            <div className="py-12">
-                <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white dark:bg-slate-900 overflow-hidden shadow-sm sm:rounded-lg border border-slate-200 dark:border-white/10">
-                        <form onSubmit={submit} className="p-6 space-y-6">
-                            <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/5 pb-4">
-                                <Link href={route('admin.navigation.index')} className="text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 flex items-center text-sm font-medium">
-                                    <ArrowLeft className="h-4 w-4 mr-1" /> Voltar
-                                </Link>
-                                <button
-                                    type="submit"
-                                    disabled={processing}
-                                    className="inline-flex items-center px-6 py-2 bg-gold-500 border border-transparent rounded-md font-bold text-xs text-neutral-950 uppercase tracking-widest hover:bg-gold-400 transition"
-                                >
-                                    <Save className="h-4 w-4 mr-2" />
-                                    Salvar Menu
-                                </button>
+            <div className="mx-auto max-w-4xl pb-20">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="rounded-[2.5rem] border border-slate-200/80 bg-white/80 p-8 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90"
+                >
+                    <form onSubmit={submit} className="space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300">
+                                    <Type className="h-4 w-4 text-gold-500" />
+                                    Nome do Menu
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.name}
+                                    onChange={e => setData('name', e.target.value)}
+                                    className="w-full rounded-2xl border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
+                                    placeholder="Ex: Joias, Casamento, Relógios"
+                                    required
+                                />
+                                {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Nome do Menu</label>
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300">
+                                    <Layout className="h-4 w-4 text-gold-500" />
+                                    Tipo de Menu
+                                </label>
+                                <select
+                                    value={data.type}
+                                    onChange={e => setData('type', e.target.value)}
+                                    className="w-full rounded-2xl border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
+                                >
+                                    <option value="link">Link Direto</option>
+                                    <option value="mega">Mega Menu (Submenus)</option>
+                                    <option value="top_bar">Barra de Avisos (Topo)</option>
+                                </select>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300">
+                                    <Globe className="h-4 w-4 text-gold-500" />
+                                    URL ou Rota
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.url}
+                                    onChange={e => setData('url', e.target.value)}
+                                    className="w-full rounded-2xl border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
+                                    placeholder="Ex: products.index ou /promocoes"
+                                    disabled={data.type === 'top_bar'}
+                                />
+                                <p className="text-[10px] text-slate-500 flex items-center">
+                                    <Info className="h-3 w-3 mr-1" /> {data.type === 'top_bar' ? 'Não aplicável para Barra de Avisos.' : 'Use nomes de rotas ou URLs completas.'}
+                                </p>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300">
+                                    <Hash className="h-4 w-4 text-gold-500" />
+                                    Ordem de Exibição
+                                </label>
+                                <input
+                                    type="number"
+                                    value={data.order}
+                                    onChange={e => setData('order', e.target.value)}
+                                    className="w-full rounded-2xl border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
+                                />
+                            </div>
+
+                            <div className="md:col-span-2">
+                                <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-white/5">
                                     <input
-                                        type="text"
-                                        value={data.name}
-                                        onChange={e => setData('name', e.target.value)}
-                                        className="w-full rounded-md border-slate-300 dark:border-white/10 dark:bg-slate-800 dark:text-white focus:ring-gold-500 focus:border-gold-500 shadow-sm"
-                                        placeholder="Ex: Joias, Casamento, Relógios"
+                                        type="checkbox"
+                                        id="is_active"
+                                        checked={data.is_active}
+                                        onChange={e => setData('is_active', e.target.checked)}
+                                        className="h-5 w-5 rounded border-slate-300 text-gold-500 focus:ring-gold-500"
                                     />
-                                    {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Tipo de Menu</label>
-                                    <select
-                                        value={data.type}
-                                        onChange={e => setData('type', e.target.value)}
-                                        className="w-full rounded-md border-slate-300 dark:border-white/10 dark:bg-slate-800 dark:text-white focus:ring-gold-500 focus:border-gold-500 shadow-sm"
-                                    >
-                                        <option value="link">Link Direto</option>
-                                        <option value="mega">Mega Menu (Submenus)</option>
-                                        <option value="top_bar">Barra de Avisos (Topo)</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">URL ou Rota</label>
-                                    <input
-                                        type="text"
-                                        value={data.url}
-                                        onChange={e => setData('url', e.target.value)}
-                                        className="w-full rounded-md border-slate-300 dark:border-white/10 dark:bg-slate-800 dark:text-white focus:ring-gold-500 focus:border-gold-500 shadow-sm"
-                                        placeholder="Ex: products.index ou /promocoes"
-                                        disabled={data.type === 'top_bar'}
-                                    />
-                                    <p className="text-[10px] text-slate-500 mt-1 flex items-center">
-                                        <Info className="h-3 w-3 mr-1" /> {data.type === 'top_bar' ? 'Não aplicável para Barra de Avisos.' : 'Use nomes de rotas (ex: home) ou URLs completas.'}
-                                    </p>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Ordem de Exibição</label>
-                                    <input
-                                        type="number"
-                                        value={data.order}
-                                        onChange={e => setData('order', e.target.value)}
-                                        className="w-full rounded-md border-slate-300 dark:border-white/10 dark:bg-slate-800 dark:text-white focus:ring-gold-500 focus:border-gold-500 shadow-sm"
-                                    />
-                                </div>
-
-                                <div className="md:col-span-2">
-                                    <label className="flex items-center space-x-3 cursor-pointer">
-                                        <input
-                                            type="checkbox"
-                                            checked={data.is_active}
-                                            onChange={e => setData('is_active', e.target.checked)}
-                                            className="h-5 w-5 rounded border-slate-300 text-gold-500 focus:ring-gold-500"
-                                        />
-                                        <span className="text-sm font-bold text-slate-700 dark:text-slate-300">Menu Ativo e Visível</span>
+                                    <label htmlFor="is_active" className="text-sm font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
+                                        Menu Ativo e Visível
                                     </label>
                                 </div>
                             </div>
+                        </div>
 
-                            {data.type === 'top_bar' && (
-                                <div className="pt-6 border-t border-slate-100 dark:border-white/5 space-y-8">
-                                    <div className="bg-gold-50 dark:bg-gold-500/5 p-4 rounded-lg border border-gold-200 dark:border-gold-500/20">
-                                        <h4 className="font-bold text-gold-800 dark:text-gold-400 flex items-center">
-                                            <Info className="h-4 w-4 mr-2" /> Configuração da Barra de Avisos
-                                        </h4>
-                                        <p className="text-xs text-gold-700/70 dark:text-gold-400/70 mt-1">
-                                            A barra de avisos aparece acima do menu principal e é dividida em 3 partes.
-                                        </p>
+                        {data.type === 'top_bar' && (
+                            <div className="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-8">
+                                <div className="bg-gold-50 dark:bg-gold-500/5 p-6 rounded-[2rem] border border-gold-200 dark:border-gold-500/20">
+                                    <h4 className="font-bold text-gold-800 dark:text-gold-400 flex items-center gap-2">
+                                        <Info className="h-5 w-5" /> Configuração da Barra de Avisos
+                                    </h4>
+                                    <p className="text-xs text-gold-700/70 dark:text-gold-400/70 mt-2 font-medium">
+                                        A barra de avisos aparece acima do menu principal e é dividida em 3 partes.
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* Left Link */}
+                                    <div className="space-y-4 p-6 border border-slate-200/50 dark:border-white/5 rounded-[2rem] bg-slate-50/30 dark:bg-white/5">
+                                        <h5 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4">Lado Esquerdo (Link)</h5>
+                                        <div className="space-y-4">
+                                            <input
+                                                type="text"
+                                                placeholder="Texto (ex: Atendimento)"
+                                                value={data.content.left?.text || ''}
+                                                onChange={e => setData('content', { ...data.content, left: { ...data.content.left, text: e.target.value } })}
+                                                className="w-full text-sm rounded-xl border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="URL ou Rota"
+                                                value={data.content.left?.url || ''}
+                                                onChange={e => setData('content', { ...data.content, left: { ...data.content.left, url: e.target.value } })}
+                                                className="w-full text-sm rounded-xl border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Nome do Ícone Lucide (ex: Headphones)"
+                                                value={data.content.left?.icon || ''}
+                                                onChange={e => setData('content', { ...data.content, left: { ...data.content.left, icon: e.target.value } })}
+                                                className="w-full text-sm rounded-xl border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                            />
+                                        </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        {/* Left Link */}
-                                        <div className="space-y-4 p-4 border border-slate-100 dark:border-white/5 rounded-xl">
-                                            <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400">Lado Esquerdo (Link)</h5>
-                                            <div className="space-y-3">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Texto (ex: Atendimento)"
-                                                    value={data.content.left?.text || ''}
-                                                    onChange={e => setData('content', { ...data.content, left: { ...data.content.left, text: e.target.value } })}
-                                                    className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
-                                                />
-                                                <input
-                                                    type="text"
-                                                    placeholder="URL ou Rota"
-                                                    value={data.content.left?.url || ''}
-                                                    onChange={e => setData('content', { ...data.content, left: { ...data.content.left, url: e.target.value } })}
-                                                    className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
-                                                />
-                                                <input
-                                                    type="text"
-                                                    placeholder="Nome do Ícone Lucide (ex: Headphones)"
-                                                    value={data.content.left?.icon || ''}
-                                                    onChange={e => setData('content', { ...data.content, left: { ...data.content.left, icon: e.target.value } })}
-                                                    className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
-                                                />
-                                            </div>
+                                    {/* Right Link */}
+                                    <div className="space-y-4 p-6 border border-slate-200/50 dark:border-white/5 rounded-[2rem] bg-slate-50/30 dark:bg-white/5">
+                                        <h5 className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-4">Lado Direito (Link)</h5>
+                                        <div className="space-y-4">
+                                            <input
+                                                type="text"
+                                                placeholder="Texto (ex: Acessibilidade)"
+                                                value={data.content.right?.text || ''}
+                                                onChange={e => setData('content', { ...data.content, right: { ...data.content.right, text: e.target.value } })}
+                                                className="w-full text-sm rounded-xl border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="URL ou Rota"
+                                                value={data.content.right?.url || ''}
+                                                onChange={e => setData('content', { ...data.content, right: { ...data.content.right, url: e.target.value } })}
+                                                className="w-full text-sm rounded-xl border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                            />
+                                            <input
+                                                type="text"
+                                                placeholder="Nome do Ícone Lucide (ex: Accessibility)"
+                                                value={data.content.right?.icon || ''}
+                                                onChange={e => setData('content', { ...data.content, right: { ...data.content.right, icon: e.target.value } })}
+                                                className="w-full text-sm rounded-xl border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                            />
                                         </div>
+                                    </div>
 
-                                        {/* Right Link */}
-                                        <div className="space-y-4 p-4 border border-slate-100 dark:border-white/5 rounded-xl">
-                                            <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400">Lado Direito (Link)</h5>
-                                            <div className="space-y-3">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Texto (ex: Acessibilidade)"
-                                                    value={data.content.right?.text || ''}
-                                                    onChange={e => setData('content', { ...data.content, right: { ...data.content.right, text: e.target.value } })}
-                                                    className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
-                                                />
-                                                <input
-                                                    type="text"
-                                                    placeholder="URL ou Rota"
-                                                    value={data.content.right?.url || ''}
-                                                    onChange={e => setData('content', { ...data.content, right: { ...data.content.right, url: e.target.value } })}
-                                                    className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
-                                                />
-                                                <input
-                                                    type="text"
-                                                    placeholder="Nome do Ícone Lucide (ex: Accessibility)"
-                                                    value={data.content.right?.icon || ''}
-                                                    onChange={e => setData('content', { ...data.content, right: { ...data.content.right, icon: e.target.value } })}
-                                                    className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
-                                                />
-                                            </div>
+                                    {/* Center Carousel */}
+                                    <div className="md:col-span-2 space-y-4 p-6 border border-slate-200/50 dark:border-white/5 rounded-[2.5rem] bg-slate-50/30 dark:bg-white/5">
+                                        <div className="flex justify-between items-center mb-4">
+                                            <h5 className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Centro (Carrossel de Avisos)</h5>
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    const carousel = [...(data.content.carousel || [])];
+                                                    carousel.push({ text: '', url: '' });
+                                                    setData('content', { ...data.content, carousel });
+                                                }}
+                                                className="inline-flex items-center gap-2 rounded-full bg-gold-500/10 px-4 py-2 text-[10px] font-bold text-gold-600 transition hover:bg-gold-500/20 dark:text-gold-400 uppercase tracking-widest"
+                                            >
+                                                <Plus className="h-3 w-3" /> Adicionar Aviso
+                                            </button>
                                         </div>
-
-                                        {/* Center Carousel */}
-                                        <div className="md:col-span-2 space-y-4 p-4 border border-slate-100 dark:border-white/5 rounded-xl">
-                                            <div className="flex justify-between items-center">
-                                                <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400">Centro (Carrossel de Avisos)</h5>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        const carousel = [...(data.content.carousel || [])];
-                                                        carousel.push({ text: '', url: '' });
-                                                        setData('content', { ...data.content, carousel });
-                                                    }}
-                                                    className="text-[10px] font-bold text-gold-600 hover:text-gold-500 uppercase tracking-widest"
-                                                >
-                                                    + Adicionar Aviso
-                                                </button>
-                                            </div>
-                                            <div className="space-y-3">
-                                                {(data.content.carousel || []).map((item, index) => (
-                                                    <div key={index} className="flex gap-3 items-start bg-slate-50 dark:bg-white/5 p-3 rounded-lg relative group">
-                                                        <div className="flex-1 space-y-2">
-                                                            <input
-                                                                type="text"
-                                                                placeholder="Mensagem do aviso"
-                                                                value={item.text}
-                                                                onChange={e => {
-                                                                    const carousel = [...data.content.carousel];
-                                                                    carousel[index].text = e.target.value;
-                                                                    setData('content', { ...data.content, carousel });
-                                                                }}
-                                                                className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
-                                                            />
-                                                            <input
-                                                                type="text"
-                                                                placeholder="URL opcional"
-                                                                value={item.url}
-                                                                onChange={e => {
-                                                                    const carousel = [...data.content.carousel];
-                                                                    carousel[index].url = e.target.value;
-                                                                    setData('content', { ...data.content, carousel });
-                                                                }}
-                                                                className="w-full text-sm rounded-md border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
-                                                            />
-                                                        </div>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => {
-                                                                const carousel = data.content.carousel.filter((_, i) => i !== index);
+                                        <div className="space-y-4">
+                                            {(data.content.carousel || []).map((item, index) => (
+                                                <div key={index} className="flex gap-4 items-start bg-white dark:bg-slate-900/50 p-4 rounded-2xl relative group shadow-sm">
+                                                    <div className="flex-1 space-y-3">
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Mensagem do aviso"
+                                                            value={item.text}
+                                                            onChange={e => {
+                                                                const carousel = [...data.content.carousel];
+                                                                carousel[index].text = e.target.value;
                                                                 setData('content', { ...data.content, carousel });
                                                             }}
-                                                            className="p-1 text-slate-400 hover:text-red-500 transition"
-                                                        >
-                                                            <Info className="h-4 w-4 rotate-45" />
-                                                        </button>
+                                                            className="w-full text-sm rounded-xl border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                                        />
+                                                        <input
+                                                            type="text"
+                                                            placeholder="URL opcional"
+                                                            value={item.url}
+                                                            onChange={e => {
+                                                                const carousel = [...data.content.carousel];
+                                                                carousel[index].url = e.target.value;
+                                                                setData('content', { ...data.content, carousel });
+                                                            }}
+                                                            className="w-full text-sm rounded-xl border-slate-200 dark:border-white/10 dark:bg-slate-800 focus:ring-gold-500"
+                                                        />
                                                     </div>
-                                                ))}
-                                                {(data.content.carousel || []).length === 0 && (
-                                                    <p className="text-center py-4 text-xs text-slate-500 italic">Nenhum aviso adicionado ao carrossel.</p>
-                                                )}
-                                            </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            const carousel = data.content.carousel.filter((_, i) => i !== index);
+                                                            setData('content', { ...data.content, carousel });
+                                                        }}
+                                                        className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10 text-red-500 transition hover:bg-red-500 hover:text-white shadow-sm"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            {(data.content.carousel || []).length === 0 && (
+                                                <div className="text-center py-12 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-[2rem]">
+                                                    <p className="text-sm text-slate-500 italic">Nenhum aviso adicionado ao carrossel.</p>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
-                            )}
+                            </div>
+                        )}
 
-                            {data.type === 'mega' && (
-                                <div className="pt-6 border-t border-slate-100 dark:border-white/5 space-y-4">
-                                    <h4 className="font-bold text-slate-900 dark:text-slate-100">Configuração do Mega Menu (JSON)</h4>
-                                    <p className="text-xs text-slate-500">No momento, a edição do conteúdo do mega menu é feita via JSON. No futuro, teremos um construtor visual.</p>
-                                    <textarea
-                                        value={JSON.stringify(data.content, null, 2)}
-                                        onChange={e => {
-                                            try {
-                                                setData('content', JSON.parse(e.target.value));
-                                            } catch (err) {
-                                                // Wait for valid JSON
-                                            }
-                                        }}
-                                        rows="12"
-                                        className="w-full rounded-md border-slate-300 dark:border-white/10 dark:bg-slate-800 dark:text-white font-mono text-xs focus:ring-gold-500 shadow-sm"
-                                    />
+                        {data.type === 'mega' && (
+                            <div className="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <h4 className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                                        <CheckCircle2 className="h-5 w-5 text-purple-500" /> Configuração do Mega Menu (JSON)
+                                    </h4>
                                 </div>
-                            )}
-                        </form>
-                    </div>
-                </div>
+                                <p className="text-xs text-slate-500 font-medium">A edição do conteúdo do mega menu é feita via JSON no momento.</p>
+                                <textarea
+                                    value={JSON.stringify(data.content, null, 2)}
+                                    onChange={e => {
+                                        try {
+                                            setData('content', JSON.parse(e.target.value));
+                                        } catch (err) {
+                                            // Handle invalid JSON
+                                        }
+                                    }}
+                                    rows="12"
+                                    className="w-full rounded-[2rem] border-slate-200 bg-slate-50/50 px-6 py-4 text-xs font-mono transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
+                                />
+                            </div>
+                        )}
+
+                        <div className="flex items-center justify-end pt-8 border-t border-slate-100 dark:border-slate-800">
+                            <button
+                                type="submit"
+                                disabled={processing}
+                                className="inline-flex items-center gap-2 rounded-full bg-gold-500 px-10 py-4 text-sm font-bold text-neutral-950 shadow-lg shadow-gold-500/30 transition hover:bg-gold-400 hover:scale-[1.02] active:scale-95 disabled:opacity-60"
+                            >
+                                <Save className="h-5 w-5" />
+                                {processing ? 'Salvando...' : 'Salvar Menu'}
+                            </button>
+                        </div>
+                    </form>
+                </motion.div>
             </div>
         </AuthenticatedLayout>
     );

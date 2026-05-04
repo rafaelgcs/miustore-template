@@ -1,7 +1,8 @@
 import React from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Plus, Edit, Trash2, Move, Layers, Link as LinkIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Plus, Edit, Trash2, Layers, Link as LinkIcon } from 'lucide-react';
 
 export default function Index({ auth, menus }) {
     const { delete: destroy } = useForm();
@@ -14,94 +15,110 @@ export default function Index({ auth, menus }) {
 
     return (
         <AuthenticatedLayout
-            user={auth.user}
-            header={<h2 className="font-semibold text-xl text-slate-800 dark:text-slate-200 leading-tight">Gestão de Navegação</h2>}
+            header={
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-slate-950 dark:text-slate-100">
+                            Gestão de Navegação
+                        </h1>
+                        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                            Gerencie os links e mega menus que aparecem no topo do site.
+                        </p>
+                    </div>
+                    <Link
+                        href={route('admin.navigation.create')}
+                        className="inline-flex items-center gap-2 rounded-full bg-gold-500 px-6 py-3 text-sm font-bold text-neutral-950 shadow-lg shadow-gold-500/30 transition hover:bg-gold-400 hover:scale-[1.02] active:scale-95"
+                    >
+                        <Plus className="h-5 w-5" />
+                        Novo Menu
+                    </Link>
+                </div>
+            }
         >
             <Head title="Menus de Navegação" />
 
-            <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="bg-white dark:bg-slate-900 overflow-hidden shadow-sm sm:rounded-lg border border-slate-200 dark:border-white/10">
-                        <div className="p-6">
-                            <div className="flex justify-between items-center mb-6">
-                                <div>
-                                    <h3 className="text-lg font-medium text-slate-900 dark:text-slate-100">Menus Ativos</h3>
-                                    <p className="text-sm text-slate-500 dark:text-slate-400">Gerencie os links e mega menus que aparecem no topo do site.</p>
-                                </div>
-                                <Link
-                                    href={route('admin.navigation.create')}
-                                    className="inline-flex items-center px-4 py-2 bg-gold-500 border border-transparent rounded-md font-semibold text-xs text-neutral-950 uppercase tracking-widest hover:bg-gold-400 transition"
-                                >
-                                    <Plus className="h-4 w-4 mr-2" />
-                                    Novo Menu
-                                </Link>
-                            </div>
-
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left border-collapse">
-                                    <thead>
-                                        <tr className="border-b border-slate-200 dark:border-white/10">
-                                            <th className="py-4 px-4 text-xs uppercase tracking-wider text-slate-500 font-bold">Ordem</th>
-                                            <th className="py-4 px-4 text-xs uppercase tracking-wider text-slate-500 font-bold">Nome</th>
-                                            <th className="py-4 px-4 text-xs uppercase tracking-wider text-slate-500 font-bold">Tipo</th>
-                                            <th className="py-4 px-4 text-xs uppercase tracking-wider text-slate-500 font-bold">Status</th>
-                                            <th className="py-4 px-4 text-xs uppercase tracking-wider text-slate-500 font-bold text-right">Ações</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {menus.map((menu) => (
-                                            <tr key={menu.id} className="border-b border-slate-100 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition">
-                                                <td className="py-4 px-4">
-                                                    <span className="inline-flex items-center justify-center h-8 w-8 rounded-full bg-slate-100 dark:bg-white/10 text-xs font-bold">
-                                                        {menu.order}
-                                                    </span>
-                                                </td>
-                                                <td className="py-4 px-4">
-                                                    <div className="font-medium text-slate-900 dark:text-slate-100">{menu.name}</div>
-                                                    <div className="text-xs text-slate-500">{menu.slug}</div>
-                                                </td>
-                                                <td className="py-4 px-4">
-                                                    {menu.type === 'mega' ? (
-                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
-                                                            <Layers className="h-3 w-3 mr-1" /> Mega Menu
-                                                        </span>
-                                                    ) : (
-                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
-                                                            <LinkIcon className="h-3 w-3 mr-1" /> Link Direto
-                                                        </span>
-                                                    )}
-                                                </td>
-                                                <td className="py-4 px-4">
-                                                    {menu.is_active ? (
-                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">Ativo</span>
-                                                    ) : (
-                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">Inativo</span>
-                                                    )}
-                                                </td>
-                                                <td className="py-4 px-4 text-right space-x-2">
-                                                    <Link
-                                                        href={route('admin.navigation.edit', menu.id)}
-                                                        className="inline-flex items-center p-2 text-slate-400 hover:text-gold-500 transition"
-                                                        title="Editar"
-                                                    >
-                                                        <Edit className="h-5 w-5" />
-                                                    </Link>
-                                                    <button
-                                                        onClick={() => deleteMenu(menu.id)}
-                                                        className="inline-flex items-center p-2 text-slate-400 hover:text-red-500 transition"
-                                                        title="Excluir"
-                                                    >
-                                                        <Trash2 className="h-5 w-5" />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+            <div className="py-6">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="overflow-hidden rounded-[2.5rem] border border-slate-200/80 bg-white/80 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90"
+                >
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="border-b border-slate-200 dark:border-slate-800">
+                                    <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Ordem</th>
+                                    <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Nome</th>
+                                    <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Tipo</th>
+                                    <th className="px-6 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Status</th>
+                                    <th className="px-6 py-5 text-right text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+                                {menus.map((menu) => (
+                                    <tr key={menu.id} className="group transition-colors hover:bg-slate-50/50 dark:hover:bg-white/5">
+                                        <td className="px-6 py-5">
+                                            <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-sm font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                                                {menu.order}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-5">
+                                            <div className="font-bold text-slate-900 dark:text-white">{menu.name}</div>
+                                            <div className="text-xs text-slate-500 font-mono mt-0.5">{menu.slug}</div>
+                                        </td>
+                                        <td className="px-6 py-5">
+                                            {menu.type === 'mega' ? (
+                                                <span className="inline-flex items-center gap-1.5 rounded-full bg-purple-50 px-3 py-1 text-xs font-bold text-purple-700 dark:bg-purple-500/10 dark:text-purple-400">
+                                                    <Layers className="h-3.5 w-3.5" /> Mega Menu
+                                                </span>
+                                            ) : menu.type === 'top_bar' ? (
+                                                <span className="inline-flex items-center gap-1.5 rounded-full bg-gold-50 px-3 py-1 text-xs font-bold text-gold-700 dark:bg-gold-500/10 dark:text-gold-400">
+                                                    <Plus className="h-3.5 w-3.5" /> Barra de Avisos
+                                                </span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 dark:bg-blue-500/10 dark:text-blue-400">
+                                                    <LinkIcon className="h-3.5 w-3.5" /> Link Direto
+                                                </span>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-5">
+                                            {menu.is_active ? (
+                                                <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-xs font-bold text-green-700 dark:bg-green-500/10 dark:text-green-400">Ativo</span>
+                                            ) : (
+                                                <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-400">Inativo</span>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-5 text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <Link
+                                                    href={route('admin.navigation.edit', menu.id)}
+                                                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400 hover:scale-110 active:scale-95"
+                                                    title="Editar"
+                                                >
+                                                    <Edit className="h-4 w-4" />
+                                                </Link>
+                                                <button
+                                                    onClick={() => deleteMenu(menu.id)}
+                                                    className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10 text-red-500 transition hover:bg-red-500 hover:text-white hover:scale-110 active:scale-95"
+                                                    title="Excluir"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                                {menus.length === 0 && (
+                                    <tr>
+                                        <td colSpan="5" className="px-6 py-20 text-center text-slate-500 dark:text-slate-400">
+                                            Nenhum item de menu cadastrado.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
-                </div>
+                </motion.div>
             </div>
         </AuthenticatedLayout>
     );

@@ -35,6 +35,13 @@ export default function Index({ products, filters = {} }) {
                             Gerencie o inventário, tipos e customizações da sua loja.
                         </p>
                     </div>
+                    <Link
+                        href={route('admin.products.create')}
+                        className="inline-flex items-center gap-2 rounded-full bg-gold-500 px-6 py-3 text-sm font-bold text-neutral-950 shadow-lg shadow-gold-500/30 transition hover:bg-gold-400 hover:scale-[1.02] active:scale-95"
+                    >
+                        <Plus className="h-5 w-5" />
+                        Novo Produto
+                    </Link>
                 </div>
             }
         >
