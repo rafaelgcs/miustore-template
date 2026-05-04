@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Save, Layers, Search, Check, X } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 export default function Edit({ auth, collection, products }) {
     const { data, setData, put, processing, errors } = useForm({
@@ -16,7 +17,7 @@ export default function Edit({ auth, collection, products }) {
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(fullUrl);
-        alert('URL copiada para a área de transferência!');
+        toast.success('URL copiada para a área de transferência!');
     };
 
     const [searchTerm, setSearchTerm] = useState('');

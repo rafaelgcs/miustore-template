@@ -4,6 +4,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { Heart, ShoppingBag, Star, X, ShoppingCart } from 'lucide-react';
 import AddToCartButton from '@/Components/AddToCartButton';
+import { toast } from 'sonner';
 
 export default function Favorites({ auth, favorites }) {
     const { post } = useForm();
@@ -31,7 +32,7 @@ export default function Favorites({ auth, favorites }) {
                             onClick={() => {
                                 const url = route('favorites.shared', auth.user.id);
                                 navigator.clipboard.writeText(window.location.origin + url);
-                                alert('Link da lista de favoritos copiado para a área de transferência!');
+                                toast.success('Link da lista de favoritos copiado para a área de transferência!');
                             }}
                             className="inline-flex items-center rounded-full bg-gold-500 px-4 py-2 text-sm font-semibold text-neutral-950 transition hover:bg-gold-400"
                         >

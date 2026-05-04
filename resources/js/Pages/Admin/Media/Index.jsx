@@ -19,6 +19,7 @@ import {
     ExternalLink
 } from 'lucide-react';
 import { useState, useRef } from 'react';
+import { toast } from 'sonner';
 
 export default function Index({ folders, media, currentFolder, breadcrumbs }) {
     const [viewMode, setViewMode] = useState('grid');
@@ -88,7 +89,7 @@ export default function Index({ folders, media, currentFolder, breadcrumbs }) {
 
     const copyToClipboard = (text) => {
         navigator.clipboard.writeText(text);
-        alert('Link copiado para a área de transferência!');
+        toast.success('Link copiado para a área de transferência!');
     };
 
     return (

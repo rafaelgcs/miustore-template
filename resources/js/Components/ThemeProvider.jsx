@@ -23,6 +23,8 @@ function mix(color1, color2, weight) {
     };
 }
 
+import ToastListener from './ToastListener';
+
 export function ThemeProvider({ children }) {
     const { props } = usePage();
     const primaryColor = props.primaryColor || 'gold';
@@ -80,6 +82,7 @@ export function ThemeProvider({ children }) {
 
     return (
         <ThemeContext.Provider value={{ theme, setTheme }}>
+            <ToastListener />
             {children}
         </ThemeContext.Provider>
     );

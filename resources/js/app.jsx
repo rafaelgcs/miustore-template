@@ -7,6 +7,8 @@ import { createRoot } from 'react-dom/client';
 import ThemeProvider from './Components/ThemeProvider';
 import SeoHead from './Components/SeoHead';
 
+import { Toaster } from 'sonner';
+
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 createInertiaApp({
@@ -21,6 +23,7 @@ createInertiaApp({
         return (props) => (
             <ThemeProvider>
                 <SeoHead />
+                <Toaster richColors closeButton position="top-right" />
                 <Page {...props} />
             </ThemeProvider>
         );

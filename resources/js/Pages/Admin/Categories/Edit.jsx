@@ -1,6 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Save, Folder } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function Edit({ auth, category }) {
     const { data, setData, put, processing, errors } = useForm({
@@ -13,7 +14,7 @@ export default function Edit({ auth, category }) {
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(fullUrl);
-        alert('URL copiada para a área de transferência!');
+        toast.success('URL copiada para a área de transferência!');
     };
 
     const handleSubmit = (e) => {
