@@ -63,7 +63,7 @@ export default function AuthenticatedLayout({ header, children }) {
     const links = user.is_admin ? adminLinks : clientLinks;
 
     return (
-        <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-neutral-950 dark:text-slate-100">
+        <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-neutral-950 dark:text-slate-100">
             <nav className="border-b border-slate-200/80 bg-white/85 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90">
                 <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
                     <div className="flex items-center gap-4">
@@ -187,7 +187,7 @@ export default function AuthenticatedLayout({ header, children }) {
                 </header>
             )}
 
-            <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                 <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
                     <aside className="hidden rounded-[2rem] border border-slate-200/80 bg-white/90 p-6 shadow-[0_30px_100px_-60px_rgba(15,23,42,0.5)] backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90 dark:shadow-none xl:block xl:sticky xl:top-24 xl:h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
                         <div className="flex items-center gap-3 pb-6 border-b border-slate-200/70 dark:border-slate-800 sticky top-0 bg-white/90 dark:bg-slate-950/90 z-10">

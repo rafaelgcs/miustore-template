@@ -11,26 +11,28 @@ import { Toaster } from 'sonner';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
+const GlobalLayout = ({ children }) => (
+    <ThemeProvider>
+        <SeoHead />
+        <Toaster richColors closeButton position="top-right" />
+        {children}
+    </ThemeProvider>
+);
+
+const defaultLayout = (page) => <GlobalLayout children={page} />;
+
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
     resolve: async (name) => {
-        const pageModule = await resolvePageComponent(
-            `./Pages/${name}.jsx`,
-            import.meta.glob('./Pages/**/*.jsx'),
-        );
-        const Page = pageModule.default ?? pageModule;
+        const page = await resolvePageComponent(`./Pages/${name}.jsx`, import.meta.glob('./Pages/**/*.jsx'));
+        const Page = page.default ?? page;
+        
+        Page.layout = Page.layout || defaultLayout;
 
-        return (props) => (
-            <ThemeProvider>
-                <SeoHead />
-                <Toaster richColors closeButton position="top-right" />
-                <Page {...props} />
-            </ThemeProvider>
-        );
+        return Page;
     },
     setup({ el, App, props }) {
         const root = createRoot(el);
-
         root.render(<App {...props} />);
     },
     progress: {
