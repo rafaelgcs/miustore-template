@@ -28,6 +28,7 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::orderBy('name')->get();
+        $product->load('images');
 
         return Inertia::render('Admin/Products/Edit', [
             'product' => $product,
@@ -55,6 +56,10 @@ class ProductController extends Controller
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
             'meta_keywords' => 'nullable|string|max:255',
+            'images' => 'nullable|array',
+            'images.*.url' => 'required|string',
+            'images.*.is_main' => 'boolean',
+            'images.*.sort_order' => 'integer',
         ]);
 
         $oldStock = $product->stock;
@@ -79,6 +84,22 @@ class ProductController extends Controller
             'meta_description' => $data['meta_description'] ?? null,
             'meta_keywords' => $data['meta_keywords'] ?? null,
         ]);
+
+        // Sync images
+        if ($request->has('images')) {
+            $product->images()->delete();
+            foreach ($data['images'] as $img) {
+                $product->images()->create([
+                    'url' => $img['url'],
+                    'is_main' => $img['is_main'] ?? false,
+                    'sort_order' => $img['sort_order'] ?? 0,
+                ]);
+
+                if ($img['is_main']) {
+                    $product->update(['image' => $img['url']]);
+                }
+            }
+        }
 
         if ($oldStock !== $newStock) {
             ProductMovement::create([

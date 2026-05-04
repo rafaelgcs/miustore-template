@@ -95,7 +95,7 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        $product->load('category');
+        $product->load(['category', 'images']);
         $isFavorited = auth()->check() ? auth()->user()->favorites()->where('product_id', $product->id)->exists() : false;
 
         return Inertia::render('Shop/ProductShow', [
