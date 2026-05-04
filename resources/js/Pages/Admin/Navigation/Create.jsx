@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
 import { Save, ArrowLeft, Info, Plus, Trash2, Layout, Type, Globe, Hash, CheckCircle2 } from 'lucide-react';
+import MegaMenuBuilder from '@/Components/MegaMenuBuilder';
 
 export default function Create({ auth }) {
+    const [editorMode, setEditorMode] = useState('visual');
     const { data, setData, post, processing, errors } = useForm({
         name: '',
         type: 'link',
@@ -271,25 +273,59 @@ export default function Create({ auth }) {
                         )}
 
                         {data.type === 'mega' && (
-                            <div className="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-4">
+                            <div className="pt-6 border-t border-slate-100 dark:border-slate-800 space-y-6">
                                 <div className="flex items-center justify-between">
-                                    <h4 className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                                        <CheckCircle2 className="h-5 w-5 text-purple-500" /> Configuração do Mega Menu (JSON)
-                                    </h4>
+                                    <div>
+                                        <h4 className="font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2 text-xl">
+                                            <Layout className="h-5 w-5 text-purple-500" /> Configuração do Mega Menu
+                                        </h4>
+                                        <p className="text-xs text-slate-500 font-medium">Personalize a estrutura de submenus e destaques.</p>
+                                    </div>
+                                    <div className="flex items-center gap-2 rounded-full bg-slate-100 dark:bg-white/5 p-1">
+                                        <button
+                                            type="button"
+                                            onClick={() => setEditorMode('visual')}
+                                            className={`rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest transition ${editorMode === 'visual' ? 'bg-white text-gold-600 shadow-sm dark:bg-slate-800 dark:text-gold-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                                        >
+                                            Editor Visual
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setEditorMode('json')}
+                                            className={`rounded-full px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest transition ${editorMode === 'json' ? 'bg-white text-gold-600 shadow-sm dark:bg-slate-800 dark:text-gold-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                                        >
+                                            JSON
+                                        </button>
+                                    </div>
                                 </div>
-                                <p className="text-xs text-slate-500 font-medium">A edição do conteúdo do mega menu é feita via JSON no momento.</p>
-                                <textarea
-                                    value={JSON.stringify(data.content, null, 2)}
-                                    onChange={e => {
-                                        try {
-                                            setData('content', JSON.parse(e.target.value));
-                                        } catch (err) {
-                                            // Handle invalid JSON
-                                        }
-                                    }}
-                                    rows="12"
-                                    className="w-full rounded-[2rem] border-slate-200 bg-slate-50/50 px-6 py-4 text-xs font-mono transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
-                                />
+
+                                {editorMode === 'visual' ? (
+                                    <MegaMenuBuilder 
+                                        content={data.content} 
+                                        onChange={(newContent) => setData('content', newContent)} 
+                                    />
+                                ) : (
+                                    <div className="space-y-4">
+                                        <div className="bg-amber-50 dark:bg-amber-500/5 p-4 rounded-2xl border border-amber-200 dark:border-amber-500/20 flex items-start gap-3">
+                                            <Info className="h-5 w-5 text-amber-500 mt-0.5" />
+                                            <p className="text-xs text-amber-700 dark:text-amber-400">
+                                                <strong>Atenção:</strong> O modo JSON é destinado a usuários avançados. Certifique-se de manter a estrutura correta para evitar erros na exibição do site.
+                                            </p>
+                                        </div>
+                                        <textarea
+                                            value={JSON.stringify(data.content, null, 2)}
+                                            onChange={e => {
+                                                try {
+                                                    setData('content', JSON.parse(e.target.value));
+                                                } catch (err) {
+                                                    // Handle invalid JSON
+                                                }
+                                            }}
+                                            rows="16"
+                                            className="w-full rounded-[2rem] border-slate-200 bg-slate-50/50 px-6 py-4 text-xs font-mono transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
+                                        />
+                                    </div>
+                                )}
                             </div>
                         )}
 

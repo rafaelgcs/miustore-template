@@ -170,10 +170,10 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                                 >
                                     {campaign.image && (
                                         <div className="mb-5 overflow-hidden rounded-[1.5rem] bg-slate-200 dark:bg-black/10">
-                                            <img 
-                                                src={campaign.image?.startsWith('http') ? campaign.image : `/storage/${campaign.image}`} 
-                                                alt={campaign.title} 
-                                                className="h-56 w-full object-cover transition duration-500 group-hover:scale-105" 
+                                            <img
+                                                src={campaign.image?.startsWith('http') ? campaign.image : `/storage/${campaign.image}`}
+                                                alt={campaign.title}
+                                                className="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
                                             />
                                         </div>
                                     )}
@@ -192,7 +192,7 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                     </div>
                 </section>
 
-                <section id="colecoes" className="px-4 pb-20 sm:px-6 lg:px-8 bg-slate-50 dark:bg-transparent">
+                <section id="colecoes" className="pt-20 px-4 pb-20 sm:px-6 lg:px-8 bg-slate-50 dark:bg-transparent">
                     <div className="mx-auto max-w-7xl">
                         <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                             <div>
@@ -229,7 +229,7 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                     </div>
                 </section>
 
-                <section id="novidades" className="px-4 pb-20 sm:px-6 lg:px-8 bg-white dark:bg-transparent">
+                <section id="novidades" className="pt-20 px-4 pb-20 sm:px-6 lg:px-8 bg-white dark:bg-transparent">
                     <div className="mx-auto max-w-7xl">
                         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                             <div>
@@ -275,8 +275,8 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                                                 >
                                                     <Heart className={`h-4 w-4 ${userFavorites.includes(product.id) ? 'fill-current' : ''}`} />
                                                 </button>
-                                                <AddToCartButton 
-                                                    product={product} 
+                                                <AddToCartButton
+                                                    product={product}
                                                     onShowOptions={setSelectedProductForOptions}
                                                     className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400"
                                                 >
@@ -291,7 +291,7 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                     </div>
                 </section>
 
-                <section id="destaques" className="px-4 pb-24 sm:px-6 lg:px-8 bg-slate-50 dark:bg-transparent">
+                <section id="destaques" className="pt-20 px-4 pb-24 sm:px-6 lg:px-8 bg-slate-50 dark:bg-transparent">
                     <div className="mx-auto max-w-7xl">
                         <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
                             <div>
@@ -355,8 +355,8 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
                                                 >
                                                     <Heart className={`h-5 w-5 ${userFavorites.includes(product.id) ? 'fill-current' : ''}`} />
                                                 </button>
-                                                <AddToCartButton 
-                                                    product={product} 
+                                                <AddToCartButton
+                                                    product={product}
                                                     onShowOptions={setSelectedProductForOptions}
                                                     className="inline-flex h-12 min-w-[3rem] items-center justify-center rounded-full bg-gold-500 text-neutral-950 transition hover:bg-gold-400"
                                                 >
@@ -374,7 +374,7 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
 
             <Footer />
 
-            <ProductOptionsModal 
+            <ProductOptionsModal
                 product={selectedProductForOptions}
                 isOpen={!!selectedProductForOptions}
                 onClose={() => setSelectedProductForOptions(null)}
