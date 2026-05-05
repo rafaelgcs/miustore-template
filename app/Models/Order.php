@@ -15,7 +15,9 @@ class Order extends Model
         'total_amount',
         'address_id',
         'shipping_mode',
-        'individual_shipping'
+        'individual_shipping',
+        'coupon_id',
+        'discount_amount'
     ];
 
     protected $casts = [

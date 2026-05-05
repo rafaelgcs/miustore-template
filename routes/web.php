@@ -37,8 +37,11 @@ Route::post('/carrinho/adicionar/{product:id}', [CartController::class, 'add'])-
 Route::patch('/carrinho/atualizar/{cartItem}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/carrinho/remover/{cartItem}', [CartController::class, 'remove'])->name('cart.remove');
 
+use App\Http\Controllers\Client\CouponController as ClientCouponController;
+
 // Shipping & Reviews
 Route::post('/shipping/calculate', [ShippingController::class, 'calculate'])->name('shipping.calculate');
+Route::post('/coupons/validate', [ClientCouponController::class, 'validateCoupon'])->name('coupons.validate');
 Route::post('/products/{product}/reviews', [ProductReviewController::class, 'store'])->name('products.reviews.store');
 
 Route::middleware(['auth', 'verified'])->group(function () {

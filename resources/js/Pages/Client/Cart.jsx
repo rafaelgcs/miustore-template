@@ -19,7 +19,9 @@ import {
     Briefcase,
     Building2,
     MoreHorizontal,
-    Trash
+    Trash,
+    Ticket,
+    X
 } from 'lucide-react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import GuestLayout from '@/Layouts/GuestLayout';
@@ -37,6 +39,10 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
     const [selectedMethod, setSelectedMethod] = useState(null);
     const [shippingMode, setShippingMode] = useState('ensemble'); // 'ensemble' or 'individual'
     const [individualShipping, setIndividualShipping] = useState({}); // { cart_item_id: { methods, selected } }
+    const [couponCode, setCouponCode] = useState('');
+    const [appliedCoupon, setAppliedCoupon] = useState(null);
+    const [couponError, setCouponError] = useState('');
+    const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
 
     const [addressForm, setAddressForm] = useState({
         name: '',
@@ -57,7 +63,8 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
         ? (selectedMethod ? selectedMethod.price : 0)
         : Object.values(individualShipping).reduce((acc, curr) => acc + (curr.selected ? curr.selected.price : 0), 0);
 
-    const total = subtotal + totalShipping;
+    const discount = appliedCoupon ? appliedCoupon.discount_amount : 0;
+    const total = subtotal + totalShipping - discount;
 
     const updateQuantity = (id, quantity) => {
         if (quantity < 1) return;
@@ -102,6 +109,79 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
             alert('Erro ao salvar endereço. Verifique os campos.');
         }
     };
+
+    const handleApplyCoupon = async () => {
+        if (!couponCode) return;
+        setIsApplyingCoupon(true);
+        setCouponError('');
+        try {
+            const response = await axios.post(route('coupons.validate'), {
+                code: couponCode,
+                subtotal: subtotal
+            });
+            setAppliedCoupon(response.data.coupon);
+            setCouponCode('');
+        } catch (error) {
+            setCouponError(error.response?.data?.message || 'Erro ao aplicar cupom.');
+            setAppliedCoupon(null);
+        } finally {
+            setIsApplyingCoupon(false);
+        }
+    };
+
+    const removeCoupon = () => {
+        setAppliedCoupon(null);
+        setCouponCode('');
+        setCouponError('');
+    };
+
+    const renderCouponSection = () => (
+        <>
+            <h4 className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-4">Cupom de Desconto</h4>
+            {!appliedCoupon ? (
+                <div className="flex gap-2">
+                    <div className="relative flex-1">
+                        <input
+                            type="text"
+                            value={couponCode}
+                            onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                            placeholder="Código..."
+                            className="w-full rounded-full border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 px-4 py-2.5 text-sm uppercase"
+                        />
+                        {couponError && <p className="absolute -bottom-5 left-2 text-[10px] text-red-500">{couponError}</p>}
+                    </div>
+                    <button
+                        onClick={handleApplyCoupon}
+                        disabled={isApplyingCoupon || !couponCode}
+                        className="rounded-full bg-slate-900 dark:bg-white px-6 py-2.5 text-xs font-bold text-white dark:text-neutral-950 transition hover:scale-105 disabled:opacity-50"
+                    >
+                        {isApplyingCoupon ? '...' : 'Aplicar'}
+                    </button>
+                </div>
+            ) : (
+                <div className="flex items-start sm:items-center justify-between rounded-2xl bg-emerald-500/10 p-3 sm:p-4 border border-emerald-500/20 backdrop-blur-sm group transition-all hover:bg-emerald-500/20 gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <div className="h-10 w-10 flex-shrink-0 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                            <Ticket className="h-5 w-5" />
+                        </div>
+                        <div className="min-w-0">
+                            <div className="flex flex-wrap items-center gap-1.5">
+                                <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400 truncate uppercase">{appliedCoupon.code}</p>
+                                <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-[8px] font-black uppercase tracking-tighter text-emerald-600 flex-shrink-0">Aplicado</span>
+                            </div>
+                            <p className="text-[9px] text-emerald-600/70 dark:text-emerald-500/70 mt-1 font-medium">Cupom aplicado com sucesso</p>
+                        </div>
+                    </div>
+                    <button
+                        onClick={removeCoupon}
+                        className="h-8 w-8 flex-shrink-0 rounded-full hover:bg-white/50 dark:hover:bg-black/20 flex items-center justify-center text-emerald-600 transition-transform active:scale-90 absolute right-0 top-0"
+                    >
+                        <X className="h-4 w-4 text-red-600" />
+                    </button>
+                </div>
+            )}
+        </>
+    );
 
     const calculateShipping = async (address) => {
         if (!address) return;
@@ -158,7 +238,10 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
         post(route('client.orders.store'), {
             ...shippingPayload,
             subtotal,
-            address_id: selectedAddress?.id,
+            shipping_amount: totalShipping,
+            address_id: selectedAddress.id,
+            coupon_id: appliedCoupon?.id,
+            discount_amount: discount
         });
     };
 
@@ -234,7 +317,41 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
                 <div className="sticky top-24 rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/5 p-8 shadow-xl backdrop-blur-xl">
                     <h3 className="text-xl font-bold mb-6">Resumo</h3>
                     <div className="space-y-4">
-                        <div className="flex justify-between"><span>Subtotal</span><span>R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></div>
+                        <div className="flex justify-between text-slate-500 text-sm font-medium">
+                            <span>Subtotal</span>
+                            <span className="text-slate-900 dark:text-white">R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                        </div>
+
+                        {appliedCoupon && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex justify-between text-emerald-600 font-bold text-sm"
+                            >
+                                <span className="flex items-center gap-2">
+                                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                                    Desconto
+                                </span>
+                                <span>- R$ {discount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            </motion.div>
+                        )}
+
+                        <div className="pt-6 mt-6 border-t border-slate-100 dark:border-white/5">
+                            <div className="flex flex-col items-center">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Total Parcial</span>
+                                <span className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                                    <span className="text-lg font-bold text-gold-500 mr-2">R$</span>
+                                    {(subtotal - discount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </span>
+                                <p className="text-[9px] text-slate-400 font-medium mt-2 flex items-center gap-1">
+                                    <Truck className="h-3 w-3" /> Frete calculado no próximo passo
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-8 pt-8 border-t border-slate-100 dark:border-white/5">
+                        {renderCouponSection()}
                     </div>
                     <button
                         onClick={() => setStep(2)}
@@ -475,12 +592,45 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
                 <div className="sticky top-24 rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/5 p-8 shadow-xl backdrop-blur-xl">
                     <h3 className="text-xl font-bold mb-6">Resumo</h3>
                     <div className="space-y-4">
-                        <div className="flex justify-between text-slate-500"><span>Subtotal</span><span>R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></div>
-                        <div className="flex justify-between text-slate-500"><span>Frete</span><span>R$ {totalShipping.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></div>
-                        <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex flex-col justify-between text-2xl font-black">
-                            <span>Total</span>
-                            <span className="text-gold-600 text-center">R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                        <div className="flex justify-between text-slate-500 text-sm font-medium">
+                            <span>Subtotal</span>
+                            <span className="text-slate-900 dark:text-white">R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                         </div>
+                        <div className="flex justify-between text-slate-500 text-sm font-medium">
+                            <span>Frete</span>
+                            <span className="text-slate-900 dark:text-white">{totalShipping > 0 ? `R$ ${totalShipping.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : 'Grátis'}</span>
+                        </div>
+
+                        {appliedCoupon && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex justify-between text-emerald-600 font-bold text-sm"
+                            >
+                                <span className="flex items-center gap-2">
+                                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                                    Desconto
+                                </span>
+                                <span>- R$ {discount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            </motion.div>
+                        )}
+
+                        <div className="pt-6 mt-6 border-t border-slate-100 dark:border-white/5">
+                            <div className="flex flex-col items-center text-center">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Total Final</span>
+                                <span className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">
+                                    <span className="text-xl font-bold text-gold-500 mr-2">R$</span>
+                                    {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </span>
+                                <div className="mt-4 flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-[9px] font-bold uppercase tracking-widest text-slate-500">
+                                    <Zap className="h-3 w-3 text-gold-500" /> Processamento Imediato
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-8 pt-8 border-t border-slate-100 dark:border-white/5">
+                        {renderCouponSection()}
                     </div>
                     <button
                         onClick={() => setStep(3)}
@@ -545,12 +695,45 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
                 <div className="sticky top-24 rounded-[2rem] border border-slate-200 dark:border-white/10 bg-white/80 dark:bg-white/5 p-8 shadow-xl backdrop-blur-xl">
                     <h3 className="text-xl font-bold mb-6">Total Final</h3>
                     <div className="space-y-4">
-                        <div className="flex justify-between text-slate-500"><span>Subtotal</span><span>R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></div>
-                        <div className="flex justify-between text-slate-500"><span>Frete</span><span>R$ {totalShipping.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></div>
-                        <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex flex-col justify-between text-3xl font-black">
-                            <span>Total</span>
-                            <span className="text-gold-600 text-center">R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                        <div className="flex justify-between text-slate-500 text-sm font-medium">
+                            <span>Subtotal</span>
+                            <span className="text-slate-900 dark:text-white">R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                         </div>
+                        <div className="flex justify-between text-slate-500 text-sm font-medium">
+                            <span>Frete</span>
+                            <span className="text-slate-900 dark:text-white">{totalShipping > 0 ? `R$ ${totalShipping.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : 'Grátis'}</span>
+                        </div>
+                        
+                        {appliedCoupon && (
+                            <motion.div 
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex justify-between text-emerald-600 font-bold text-sm"
+                            >
+                                <span className="flex items-center gap-2">
+                                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                                    Desconto
+                                </span>
+                                <span>- R$ {discount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            </motion.div>
+                        )}
+
+                        <div className="pt-6 mt-6 border-t border-slate-100 dark:border-white/5">
+                            <div className="flex flex-col items-center text-center">
+                                <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Total Final</span>
+                                <span className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter">
+                                    <span className="text-xl font-bold text-gold-500 mr-2">R$</span>
+                                    {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                </span>
+                                <div className="mt-4 flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-white/5 text-[9px] font-bold uppercase tracking-widest text-slate-500">
+                                    <Zap className="h-3 w-3 text-gold-500" /> Processamento Imediato
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-8 pt-8 border-t border-slate-100 dark:border-white/5">
+                        {renderCouponSection()}
                     </div>
                     <button
                         onClick={handleCheckout}

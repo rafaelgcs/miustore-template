@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Notification;
 use App\Models\User;
+use App\Models\Coupon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -26,6 +27,8 @@ class OrderController extends Controller
             'shipping_mode' => 'nullable|string',
             'individual_shipping' => 'nullable|array',
             'address_id' => 'required|exists:user_addresses,id',
+            'coupon_id' => 'nullable|exists:coupons,id',
+            'discount_amount' => 'nullable|numeric',
         ]);
 
         $user = auth()->user();
@@ -44,7 +47,8 @@ class OrderController extends Controller
                 $shipping = $request->shipping_amount;
             }
 
-            $total = $subtotal + $shipping;
+            $discount = $request->discount_amount ?? 0;
+            $total = $subtotal + $shipping - $discount;
 
             // Create Order
             $order = Order::create([
@@ -57,7 +61,14 @@ class OrderController extends Controller
                 'individual_shipping' => $request->individual_shipping,
                 'address_id' => $request->address_id,
                 'total_amount' => $total,
+                'coupon_id' => $request->coupon_id,
+                'discount_amount' => $discount,
             ]);
+
+            // Increment Coupon Use
+            if ($request->coupon_id) {
+                Coupon::where('id', $request->coupon_id)->increment('used_count');
+            }
 
             // Create Order Items
             foreach ($cartItems as $cartItem) {
