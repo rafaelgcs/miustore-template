@@ -489,74 +489,93 @@ export default function Edit({ product, categories, availableShippingMethods }) 
                                             {data.variants.map((variant, index) => (
                                                 <div
                                                     key={index}
-                                                    className="grid gap-4 rounded-2xl border border-slate-200 bg-slate-50/50 p-6 dark:border-slate-800 dark:bg-white/5 sm:grid-cols-5 items-end"
+                                                    className="relative space-y-4 rounded-3xl border border-slate-200 bg-slate-50/50 p-6 dark:border-slate-800 dark:bg-white/5 pt-10"
                                                 >
-                                                    <div className="space-y-2">
-                                                        <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tamanho</label>
-                                                        <select
-                                                            value={variant.attributes.size}
-                                                            onChange={(e) => updateVariant(index, 'attributes.size', e.target.value)}
-                                                            className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
-                                                        >
-                                                            <option value="">Nenhum</option>
-                                                            {data.available_sizes.split('\n').filter(Boolean).map(s => (
-                                                                <option key={s} value={s}>{s}</option>
-                                                            ))}
-                                                        </select>
+                                                    {/* Identificador da Variação */}
+                                                    <div className="absolute left-6 top-4 flex items-center gap-2">
+                                                        <span className="flex h-5 w-8 items-center justify-center rounded-lg bg-gold-500 text-[10px] font-black text-neutral-950 shadow-sm shadow-gold-500/20">
+                                                            #{index + 1}
+                                                        </span>
+                                                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400">
+                                                            Variação
+                                                        </span>
+                                                    </div>
+                                                    <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+                                                        <div className="space-y-2">
+                                                            <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Tamanho</label>
+                                                            <select
+                                                                value={variant.attributes.size || ''}
+                                                                onChange={(e) => updateVariant(index, 'attributes.size', e.target.value)}
+                                                                className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white transition focus:border-gold-500 focus:ring-gold-500"
+                                                            >
+                                                                <option value="">Nenhum</option>
+                                                                {data.available_sizes.split('\n').filter(Boolean).map(s => (
+                                                                    <option key={s} value={s}>{s}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Cor</label>
+                                                            <select
+                                                                value={variant.attributes.color || ''}
+                                                                onChange={(e) => updateVariant(index, 'attributes.color', e.target.value)}
+                                                                className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white transition focus:border-gold-500 focus:ring-gold-500"
+                                                            >
+                                                                <option value="">Nenhuma</option>
+                                                                {data.available_colors.split('\n').filter(Boolean).map(c => (
+                                                                    <option key={c} value={c}>{c}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Preço Diferenciado (R$)</label>
+                                                            <div className="relative">
+                                                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">R$</span>
+                                                                <input
+                                                                    type="number"
+                                                                    step="0.01"
+                                                                    value={variant.price || ''}
+                                                                    onChange={(e) => updateVariant(index, 'price', e.target.value)}
+                                                                    placeholder={data.price}
+                                                                    className="w-full rounded-xl border-slate-200 bg-white pl-9 pr-4 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white transition focus:border-gold-500 focus:ring-gold-500"
+                                                                />
+                                                            </div>
+                                                        </div>
                                                     </div>
 
-                                                    <div className="space-y-2">
-                                                        <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Cor</label>
-                                                        <select
-                                                            value={variant.attributes.color}
-                                                            onChange={(e) => updateVariant(index, 'attributes.color', e.target.value)}
-                                                            className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
-                                                        >
-                                                            <option value="">Nenhuma</option>
-                                                            {data.available_colors.split('\n').filter(Boolean).map(c => (
-                                                                <option key={c} value={c}>{c}</option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
+                                                    {/* Segunda Linha: Estoque, SKU e Ações */}
+                                                    <div className="grid gap-4 grid-cols-1 md:grid-cols-[1fr_2fr_auto] items-end pt-4 border-t border-slate-200/50 dark:border-slate-800/50">
+                                                        <div className="space-y-2">
+                                                            <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Estoque</label>
+                                                            <input
+                                                                type="number"
+                                                                value={variant.stock}
+                                                                onChange={(e) => updateVariant(index, 'stock', e.target.value)}
+                                                                className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white transition focus:border-gold-500 focus:ring-gold-500"
+                                                            />
+                                                        </div>
 
-                                                    <div className="space-y-2">
-                                                        <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Preço (R$)</label>
-                                                        <input
-                                                            type="number"
-                                                            step="0.01"
-                                                            value={variant.price || ''}
-                                                            onChange={(e) => updateVariant(index, 'price', e.target.value)}
-                                                            placeholder={data.price}
-                                                            className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
-                                                        />
-                                                    </div>
-
-                                                    <div className="space-y-2">
-                                                        <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Estoque</label>
-                                                        <input
-                                                            type="number"
-                                                            value={variant.stock}
-                                                            onChange={(e) => updateVariant(index, 'stock', e.target.value)}
-                                                            className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
-                                                        />
-                                                    </div>
-
-                                                    <div className="flex gap-2">
-                                                        <div className="flex-1 space-y-2">
-                                                            <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">SKU</label>
+                                                        <div className="space-y-2">
+                                                            <label className="text-[10px] font-bold uppercase tracking-wider text-slate-500">SKU da Variação</label>
                                                             <input
                                                                 type="text"
                                                                 value={variant.sku || ''}
                                                                 onChange={(e) => updateVariant(index, 'sku', e.target.value)}
-                                                                className="w-full rounded-xl border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                                                                placeholder="Opcional"
+                                                                className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-700 dark:bg-slate-900 dark:text-white transition focus:border-gold-500 focus:ring-gold-500"
                                                             />
                                                         </div>
+
                                                         <button
                                                             type="button"
                                                             onClick={() => removeVariant(index)}
-                                                            className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-500/10 text-red-500 transition hover:bg-red-500 hover:text-white"
+                                                            className="flex h-[42px] items-center gap-2 rounded-xl bg-red-500/10 px-4 text-xs font-bold text-red-500 transition hover:bg-red-500 hover:text-white"
+                                                            title="Remover Variação"
                                                         >
                                                             <Trash2 className="h-4 w-4" />
+                                                            <span className="md:hidden lg:inline">Remover</span>
                                                         </button>
                                                     </div>
                                                 </div>
