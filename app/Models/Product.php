@@ -26,6 +26,8 @@ class Product extends Model
         'meta_keywords',
         'size_guide',
         'shipping_methods',
+        'origin_zip',
+        'allow_pickup',
     ];
     
     protected $casts = [
@@ -33,6 +35,7 @@ class Product extends Model
         'available_colors' => 'array',
         'customization_options' => 'array',
         'shipping_methods' => 'array',
+        'allow_pickup' => 'boolean',
     ];
 
     public function getRouteKeyName()

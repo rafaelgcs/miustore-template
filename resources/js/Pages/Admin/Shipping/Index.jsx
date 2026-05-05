@@ -11,7 +11,9 @@ import {
     Info,
     ShieldCheck,
     Zap,
-    Globe
+    Globe,
+    MapPin,
+    Home
 } from 'lucide-react';
 
 export default function Index({ settings }) {
@@ -67,6 +69,7 @@ function ShippingProviderCard({ setting }) {
 
     const getProviderName = (provider) => {
         switch (provider) {
+            case 'general': return 'Configurações Gerais';
             case 'melhor_envio': return 'Melhor Envio';
             case 'correios': return 'Correios (Direto)';
             case 'frenet': return 'Frenet';
@@ -76,6 +79,7 @@ function ShippingProviderCard({ setting }) {
 
     const getProviderIcon = (provider) => {
         switch (provider) {
+            case 'general': return <Home className="h-6 w-6 text-gold-500" />;
             case 'melhor_envio': return <Zap className="h-6 w-6 text-gold-500" />;
             case 'correios': return <Truck className="h-6 w-6 text-gold-500" />;
             case 'frenet': return <Globe className="h-6 w-6 text-gold-500" />;
@@ -126,6 +130,143 @@ function ShippingProviderCard({ setting }) {
                 </div>
 
                 <div className="mt-8 grid gap-6 border-t border-slate-100 pt-8 dark:border-white/5">
+                    {setting.provider === 'general' && (
+                        <div className="space-y-6">
+                            <div className="grid gap-6 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">CEP de Origem Padrão</label>
+                                    <input
+                                        type="text"
+                                        value={data.config.origin_address?.zip || ''}
+                                        onChange={(e) => setData('config', { 
+                                            ...data.config, 
+                                            origin_address: { ...(data.config.origin_address || {}), zip: e.target.value } 
+                                        })}
+                                        placeholder="00000-000"
+                                        className="w-full rounded-2xl border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
+                                    />
+                                </div>
+                                <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-white/5">
+                                    <input
+                                        type="checkbox"
+                                        id="global_allow_pickup"
+                                        checked={data.config.allow_pickup || false}
+                                        onChange={(e) => setData('config', { ...data.config, allow_pickup: e.target.checked })}
+                                        className="h-5 w-5 rounded border-slate-300 text-gold-500 focus:ring-gold-500"
+                                    />
+                                    <label htmlFor="global_allow_pickup" className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                        Habilitar Retirada Globalmente
+                                    </label>
+                                </div>
+                            </div>
+
+                            {data.config.allow_pickup && (
+                                <motion.div 
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: 'auto' }}
+                                    className="grid gap-6 sm:grid-cols-2 p-6 rounded-2xl bg-gold-500/5 border border-gold-500/10"
+                                >
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                                            <Globe className="h-3 w-3" /> Estados Autorizados (Ex: SP, RJ)
+                                        </label>
+                                        <textarea
+                                            value={data.config.pickup_states || ''}
+                                            onChange={(e) => setData('config', { ...data.config, pickup_states: e.target.value })}
+                                            placeholder="Ex: SP, RJ (deixe em branco para todos)"
+                                            className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                            rows={2}
+                                        />
+                                        <p className="text-[8px] text-slate-400">Separe por vírgula. Se vazio, todos os estados são permitidos.</p>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-2">
+                                            <MapPin className="h-3 w-3" /> Cidades Autorizadas
+                                        </label>
+                                        <textarea
+                                            value={data.config.pickup_cities || ''}
+                                            onChange={(e) => setData('config', { ...data.config, pickup_cities: e.target.value })}
+                                            placeholder="Ex: São Paulo, Campinas (deixe em branco para todas)"
+                                            className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                            rows={2}
+                                        />
+                                        <p className="text-[8px] text-slate-400">Separe por vírgula. Se vazio, todas as cidades são permitidas.</p>
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            <div className="space-y-4">
+                                <h4 className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
+                                    <MapPin className="h-4 w-4 text-gold-500" />
+                                    Endereço de Origem Completo
+                                </h4>
+                                <div className="grid gap-4 sm:grid-cols-3">
+                                    <div className="sm:col-span-2 space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Rua / Logradouro</label>
+                                        <input
+                                            type="text"
+                                            value={data.config.origin_address?.street || ''}
+                                            onChange={(e) => setData('config', { 
+                                                ...data.config, 
+                                                origin_address: { ...(data.config.origin_address || {}), street: e.target.value } 
+                                            })}
+                                            className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Número</label>
+                                        <input
+                                            type="text"
+                                            value={data.config.origin_address?.number || ''}
+                                            onChange={(e) => setData('config', { 
+                                                ...data.config, 
+                                                origin_address: { ...(data.config.origin_address || {}), number: e.target.value } 
+                                            })}
+                                            className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Bairro</label>
+                                        <input
+                                            type="text"
+                                            value={data.config.origin_address?.neighborhood || ''}
+                                            onChange={(e) => setData('config', { 
+                                                ...data.config, 
+                                                origin_address: { ...(data.config.origin_address || {}), neighborhood: e.target.value } 
+                                            })}
+                                            className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Cidade</label>
+                                        <input
+                                            type="text"
+                                            value={data.config.origin_address?.city || ''}
+                                            onChange={(e) => setData('config', { 
+                                                ...data.config, 
+                                                origin_address: { ...(data.config.origin_address || {}), city: e.target.value } 
+                                            })}
+                                            className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Estado (UF)</label>
+                                        <input
+                                            type="text"
+                                            maxLength="2"
+                                            value={data.config.origin_address?.state || ''}
+                                            onChange={(e) => setData('config', { 
+                                                ...data.config, 
+                                                origin_address: { ...(data.config.origin_address || {}), state: e.target.value.toUpperCase() } 
+                                            })}
+                                            className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {setting.provider === 'melhor_envio' && (
                         <div className="space-y-2">
                             <label className="text-xs font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">API Token (OAuth2)</label>

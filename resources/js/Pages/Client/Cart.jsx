@@ -1,12 +1,12 @@
 import { Head, Link, useForm, router } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-    ShoppingBag, 
-    Trash2, 
-    Minus, 
-    Plus, 
-    ArrowLeft, 
-    ShoppingCart, 
+import {
+    ShoppingBag,
+    Trash2,
+    Minus,
+    Plus,
+    ArrowLeft,
+    ShoppingCart,
     CreditCard,
     MapPin,
     Truck,
@@ -53,7 +53,7 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
     const subtotal = cartItems.reduce((acc, item) => acc + (parseFloat(item.final_price) * item.quantity), 0);
 
     // Calculate total shipping
-    const totalShipping = shippingMode === 'ensemble' 
+    const totalShipping = shippingMode === 'ensemble'
         ? (selectedMethod ? selectedMethod.price : 0)
         : Object.values(individualShipping).reduce((acc, curr) => acc + (curr.selected ? curr.selected.price : 0), 0);
 
@@ -147,13 +147,13 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
     const handleCheckout = () => {
         const shippingPayload = shippingMode === 'ensemble'
             ? { shipping_method: selectedMethod?.id, shipping_amount: selectedMethod?.price }
-            : { 
+            : {
                 shipping_mode: 'individual',
                 individual_shipping: Object.entries(individualShipping).reduce((acc, [id, data]) => {
                     acc[id] = { method: data.selected?.id, price: data.selected?.price };
                     return acc;
                 }, {})
-              };
+            };
 
         post(route('client.orders.store'), {
             ...shippingPayload,
@@ -171,16 +171,14 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
             ].map((s, idx) => (
                 <div key={s.id} className="flex items-center">
                     <div className="flex flex-col items-center relative">
-                        <div className={`h-12 w-12 rounded-full flex items-center justify-center transition-all duration-500 border-2 ${
-                            step >= s.id 
-                                ? 'bg-gold-500 border-gold-500 text-neutral-900 shadow-lg shadow-gold-500/20' 
-                                : 'bg-transparent border-slate-200 dark:border-white/10 text-slate-400'
-                        }`}>
+                        <div className={`h-12 w-12 rounded-full flex items-center justify-center transition-all duration-500 border-2 ${step >= s.id
+                            ? 'bg-gold-500 border-gold-500 text-neutral-900 shadow-lg shadow-gold-500/20'
+                            : 'bg-transparent border-slate-200 dark:border-white/10 text-slate-400'
+                            }`}>
                             <s.icon className="h-5 w-5" />
                         </div>
-                        <span className={`absolute -bottom-7 text-[10px] font-bold uppercase tracking-widest whitespace-nowrap ${
-                            step >= s.id ? 'text-slate-900 dark:text-white' : 'text-slate-400'
-                        }`}>
+                        <span className={`absolute -bottom-7 text-[10px] font-bold uppercase tracking-widest whitespace-nowrap ${step >= s.id ? 'text-slate-900 dark:text-white' : 'text-slate-400'
+                            }`}>
                             {s.name}
                         </span>
                     </div>
@@ -238,7 +236,7 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
                     <div className="space-y-4">
                         <div className="flex justify-between"><span>Subtotal</span><span>R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></div>
                     </div>
-                    <button 
+                    <button
                         onClick={() => setStep(2)}
                         className="mt-8 w-full flex items-center justify-center gap-3 rounded-full bg-gold-500 py-4 text-sm font-bold text-neutral-950 shadow-lg"
                     >
@@ -255,7 +253,7 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
             <div className="lg:col-span-2 space-y-6">
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-bold">Endereço de Entrega</h2>
-                    <button 
+                    <button
                         onClick={() => setShowAddressForm(!showAddressForm)}
                         className="flex items-center gap-2 text-sm font-bold text-gold-600 hover:text-gold-500 transition"
                     >
@@ -266,7 +264,7 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
 
                 <AnimatePresence>
                     {showAddressForm && (
-                        <motion.div 
+                        <motion.div
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
@@ -276,20 +274,20 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="col-span-2">
                                         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4 mb-2 block">Nome do Local (Ex: Minha Casa, Trabalho)</label>
-                                        <input 
+                                        <input
                                             required
                                             value={addressForm.name}
-                                            onChange={e => setAddressForm({...addressForm, name: e.target.value})}
+                                            onChange={e => setAddressForm({ ...addressForm, name: e.target.value })}
                                             className="w-full rounded-full border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 px-6 py-3"
                                         />
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4 mb-2 block">CEP</label>
-                                        <input 
+                                        <input
                                             required
                                             value={addressForm.cep}
                                             onChange={e => {
-                                                setAddressForm({...addressForm, cep: e.target.value});
+                                                setAddressForm({ ...addressForm, cep: e.target.value });
                                                 fetchAddressFromCep(e.target.value);
                                             }}
                                             className="w-full rounded-full border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 px-6 py-3"
@@ -297,55 +295,55 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
                                     </div>
                                     <div className="col-span-2">
                                         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4 mb-2 block">Rua / Logradouro</label>
-                                        <input 
+                                        <input
                                             required
                                             value={addressForm.logradouro}
-                                            onChange={e => setAddressForm({...addressForm, logradouro: e.target.value})}
+                                            onChange={e => setAddressForm({ ...addressForm, logradouro: e.target.value })}
                                             className="w-full rounded-full border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 px-6 py-3"
                                         />
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4 mb-2 block">Número</label>
-                                        <input 
+                                        <input
                                             required
                                             value={addressForm.numero}
-                                            onChange={e => setAddressForm({...addressForm, numero: e.target.value})}
+                                            onChange={e => setAddressForm({ ...addressForm, numero: e.target.value })}
                                             className="w-full rounded-full border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 px-6 py-3"
                                         />
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4 mb-2 block">Complemento</label>
-                                        <input 
+                                        <input
                                             value={addressForm.complemento}
-                                            onChange={e => setAddressForm({...addressForm, complemento: e.target.value})}
+                                            onChange={e => setAddressForm({ ...addressForm, complemento: e.target.value })}
                                             className="w-full rounded-full border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 px-6 py-3"
                                         />
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4 mb-2 block">Bairro</label>
-                                        <input 
+                                        <input
                                             required
                                             value={addressForm.bairro}
-                                            onChange={e => setAddressForm({...addressForm, bairro: e.target.value})}
+                                            onChange={e => setAddressForm({ ...addressForm, bairro: e.target.value })}
                                             className="w-full rounded-full border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 px-6 py-3"
                                         />
                                     </div>
                                     <div className="flex gap-2">
                                         <div className="flex-1">
                                             <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4 mb-2 block">Cidade</label>
-                                            <input 
+                                            <input
                                                 required
                                                 value={addressForm.cidade}
-                                                onChange={e => setAddressForm({...addressForm, cidade: e.target.value})}
+                                                onChange={e => setAddressForm({ ...addressForm, cidade: e.target.value })}
                                                 className="w-full rounded-full border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 px-6 py-3"
                                             />
                                         </div>
                                         <div className="w-20">
                                             <label className="text-[10px] font-bold uppercase tracking-widest text-slate-500 ml-4 mb-2 block">UF</label>
-                                            <input 
+                                            <input
                                                 required
                                                 value={addressForm.uf}
-                                                onChange={e => setAddressForm({...addressForm, uf: e.target.value})}
+                                                onChange={e => setAddressForm({ ...addressForm, uf: e.target.value })}
                                                 className="w-full rounded-full border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 px-6 py-3"
                                             />
                                         </div>
@@ -359,14 +357,13 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
 
                 <div className="grid gap-4 sm:grid-cols-2">
                     {addresses.map(addr => (
-                        <div 
+                        <div
                             key={addr.id}
                             onClick={() => setSelectedAddress(addr)}
-                            className={`cursor-pointer group relative rounded-[2rem] border-2 p-6 transition-all ${
-                                selectedAddress?.id === addr.id 
-                                    ? 'border-gold-500 bg-gold-500/5 shadow-xl shadow-gold-500/10' 
-                                    : 'border-slate-100 bg-white dark:border-white/5 dark:bg-white/5'
-                            }`}
+                            className={`cursor-pointer group relative rounded-[2rem] border-2 p-6 transition-all ${selectedAddress?.id === addr.id
+                                ? 'border-gold-500 bg-gold-500/5 shadow-xl shadow-gold-500/10'
+                                : 'border-slate-100 bg-white dark:border-white/5 dark:bg-white/5'
+                                }`}
                         >
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="h-10 w-10 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center">
@@ -391,13 +388,13 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-bold">Modo de Envio</h2>
                         <div className="flex bg-slate-100 dark:bg-white/5 p-1 rounded-full">
-                            <button 
+                            <button
                                 onClick={() => setShippingMode('ensemble')}
                                 className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition ${shippingMode === 'ensemble' ? 'bg-white dark:bg-slate-800 shadow-sm' : 'text-slate-500'}`}
                             >
                                 Em Conjunto
                             </button>
-                            <button 
+                            <button
                                 onClick={() => setShippingMode('individual')}
                                 className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest transition ${shippingMode === 'individual' ? 'bg-white dark:bg-slate-800 shadow-sm' : 'text-slate-500'}`}
                             >
@@ -416,14 +413,13 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
                             {shippingMode === 'ensemble' ? (
                                 <div className="grid gap-4">
                                     {shippingData?.methods.map((method, idx) => (
-                                        <div 
+                                        <div
                                             key={idx}
                                             onClick={() => setSelectedMethod(method)}
-                                            className={`cursor-pointer flex items-center justify-between rounded-2xl border-2 p-5 transition-all ${
-                                                selectedMethod?.id === method.id 
-                                                    ? 'border-gold-500 bg-gold-500/5' 
-                                                    : 'border-slate-100 dark:border-white/5'
-                                            }`}
+                                            className={`cursor-pointer flex items-center justify-between rounded-2xl border-2 p-5 transition-all ${selectedMethod?.id === method.id
+                                                ? 'border-gold-500 bg-gold-500/5'
+                                                : 'border-slate-100 dark:border-white/5'
+                                                }`}
                                         >
                                             <div className="flex items-center gap-4">
                                                 <div className="h-12 w-12 rounded-2xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-white/5 flex items-center justify-center shadow-sm">
@@ -450,17 +446,16 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
                                             </div>
                                             <div className="grid gap-3 pl-13">
                                                 {individualShipping[item.id]?.methods.map((method, idx) => (
-                                                    <div 
+                                                    <div
                                                         key={idx}
                                                         onClick={() => setIndividualShipping(prev => ({
                                                             ...prev,
                                                             [item.id]: { ...prev[item.id], selected: method }
                                                         }))}
-                                                        className={`cursor-pointer flex items-center justify-between rounded-xl border p-4 transition-all ${
-                                                            individualShipping[item.id].selected?.id === method.id 
-                                                                ? 'border-gold-500 bg-gold-500/5' 
-                                                                : 'border-slate-100 dark:border-white/5'
-                                                        }`}
+                                                        className={`cursor-pointer flex items-center justify-between rounded-xl border p-4 transition-all ${individualShipping[item.id].selected?.id === method.id
+                                                            ? 'border-gold-500 bg-gold-500/5'
+                                                            : 'border-slate-100 dark:border-white/5'
+                                                            }`}
                                                     >
                                                         <span className="text-[10px] font-bold">{method.name}</span>
                                                         <span className="text-[10px] font-bold">R$ {method.price.toFixed(2).replace('.', ',')}</span>
@@ -482,12 +477,12 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
                     <div className="space-y-4">
                         <div className="flex justify-between text-slate-500"><span>Subtotal</span><span>R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></div>
                         <div className="flex justify-between text-slate-500"><span>Frete</span><span>R$ {totalShipping.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></div>
-                        <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex justify-between text-2xl font-black">
+                        <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex flex-col justify-between text-2xl font-black">
                             <span>Total</span>
-                            <span className="text-gold-600">R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            <span className="text-gold-600 text-center">R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                         </div>
                     </div>
-                    <button 
+                    <button
                         onClick={() => setStep(3)}
                         disabled={!selectedAddress || (shippingMode === 'ensemble' ? !selectedMethod : Object.values(individualShipping).some(s => !s.selected))}
                         className="mt-8 w-full flex items-center justify-center gap-3 rounded-full bg-gold-500 py-4 text-sm font-bold text-neutral-950 shadow-lg disabled:opacity-50"
@@ -552,12 +547,12 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
                     <div className="space-y-4">
                         <div className="flex justify-between text-slate-500"><span>Subtotal</span><span>R$ {subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></div>
                         <div className="flex justify-between text-slate-500"><span>Frete</span><span>R$ {totalShipping.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></div>
-                        <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex justify-between text-3xl font-black">
+                        <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex flex-col justify-between text-3xl font-black">
                             <span>Total</span>
-                            <span className="text-gold-600">R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            <span className="text-gold-600 text-center">R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                         </div>
                     </div>
-                    <button 
+                    <button
                         onClick={handleCheckout}
                         disabled={processing}
                         className="mt-8 w-full flex items-center justify-center gap-3 rounded-full bg-slate-900 dark:bg-white py-5 text-sm font-bold text-white dark:text-neutral-950 shadow-2xl transition-all hover:scale-[1.02] active:scale-95"

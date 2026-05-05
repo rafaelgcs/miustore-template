@@ -14,12 +14,12 @@ class ShippingSettingController extends Controller
         $settings = ShippingSetting::all();
         
         // Ensure default providers exist
-        $providers = ['melhor_envio', 'correios', 'frenet'];
+        $providers = ['general', 'melhor_envio', 'correios', 'frenet'];
         foreach ($providers as $provider) {
             if (!$settings->where('provider', $provider)->first()) {
                 ShippingSetting::create([
                     'provider' => $provider,
-                    'is_enabled' => false,
+                    'is_enabled' => $provider === 'general',
                     'config' => $this->getDefaultConfig($provider)
                 ]);
             }
@@ -45,6 +45,21 @@ class ShippingSettingController extends Controller
     private function getDefaultConfig($provider)
     {
         switch ($provider) {
+            case 'general':
+                return [
+                    'origin_address' => [
+                        'street' => '',
+                        'number' => '',
+                        'complement' => '',
+                        'neighborhood' => '',
+                        'city' => '',
+                        'state' => '',
+                        'zip' => '',
+                    ],
+                    'allow_pickup' => true,
+                    'pickup_cities' => '',
+                    'pickup_states' => '',
+                ];
             case 'melhor_envio':
                 return ['token' => ''];
             case 'correios':

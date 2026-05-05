@@ -62,6 +62,8 @@ class ProductController extends Controller
             'images.*.sort_order' => 'integer',
             'size_guide' => 'nullable|string',
             'shipping_methods' => 'nullable|array',
+            'origin_zip' => 'nullable|string|max:10',
+            'allow_pickup' => 'boolean',
             'variants' => 'nullable|array',
             'variants.*.attributes' => 'required|array',
             'variants.*.price' => 'nullable|numeric|min:0',
@@ -89,6 +91,8 @@ class ProductController extends Controller
             'meta_keywords' => $data['meta_keywords'] ?? null,
             'size_guide' => $data['size_guide'] ?? null,
             'shipping_methods' => $data['shipping_methods'] ?? [],
+            'origin_zip' => $data['origin_zip'] ?? null,
+            'allow_pickup' => $request->boolean('allow_pickup'),
         ]);
 
         // Sync images
@@ -171,6 +175,8 @@ class ProductController extends Controller
             'images.*.sort_order' => 'integer',
             'size_guide' => 'nullable|string',
             'shipping_methods' => 'nullable|array',
+            'origin_zip' => 'nullable|string|max:10',
+            'allow_pickup' => 'boolean',
             'variants' => 'nullable|array',
             'variants.*.attributes' => 'required|array',
             'variants.*.price' => 'nullable|numeric|min:0',
@@ -201,6 +207,8 @@ class ProductController extends Controller
             'meta_keywords' => $data['meta_keywords'] ?? null,
             'size_guide' => $data['size_guide'] ?? null,
             'shipping_methods' => $data['shipping_methods'] ?? [],
+            'origin_zip' => $data['origin_zip'] ?? null,
+            'allow_pickup' => $request->boolean('allow_pickup'),
         ]);
 
         // Sync images

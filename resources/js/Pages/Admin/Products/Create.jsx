@@ -49,6 +49,8 @@ export default function Create({ categories, availableShippingMethods }) {
         images: [],
         size_guide: '',
         shipping_methods: [],
+        origin_zip: '',
+        allow_pickup: true,
         variants: [],
     });
 
@@ -629,6 +631,36 @@ export default function Create({ categories, availableShippingMethods }) {
                                                         Habilite ou desabilite métodos de entrega específicos para este produto.
                                                     </p>
                                                 </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid gap-6 md:grid-cols-2 mb-8">
+                                            <div className="space-y-2">
+                                                <label className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300">
+                                                    <Hash className="h-4 w-4 text-gold-500" />
+                                                    CEP de Origem Específico (Opcional)
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={data.origin_zip}
+                                                    onChange={(e) => setData('origin_zip', e.target.value)}
+                                                    placeholder="00000-000"
+                                                    className="w-full rounded-2xl border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
+                                                />
+                                                <p className="text-[10px] text-slate-400">Se deixado em branco, será usado o CEP padrão da loja.</p>
+                                            </div>
+
+                                            <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-white/5">
+                                                <input
+                                                    type="checkbox"
+                                                    id="allow_pickup"
+                                                    checked={data.allow_pickup}
+                                                    onChange={(e) => setData('allow_pickup', e.target.checked)}
+                                                    className="h-5 w-5 rounded border-slate-300 text-gold-500 focus:ring-gold-500"
+                                                />
+                                                <label htmlFor="allow_pickup" className="text-sm font-bold text-slate-700 dark:text-slate-300">
+                                                    Permitir Retirada no Local
+                                                </label>
                                             </div>
                                         </div>
 

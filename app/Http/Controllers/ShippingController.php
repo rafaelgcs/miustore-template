@@ -55,7 +55,10 @@ class ShippingController extends Controller
             return response()->json(['message' => 'Nenhum item para calcular.'], 422);
         }
 
-        $methods = $this->shippingService->calculateForCart($items, $cep);
+        $methods = $this->shippingService->calculateForCart($items, $cep, [
+            'city' => $address['localidade'],
+            'state' => $address['uf']
+        ]);
 
         return response()->json([
             'address' => $address,
