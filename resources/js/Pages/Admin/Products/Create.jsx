@@ -25,7 +25,7 @@ import {
     Tag
 } from 'lucide-react';
 
-export default function Create({ categories }) {
+export default function Create({ categories, availableShippingMethods }) {
     const [activeTab, setActiveTab] = useState('general');
 
     const { data, setData, post, processing, errors } = useForm({
@@ -48,6 +48,7 @@ export default function Create({ categories }) {
         meta_keywords: '',
         images: [],
         size_guide: '',
+        shipping_methods: [],
         variants: [],
     });
 
@@ -112,6 +113,7 @@ export default function Create({ categories }) {
         { id: 'inventory', label: 'Estoque & Preço', icon: Package },
         { id: 'variants', label: 'Variações de Preço', icon: Layers },
         { id: 'customization', label: 'Customização', icon: Palette },
+        { id: 'shipping', label: 'Entregas', icon: Truck },
         { id: 'seo', label: 'SEO & Meta', icon: Globe },
     ];
 
@@ -605,6 +607,71 @@ export default function Create({ categories }) {
                                                 placeholder="Tabela de medidas ou instruções detalhadas..."
                                                 className="w-full rounded-[2rem] border-slate-200 bg-slate-50/50 px-6 py-4 text-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
                                             />
+                                        </div>
+                                    </motion.div>
+                                )}
+
+                                {activeTab === 'shipping' && (
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        className="space-y-6"
+                                    >
+                                        <div className="bg-gold-50 dark:bg-gold-500/5 rounded-[2rem] p-6 border border-gold-100 dark:border-gold-500/10 mb-6">
+                                            <div className="flex gap-4">
+                                                <div className="h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-gold-500 text-neutral-950">
+                                                    <Truck className="h-5 w-5" />
+                                                </div>
+                                                <div>
+                                                    <h3 className="font-bold text-slate-900 dark:text-white">Configurações de Entrega</h3>
+                                                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                                                        Habilite ou desabilite métodos de entrega específicos para este produto.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="grid gap-4 sm:grid-cols-2">
+                                            {availableShippingMethods.map((method) => (
+                                                <div 
+                                                    key={method.id}
+                                                    onClick={() => {
+                                                        const current = data.shipping_methods;
+                                                        if (current.includes(method.id)) {
+                                                            setData('shipping_methods', current.filter(id => id !== method.id));
+                                                        } else {
+                                                            setData('shipping_methods', [...current, method.id]);
+                                                        }
+                                                    }}
+                                                    className={`cursor-pointer flex items-center justify-between rounded-2xl border p-5 transition-all ${
+                                                        data.shipping_methods.includes(method.id)
+                                                            ? 'border-gold-500 bg-gold-500/5 shadow-lg shadow-gold-500/10'
+                                                            : 'border-slate-100 bg-slate-50 dark:border-slate-800 dark:bg-white/5'
+                                                    }`}
+                                                >
+                                                    <div>
+                                                        <p className="text-sm font-bold text-slate-900 dark:text-white">{method.name}</p>
+                                                        <p className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">{method.provider}</p>
+                                                    </div>
+                                                    <div className={`h-6 w-11 rounded-full p-1 transition-colors ${
+                                                        data.shipping_methods.includes(method.id) ? 'bg-gold-500' : 'bg-slate-300 dark:bg-slate-700'
+                                                    }`}>
+                                                        <div className={`h-4 w-4 rounded-full bg-white transition-transform ${
+                                                            data.shipping_methods.includes(method.id) ? 'translate-x-5' : 'translate-x-0'
+                                                        }`} />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        <div className="mt-8 p-6 rounded-2xl bg-blue-50 dark:bg-blue-500/5 border border-blue-100 dark:border-blue-500/10">
+                                            <div className="flex gap-4">
+                                                <Info className="h-5 w-5 text-blue-500 flex-shrink-0" />
+                                                <p className="text-xs text-blue-600 dark:text-blue-400 leading-relaxed">
+                                                    <strong>Nota:</strong> Se nenhum método for selecionado, todos os métodos habilitados globalmente serão permitidos para este produto. Caso selecione um ou mais, apenas os selecionados serão mostrados se este produto estiver no carrinho.
+                                                </p>
+                                            </div>
                                         </div>
                                     </motion.div>
                                 )}

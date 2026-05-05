@@ -19,6 +19,15 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'subtotal' => 'required|numeric',
+            'shipping_amount' => 'nullable|numeric',
+            'shipping_method' => 'nullable|string',
+            'shipping_mode' => 'nullable|string',
+            'individual_shipping' => 'nullable|array',
+            'address_id' => 'required|exists:user_addresses,id',
+        ]);
+
         $user = auth()->user();
         $cartItems = CartItem::where('user_id', $user->id)->with(['product.variants'])->get();
 
@@ -26,19 +35,27 @@ class OrderController extends Controller
             return redirect()->route('cart.index')->with('error', 'Seu carrinho está vazio.');
         }
 
-        return DB::transaction(function () use ($user, $cartItems) {
-            // Calculate total amount
-            $subtotal = $cartItems->reduce(function ($acc, $item) {
-                return $acc + ($item->final_price * $item->quantity);
-            }, 0);
+        return DB::transaction(function () use ($user, $cartItems, $request) {
+            $subtotal = $request->subtotal;
             
-            $shipping = $subtotal > 500 ? 0 : 25.00;
+            if ($request->shipping_mode === 'individual') {
+                $shipping = collect($request->individual_shipping)->sum('price');
+            } else {
+                $shipping = $request->shipping_amount;
+            }
+
             $total = $subtotal + $shipping;
 
             // Create Order
             $order = Order::create([
                 'user_id' => $user->id,
                 'status' => 'pending',
+                'subtotal' => $subtotal,
+                'shipping_amount' => $shipping,
+                'shipping_method' => $request->shipping_method,
+                'shipping_mode' => $request->shipping_mode ?? 'ensemble',
+                'individual_shipping' => $request->individual_shipping,
+                'address_id' => $request->address_id,
                 'total_amount' => $total,
             ]);
 

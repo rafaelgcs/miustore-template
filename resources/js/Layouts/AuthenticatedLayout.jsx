@@ -4,7 +4,8 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import ThemeToggle from '@/Components/ThemeToggle';
 import { Link, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     LayoutDashboard,
     ShoppingBag,
@@ -24,6 +25,13 @@ import {
     Layers,
     Tag,
     Ticket,
+    Truck,
+    MapPin,
+    ChevronDown,
+    ChevronRight,
+    Search,
+    Wrench,
+    Globe
 } from 'lucide-react';
 
 export default function AuthenticatedLayout({ header, children }) {
@@ -34,33 +42,98 @@ export default function AuthenticatedLayout({ header, children }) {
     const user = auth.user;
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+    const [openSubMenus, setOpenSubMenus] = useState({});
 
-    const adminLinks = [
-        { name: 'Visão Geral', href: route('admin.dashboard'), icon: LayoutDashboard, active: route().current('admin.dashboard') },
-        { name: 'Pedidos', href: route('admin.orders.index'), icon: ShoppingBag, active: route().current('admin.orders.*') },
-        { name: 'Produtos', href: route('admin.products.index'), icon: ShoppingBag, active: route().current('admin.products.*') },
-        { name: 'Banners', href: route('admin.carousel.index'), icon: ImageIcon, active: route().current('admin.carousel.*') },
-        { name: 'Página Inicial', href: route('admin.home-settings.edit'), icon: Layout, active: route().current('admin.home-settings.*') },
-        { name: 'Campanhas', href: route('admin.campaigns.index'), icon: Megaphone, active: route().current('admin.campaigns.*') },
-        { name: 'Navegação', href: route('admin.navigation.index'), icon: CheckCircle, active: route().current('admin.navigation.*') },
-        { name: 'Biblioteca', href: route('admin.media.index'), icon: ImageIcon, active: route().current('admin.media.*') },
-        { name: 'Categorias', href: route('admin.categories.index'), icon: Folder, active: route().current('admin.categories.*') },
-        { name: 'Coleções', href: route('admin.collections.index'), icon: Layers, active: route().current('admin.collections.*') },
-        { name: 'Promoções', href: route('admin.promotions.index'), icon: Tag, active: route().current('admin.promotions.*') },
-        { name: 'Cupons', href: route('admin.coupons.index'), icon: Ticket, active: route().current('admin.coupons.*') },
-        { name: 'Notificações', href: route('admin.notifications'), icon: Bell, active: route().current('admin.notifications'), badge: notifications.unread_count },
-        { name: 'SEO', href: route('admin.seo.index'), icon: Settings, active: route().current('admin.seo.*') },
+    const toggleSubMenu = (name) => {
+        setOpenSubMenus(prev => ({
+            ...prev,
+            [name]: !prev[name]
+        }));
+    };
+
+    const adminSections = [
+        {
+            title: 'Principal',
+            links: [
+                { name: 'Visão Geral', href: route('admin.dashboard'), icon: LayoutDashboard, active: route().current('admin.dashboard') },
+                { name: 'Pedidos', href: route('admin.orders.index'), icon: ShoppingBag, active: route().current('admin.orders.*') },
+                { name: 'Notificações', href: route('admin.notifications'), icon: Bell, active: route().current('admin.notifications'), badge: notifications.unread_count },
+            ]
+        },
+        {
+            title: 'Catálogo',
+            links: [
+                { name: 'Produtos', href: route('admin.products.index'), icon: Package, active: route().current('admin.products.*') },
+                { name: 'Categorias', href: route('admin.categories.index'), icon: Folder, active: route().current('admin.categories.*') },
+                { name: 'Coleções', href: route('admin.collections.index'), icon: Layers, active: route().current('admin.collections.*') },
+                { name: 'Biblioteca', href: route('admin.media.index'), icon: ImageIcon, active: route().current('admin.media.*') },
+            ]
+        },
+        {
+            title: 'Marketing',
+            links: [
+                { name: 'Banners', href: route('admin.carousel.index'), icon: ImageIcon, active: route().current('admin.carousel.*') },
+                { name: 'Campanhas', href: route('admin.campaigns.index'), icon: Megaphone, active: route().current('admin.campaigns.*') },
+                { name: 'Promoções', href: route('admin.promotions.index'), icon: Tag, active: route().current('admin.promotions.*') },
+                { name: 'Cupons', href: route('admin.coupons.index'), icon: Ticket, active: route().current('admin.coupons.*') },
+            ]
+        },
+        {
+            title: 'Logística',
+            links: [
+                { 
+                    name: 'Entregas', 
+                    icon: Truck, 
+                    active: route().current('admin.shipping.*'),
+                    subLinks: [
+                        { name: 'Configurações', href: route('admin.shipping.settings.index'), active: route().current('admin.shipping.settings.*') },
+                        { name: 'Gerenciamento', href: route('admin.shipping.management.index'), active: route().current('admin.shipping.management.*') },
+                    ]
+                },
+            ]
+        },
+        {
+            title: 'Customização',
+            links: [
+                { name: 'Página Inicial', href: route('admin.home-settings.edit'), icon: Layout, active: route().current('admin.home-settings.*') },
+                { name: 'Navegação', href: route('admin.navigation.index'), icon: CheckCircle, active: route().current('admin.navigation.*') },
+                { name: 'SEO', href: route('admin.seo.index'), icon: Globe, active: route().current('admin.seo.*') },
+            ]
+        }
     ];
 
-    const clientLinks = [
-        { name: 'Ir para a Loja', href: route('home'), icon: ShoppingBag, active: route().current('home') },
-        { name: 'Meu Painel', href: route('client.dashboard'), icon: Package, active: route().current('client.dashboard') },
-        { name: 'Meus Pedidos', href: route('client.orders'), icon: ShoppingBag, active: route().current('client.orders') },
-        { name: 'Favoritos', href: route('client.favorites'), icon: Heart, active: route().current('client.favorites') },
-        { name: 'Perfil', href: route('profile.edit'), icon: User, active: route().current('profile.edit') },
+    const clientSections = [
+        {
+            title: 'Minha Conta',
+            links: [
+                { name: 'Meu Painel', href: route('client.dashboard'), icon: LayoutDashboard, active: route().current('client.dashboard') },
+                { name: 'Meus Pedidos', href: route('client.orders'), icon: ShoppingBag, active: route().current('client.orders') },
+                { name: 'Endereços', href: route('client.addresses.index'), icon: MapPin, active: route().current('client.addresses.*') },
+                { name: 'Favoritos', href: route('client.favorites'), icon: Heart, active: route().current('client.favorites') },
+                { name: 'Perfil', href: route('profile.edit'), icon: User, active: route().current('profile.edit') },
+            ]
+        },
+        {
+            title: 'Loja',
+            links: [
+                { name: 'Ir para a Loja', href: route('home'), icon: ShoppingBag, active: route().current('home') },
+            ]
+        }
     ];
 
-    const links = user.is_admin ? adminLinks : clientLinks;
+    const sections = user.is_admin ? adminSections : clientSections;
+
+    useEffect(() => {
+        const initialOpen = {};
+        sections.forEach(section => {
+            section.links.forEach(link => {
+                if (link.subLinks && link.active) {
+                    initialOpen[link.name] = true;
+                }
+            });
+        });
+        setOpenSubMenus(initialOpen);
+    }, []);
 
     return (
         <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-neutral-950 dark:text-slate-100">
@@ -161,20 +234,48 @@ export default function AuthenticatedLayout({ header, children }) {
 
                 <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' md:hidden overflow-y-auto max-h-[80vh]'}>
                     <div className="space-y-1 border-t border-slate-200/80 bg-white/95 px-4 py-3 dark:border-slate-800 dark:bg-slate-950/95">
-                        {links.map((link) => (
-                            <ResponsiveNavLink key={link.name} href={link.href} active={link.active}>
-                                {link.name}
-                            </ResponsiveNavLink>
+                        {sections.map((section) => (
+                            <div key={section.title} className="py-2">
+                                <div className="px-3 text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">{section.title}</div>
+                                {section.links.map((link) => (
+                                    <div key={link.name}>
+                                        {link.subLinks ? (
+                                            <div className="space-y-1">
+                                                <button
+                                                    onClick={() => toggleSubMenu(link.name)}
+                                                    className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm font-medium transition ${link.active ? 'bg-gold-50 text-gold-700' : 'text-slate-600 hover:bg-slate-50'}`}
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <link.icon className="h-4 w-4" />
+                                                        {link.name}
+                                                    </div>
+                                                    {openSubMenus[link.name] ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                                                </button>
+                                                {openSubMenus[link.name] && (
+                                                    <div className="pl-9 space-y-1">
+                                                        {link.subLinks.map(sub => (
+                                                            <ResponsiveNavLink key={sub.name} href={sub.href} active={sub.active}>
+                                                                {sub.name}
+                                                            </ResponsiveNavLink>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <ResponsiveNavLink href={link.href} active={link.active}>
+                                                <div className="flex items-center gap-3">
+                                                    <link.icon className="h-4 w-4" />
+                                                    {link.name}
+                                                </div>
+                                            </ResponsiveNavLink>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
                         ))}
-                        <ResponsiveNavLink href={route('cart.index')} active={route().current('cart.index')}>
-                            Carrinho ({usePage().props.cart.count})
-                        </ResponsiveNavLink>
                         <ResponsiveNavLink method="post" href={route('logout')} as="button">
                             Desconectar
                         </ResponsiveNavLink>
-                    </div>
-                    <div className="border-t border-slate-200/80 bg-white/95 px-4 py-4 dark:border-slate-800 dark:bg-slate-950/95">
-                        <ThemeToggle />
                     </div>
                 </div>
             </nav>
@@ -189,7 +290,7 @@ export default function AuthenticatedLayout({ header, children }) {
 
             <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
                 <div className="grid gap-6 xl:grid-cols-[280px_minmax(0,1fr)]">
-                    <aside className="hidden rounded-[2rem] border border-slate-200/80 bg-white/90 p-6 shadow-[0_30px_100px_-60px_rgba(15,23,42,0.5)] backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90 dark:shadow-none xl:block xl:sticky xl:top-24 xl:h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
+                    <aside className="hidden rounded-[2.5rem] border border-slate-200/80 bg-white/90 p-6 shadow-[0_30px_100px_-60px_rgba(15,23,42,0.5)] backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90 dark:shadow-none xl:block xl:sticky xl:top-24 xl:h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
                         <div className="flex items-center gap-3 pb-6 border-b border-slate-200/70 dark:border-slate-800 sticky top-0 bg-white/90 dark:bg-slate-950/90 z-10">
                             <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20">
                                 {user.is_admin ? 'R' : user.name.charAt(0).toUpperCase()}
@@ -204,28 +305,79 @@ export default function AuthenticatedLayout({ header, children }) {
                             </div>
                         </div>
 
-                        <nav className="mt-6 space-y-2">
-                            {links.map((link) => {
-                                const Icon = link.icon;
-                                return (
-                                    <Link
-                                        key={link.name}
-                                        href={link.href}
-                                        className={`flex items-center gap-3 rounded-3xl border px-4 py-3 text-sm font-semibold transition ${link.active
-                                            ? 'border-gold-100 bg-gold-50 text-gold-700 shadow-sm shadow-gold-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100'
-                                            : 'border-slate-200 bg-white text-slate-700 hover:border-gold-200 hover:bg-gold-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200'
-                                            }`}
-                                    >
-                                        <Icon className="h-5 w-5" />
-                                        <span className="flex-1">{link.name}</span>
-                                        {link.badge > 0 && (
-                                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gold-500 text-[10px] font-bold text-neutral-950 shadow-lg shadow-gold-500/20">
-                                                {link.badge}
-                                            </span>
-                                        )}
-                                    </Link>
-                                );
-                            })}
+                        <nav className="mt-6 space-y-6">
+                            {sections.map((section) => (
+                                <div key={section.title} className="space-y-3">
+                                    <h4 className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
+                                        {section.title}
+                                    </h4>
+                                    <div className="space-y-1">
+                                        {section.links.map((link) => {
+                                            const Icon = link.icon;
+                                            const isExpanded = openSubMenus[link.name];
+
+                                            return (
+                                                <div key={link.name} className="space-y-1">
+                                                    {link.subLinks ? (
+                                                        <>
+                                                            <button
+                                                                onClick={() => toggleSubMenu(link.name)}
+                                                                className={`flex w-full items-center gap-3 rounded-3xl border px-4 py-3 text-sm font-semibold transition ${link.active
+                                                                    ? 'border-gold-100 bg-gold-50 text-gold-700 shadow-sm shadow-gold-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100'
+                                                                    : 'border-slate-200 bg-white text-slate-700 hover:border-gold-200 hover:bg-gold-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200'
+                                                                    }`}
+                                                            >
+                                                                <Icon className="h-5 w-5" />
+                                                                <span className="flex-1 text-left">{link.name}</span>
+                                                                {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                                                            </button>
+                                                            <AnimatePresence>
+                                                                {isExpanded && (
+                                                                    <motion.div
+                                                                        initial={{ height: 0, opacity: 0 }}
+                                                                        animate={{ height: 'auto', opacity: 1 }}
+                                                                        exit={{ height: 0, opacity: 0 }}
+                                                                        className="overflow-hidden pl-11 space-y-1"
+                                                                    >
+                                                                        {link.subLinks.map(sub => (
+                                                                            <Link
+                                                                                key={sub.name}
+                                                                                href={sub.href}
+                                                                                className={`block rounded-2xl py-2 px-4 text-xs font-bold transition ${sub.active
+                                                                                    ? 'text-gold-600 dark:text-gold-400'
+                                                                                    : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                                                                                    }`}
+                                                                            >
+                                                                                {sub.name}
+                                                                            </Link>
+                                                                        ))}
+                                                                    </motion.div>
+                                                                )}
+                                                            </AnimatePresence>
+                                                        </>
+                                                    ) : (
+                                                        <Link
+                                                            href={link.href}
+                                                            className={`flex items-center gap-3 rounded-3xl border px-4 py-3 text-sm font-semibold transition ${link.active
+                                                                ? 'border-gold-100 bg-gold-50 text-gold-700 shadow-sm shadow-gold-200 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100'
+                                                                : 'border-slate-200 bg-white text-slate-700 hover:border-gold-200 hover:bg-gold-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200'
+                                                                }`}
+                                                        >
+                                                            <Icon className="h-5 w-5" />
+                                                            <span className="flex-1 text-left">{link.name}</span>
+                                                            {link.badge > 0 && (
+                                                                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gold-500 text-[10px] font-bold text-neutral-950 shadow-lg shadow-gold-500/20">
+                                                                    {link.badge}
+                                                                </span>
+                                                            )}
+                                                        </Link>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            ))}
                         </nav>
 
                         <div className="mt-8 border-t border-slate-200/70 pt-5 dark:border-slate-800 sticky bottom-0 bg-white/90 dark:bg-slate-950/90 z-10">

@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CollectionController;
 use App\Http\Controllers\Admin\PromotionController;
 use App\Http\Controllers\Admin\CouponController;
+use App\Http\Controllers\Admin\ShippingSettingController;
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
 use App\Http\Controllers\ShippingController;
 use App\Http\Controllers\ProductReviewController;
@@ -72,6 +73,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/home-settings', [HomeSettingController::class, 'edit'])->name('home-settings.edit');
         Route::put('/home-settings', [HomeSettingController::class, 'update'])->name('home-settings.update');
         Route::resource('navigation', NavigationMenuController::class)->except(['show']);
+        // Shipping
+        Route::prefix('shipping')->name('shipping.')->group(function () {
+            Route::get('/settings', [ShippingSettingController::class, 'index'])->name('settings.index');
+            Route::put('/settings/{setting}', [ShippingSettingController::class, 'update'])->name('settings.update');
+            Route::get('/management', [\App\Http\Controllers\Admin\ShippingManagementController::class, 'index'])->name('management.index');
+        });
 
         // Media Library
         Route::get('/media', [MediaController::class, 'index'])->name('media.index');
@@ -85,11 +92,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Client Routes
     Route::prefix('client')->name('client.')->group(function () {
         Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/orders', [ClientDashboardController::class, 'orders'])->name('orders');
+        
+        // Orders
+        Route::get('/orders', [\App\Http\Controllers\Client\OrderController::class, 'index'])->name('orders');
         Route::post('/orders', [\App\Http\Controllers\Client\OrderController::class, 'store'])->name('orders.store');
         Route::get('/orders/success/{order}', [\App\Http\Controllers\Client\OrderController::class, 'success'])->name('orders.success');
+
+        // Favorites
         Route::get('/favorites', [ClientDashboardController::class, 'favorites'])->name('favorites');
         Route::post('/favorites/{product:id}', [ClientDashboardController::class, 'toggleFavorite'])->name('favorites.toggle');
+
+        // Addresses
+        Route::get('/addresses', [\App\Http\Controllers\Client\UserAddressController::class, 'index'])->name('addresses.index');
+        Route::post('/addresses', [\App\Http\Controllers\Client\UserAddressController::class, 'store'])->name('addresses.store');
+        Route::put('/addresses/{userAddress}', [\App\Http\Controllers\Client\UserAddressController::class, 'update'])->name('addresses.update');
+        Route::delete('/addresses/{userAddress}', [\App\Http\Controllers\Client\UserAddressController::class, 'destroy'])->name('addresses.destroy');
+        Route::post('/addresses/{userAddress}/default', [\App\Http\Controllers\Client\UserAddressController::class, 'setDefault'])->name('addresses.set-default');
+
         Route::get('/cart', function() { return redirect()->route('cart.index'); })->name('cart');
     });
 

@@ -25,12 +25,14 @@ class Product extends Model
         'meta_description',
         'meta_keywords',
         'size_guide',
+        'shipping_methods',
     ];
-
+    
     protected $casts = [
         'available_sizes' => 'array',
         'available_colors' => 'array',
         'customization_options' => 'array',
+        'shipping_methods' => 'array',
     ];
 
     public function getRouteKeyName()

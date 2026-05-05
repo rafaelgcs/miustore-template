@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { 
     Heart, 
@@ -56,7 +56,7 @@ const Accordion = ({ title, children, defaultOpen = false }) => {
     );
 };
 
-export default function ProductShow({ product, isFavorited, relatedProducts = [] }) {
+export default function ProductShow({ product, isFavorited, relatedProducts = [], defaultAddress = null }) {
     const { post } = useForm();
     const { auth } = usePage().props;
     const isLoggedIn = !!auth?.user;
@@ -66,7 +66,7 @@ export default function ProductShow({ product, isFavorited, relatedProducts = []
     const [activeImage, setActiveImage] = useState(0);
     const [isZooming, setIsZooming] = useState(false);
     const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
-    const [cep, setCep] = useState('');
+    const [cep, setCep] = useState(defaultAddress?.cep || '');
     const [shippingData, setShippingData] = useState(null);
     const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
     const [showSizeGuide, setShowSizeGuide] = useState(false);
@@ -76,6 +76,12 @@ export default function ProductShow({ product, isFavorited, relatedProducts = []
         rating: 5,
         comment: '',
     });
+
+    useEffect(() => {
+        if (defaultAddress?.cep) {
+            handleShipping();
+        }
+    }, []);
 
     const activeVariant = product.variants?.find(v => 
         (v.attributes.size == selectedSize || (!v.attributes.size && !selectedSize)) && 
@@ -87,16 +93,19 @@ export default function ProductShow({ product, isFavorited, relatedProducts = []
     const displaySku = activeVariant?.sku || product.sku;
 
     const handleShipping = async () => {
-        if (!cep) return;
+        const targetCep = cep || defaultAddress?.cep;
+        if (!targetCep) return;
         setIsCalculatingShipping(true);
+        setShippingData(null);
         try {
             const response = await axios.post(route('shipping.calculate'), {
-                cep,
+                cep: targetCep,
                 product_id: product.id
             });
             setShippingData(response.data);
         } catch (error) {
             console.error('Erro ao calcular frete:', error);
+            alert(error.response?.data?.message || 'Erro ao calcular frete.');
         } finally {
             setIsCalculatingShipping(false);
         }

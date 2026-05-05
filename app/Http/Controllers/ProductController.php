@@ -112,10 +112,13 @@ class ProductController extends Controller
             ->get()
             ->each->append(['average_rating', 'reviews_count']);
 
+        $defaultAddress = auth()->check() ? auth()->user()->addresses()->where('is_default', true)->first() : null;
+
         return Inertia::render('Shop/ProductShow', [
             'product' => $product,
             'isFavorited' => $isFavorited,
             'relatedProducts' => $relatedProducts,
+            'defaultAddress' => $defaultAddress,
         ]);
     }
 }

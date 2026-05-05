@@ -5,14 +5,24 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use App\Models\Product;
+use App\Services\ShippingService;
+use App\Models\CartItem;
 
 class ShippingController extends Controller
 {
+    protected $shippingService;
+
+    public function __construct(ShippingService $shippingService)
+    {
+        $this->shippingService = $shippingService;
+    }
+
     public function calculate(Request $request)
     {
         $request->validate([
             'cep' => 'required|string',
-            'product_id' => 'required|exists:products,id',
+            'product_id' => 'nullable|exists:products,id',
+            'cart' => 'nullable|boolean',
         ]);
 
         $cep = str_replace(['-', '.', ' '], '', $request->cep);
@@ -26,28 +36,30 @@ class ShippingController extends Controller
 
         $address = $viaCepResponse->json();
 
-        // 2. Mock Correios Shipping Calculation
-        // In a real scenario, you would call Correios API here.
-        // For demonstration, we'll return fixed values based on distance or just static values.
-        
-        $shippingMethods = [
-            [
-                'name' => 'PAC',
-                'price' => 24.90,
-                'deadline' => 8,
-                'icon' => 'truck'
-            ],
-            [
-                'name' => 'SEDEX',
-                'price' => 48.50,
-                'deadline' => 2,
-                'icon' => 'zap'
-            ]
-        ];
+        // 2. Get items to calculate
+        if ($request->cart) {
+            $query = CartItem::with(['product.variants']);
+            if (auth()->check()) {
+                $items = $query->where('user_id', auth()->id())->get();
+            } else {
+                $items = $query->where('session_id', session()->getId())->get();
+            }
+        } else {
+            $product = Product::with('variants')->find($request->product_id);
+            $items = [
+                (object) ['product' => $product, 'quantity' => 1]
+            ];
+        }
+
+        if (count($items) === 0) {
+            return response()->json(['message' => 'Nenhum item para calcular.'], 422);
+        }
+
+        $methods = $this->shippingService->calculateForCart($items, $cep);
 
         return response()->json([
             'address' => $address,
-            'methods' => $shippingMethods
+            'methods' => $methods
         ]);
     }
 }

@@ -13,8 +13,11 @@ class CartController extends Controller
     public function index()
     {
         $cartItems = $this->getCartItems();
+        $addresses = auth()->check() ? auth()->user()->addresses()->orderBy('is_default', 'desc')->get() : [];
+        
         return Inertia::render('Client/Cart', [
             'cartItems' => $cartItems,
+            'addresses' => $addresses,
         ]);
     }
 

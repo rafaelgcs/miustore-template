@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Response;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\ShippingService;
 
 class ProductController extends Controller
 {
@@ -31,6 +32,7 @@ class ProductController extends Controller
 
         return Inertia::render('Admin/Products/Create', [
             'categories' => $categories,
+            'availableShippingMethods' => ShippingService::getAllAvailableMethods(),
         ]);
     }
 
@@ -59,6 +61,7 @@ class ProductController extends Controller
             'images.*.is_main' => 'boolean',
             'images.*.sort_order' => 'integer',
             'size_guide' => 'nullable|string',
+            'shipping_methods' => 'nullable|array',
             'variants' => 'nullable|array',
             'variants.*.attributes' => 'required|array',
             'variants.*.price' => 'nullable|numeric|min:0',
@@ -85,6 +88,7 @@ class ProductController extends Controller
             'meta_description' => $data['meta_description'] ?? null,
             'meta_keywords' => $data['meta_keywords'] ?? null,
             'size_guide' => $data['size_guide'] ?? null,
+            'shipping_methods' => $data['shipping_methods'] ?? [],
         ]);
 
         // Sync images
@@ -137,6 +141,7 @@ class ProductController extends Controller
         return Inertia::render('Admin/Products/Edit', [
             'product' => $product,
             'categories' => $categories,
+            'availableShippingMethods' => ShippingService::getAllAvailableMethods(),
         ]);
     }
 
@@ -165,6 +170,7 @@ class ProductController extends Controller
             'images.*.is_main' => 'boolean',
             'images.*.sort_order' => 'integer',
             'size_guide' => 'nullable|string',
+            'shipping_methods' => 'nullable|array',
             'variants' => 'nullable|array',
             'variants.*.attributes' => 'required|array',
             'variants.*.price' => 'nullable|numeric|min:0',
@@ -194,6 +200,7 @@ class ProductController extends Controller
             'meta_description' => $data['meta_description'] ?? null,
             'meta_keywords' => $data['meta_keywords'] ?? null,
             'size_guide' => $data['size_guide'] ?? null,
+            'shipping_methods' => $data['shipping_methods'] ?? [],
         ]);
 
         // Sync images
