@@ -8,6 +8,7 @@ import ThemeProvider from './Components/ThemeProvider';
 import SeoHead from './Components/SeoHead';
 
 import { Toaster } from 'sonner';
+import CartFloatingBar from './Components/CartFloatingBar';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -16,6 +17,7 @@ const GlobalLayout = ({ children }) => (
         <SeoHead />
         <Toaster richColors closeButton position="top-right" />
         {children}
+        <CartFloatingBar />
     </ThemeProvider>
 );
 
