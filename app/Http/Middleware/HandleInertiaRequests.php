@@ -83,6 +83,7 @@ class HandleInertiaRequests extends Middleware
                 'error' => $request->session()->get('error'),
             ],
             'primaryColor' => HomeSetting::current()->primary_color ?? 'gold',
+            'footer_settings' => HomeSetting::current()->footer ?? HomeSetting::defaultFooter(),
         ];
     }
 }

@@ -96,3 +96,14 @@
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #334155;
 }
+
+/* Bottom padding when cart floating bar is active */
+body.has-floating-cart {
+    padding-bottom: 96px;
+    transition: padding-bottom 0.2s ease-in-out;
+}
+@media (min-width: 640px) {
+    body.has-floating-cart {
+        padding-bottom: 120px;
+    }
+}

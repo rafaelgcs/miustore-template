@@ -31,6 +31,8 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $sessionId = session()->getId();
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
@@ -46,6 +48,12 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
+
+        \App\Models\CartItem::mergeGuestCartToUser($sessionId, $user->id);
+ 
+        if ($request->has('redirect_url')) {
+            return redirect($request->input('redirect_url'));
+        }
 
         return redirect(route('dashboard', absolute: false));
     }

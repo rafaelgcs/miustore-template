@@ -13,7 +13,10 @@ import {
     Zap,
     Globe,
     MapPin,
-    Home
+    Home,
+    Plus,
+    Trash2,
+    Edit2
 } from 'lucide-react';
 
 export default function Index({ settings }) {
@@ -61,6 +64,68 @@ function ShippingProviderCard({ setting }) {
         is_enabled: setting.is_enabled,
         config: setting.config || {},
     });
+
+    const [showModal, setShowModal] = useState(false);
+    const [editingIndex, setEditingIndex] = useState(null);
+    const [modalData, setModalData] = useState({
+        id: '',
+        name: '',
+        price_mode: 'fixed',
+        fixed_price: 0,
+        deadline: 1,
+        description: '',
+        is_enabled: true
+    });
+
+    const openAddModal = () => {
+        setEditingIndex(null);
+        setModalData({
+            id: 'custom_' + Math.random().toString(36).substring(2, 11),
+            name: '',
+            price_mode: 'fixed',
+            fixed_price: 0,
+            deadline: 1,
+            description: '',
+            is_enabled: true
+        });
+        setShowModal(true);
+    };
+
+    const openEditModal = (method, idx) => {
+        setEditingIndex(idx);
+        setModalData({ ...method });
+        setShowModal(true);
+    };
+
+    const saveModalData = () => {
+        if (!modalData.name.trim()) return;
+
+        const currentMethods = data.config.custom_methods || [];
+        if (editingIndex === null) {
+            setData('config', {
+                ...data.config,
+                custom_methods: [...currentMethods, modalData]
+            });
+        } else {
+            const updated = [...currentMethods];
+            updated[editingIndex] = modalData;
+            setData('config', {
+                ...data.config,
+                custom_methods: updated
+            });
+        }
+        setShowModal(false);
+    };
+
+    const deleteCustomMethod = (idx) => {
+        if (confirm('Tem certeza que deseja excluir esta opção de entrega?')) {
+            const currentMethods = data.config.custom_methods || [];
+            setData('config', {
+                ...data.config,
+                custom_methods: currentMethods.filter((_, i) => i !== idx)
+            });
+        }
+    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -262,6 +327,91 @@ function ShippingProviderCard({ setting }) {
                                             className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
                                         />
                                     </div>
+                            </div>
+                        </div>
+
+                        {/* Opções de Entrega Customizadas */}
+                        <div className="border-t border-slate-100 pt-8 dark:border-white/5 space-y-6">
+                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                                    <div>
+                                        <h4 className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-white">
+                                            <Truck className="h-4 w-4 text-gold-500" />
+                                            Opções de Entrega Customizadas (Ex: Uber Flash, Motoboy)
+                                        </h4>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                            Crie opções de entrega específicas com preço fixo ou a combinar.
+                                        </p>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        onClick={openAddModal}
+                                        className="inline-flex items-center gap-2 rounded-xl bg-gold-500/10 px-4 py-2 text-xs font-bold text-gold-600 transition hover:bg-gold-500/20 dark:text-gold-400"
+                                    >
+                                        <Plus className="h-3.5 w-3.5" />
+                                        Criar Opção de Entrega
+                                    </button>
+                                </div>
+
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    {(data.config.custom_methods || []).map((method, idx) => (
+                                        <div
+                                            key={method.id}
+                                            className={`group relative rounded-2xl border p-4 bg-slate-50/50 dark:bg-white/5 ${
+                                                method.is_enabled ? 'border-gold-500/20' : 'border-slate-200 dark:border-slate-800'
+                                            }`}
+                                        >
+                                            <div className="flex justify-between items-start">
+                                                <div>
+                                                    <span className={`text-[9px] uppercase tracking-wider font-bold ${
+                                                        method.is_enabled ? 'text-green-500' : 'text-slate-400'
+                                                    }`}>
+                                                        {method.is_enabled ? 'Habilitado' : 'Desabilitado'}
+                                                    </span>
+                                                    <h5 className="font-bold text-sm text-slate-900 dark:text-white mt-1">
+                                                        {method.name}
+                                                    </h5>
+                                                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                                        {method.price_mode === 'combine' ? (
+                                                            <span className="font-semibold text-gold-600">A combinar / Calculado na hora</span>
+                                                        ) : (
+                                                            <span className="font-semibold text-slate-900 dark:text-slate-300">
+                                                                R$ {parseFloat(method.fixed_price || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                                                            </span>
+                                                        )}
+                                                        {` • Prazo: ${method.deadline} dia(s)`}
+                                                    </p>
+                                                    {method.description && (
+                                                        <p className="text-[10px] text-slate-400 mt-2 italic line-clamp-2">
+                                                            {method.description}
+                                                        </p>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex gap-2 opacity-80 group-hover:opacity-100 transition-opacity">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => openEditModal(method, idx)}
+                                                        className="p-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 hover:text-gold-500 transition-colors"
+                                                    >
+                                                        <Edit2 className="h-3.5 w-3.5" />
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => deleteCustomMethod(idx)}
+                                                        className="p-1.5 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors"
+                                                    >
+                                                        <Trash2 className="h-3.5 w-3.5" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    {(data.config.custom_methods || []).length === 0 && (
+                                        <div className="col-span-full py-8 text-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 text-slate-500 text-xs">
+                                            Nenhuma opção de entrega customizada configurada.
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -327,6 +477,110 @@ function ShippingProviderCard({ setting }) {
                     </div>
                 </div>
             </form>
+
+            {showModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
+                    <div className="w-full max-w-lg rounded-[2.5rem] border border-slate-200/80 bg-white/90 p-8 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-slate-950/90 text-left">
+                        <h4 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
+                            {editingIndex === null ? 'Nova Opção de Entrega' : 'Editar Opção de Entrega'}
+                        </h4>
+                        
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">Nome da Entrega</label>
+                                <input
+                                    type="text"
+                                    value={modalData.name}
+                                    onChange={(e) => setModalData({ ...modalData, name: e.target.value })}
+                                    placeholder="Ex: Uber Flash, Motoboy Expresso"
+                                    className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                />
+                            </div>
+
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">Tipo de Preço</label>
+                                    <select
+                                        value={modalData.price_mode}
+                                        onChange={(e) => setModalData({ ...modalData, price_mode: e.target.value })}
+                                        className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                    >
+                                        <option value="fixed">Preço Fixo</option>
+                                        <option value="combine">A combinar / Calculado na hora</option>
+                                    </select>
+                                </div>
+
+                                {modalData.price_mode === 'fixed' && (
+                                    <div className="space-y-2">
+                                        <label className="text-xs font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">Valor do Frete (R$)</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value={modalData.fixed_price}
+                                            onChange={(e) => setModalData({ ...modalData, fixed_price: parseFloat(e.target.value) || 0 })}
+                                            className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="grid gap-4 sm:grid-cols-2">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">Prazo Estimado (Dias Úteis)</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={modalData.deadline}
+                                        onChange={(e) => setModalData({ ...modalData, deadline: parseInt(e.target.value) || 0 })}
+                                        className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                    />
+                                </div>
+
+                                <div className="flex items-center gap-3 p-4">
+                                    <input
+                                        type="checkbox"
+                                        id="modal_is_enabled"
+                                        checked={modalData.is_enabled}
+                                        onChange={(e) => setModalData({ ...modalData, is_enabled: e.target.checked })}
+                                        className="h-5 w-5 rounded border-slate-300 text-gold-500 focus:ring-gold-500 animate-pulse"
+                                    />
+                                    <label htmlFor="modal_is_enabled" className="text-sm font-bold text-slate-700 dark:text-slate-300 cursor-pointer">
+                                        Habilitado
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold uppercase tracking-widest text-slate-700 dark:text-slate-300">Descrição / Instruções</label>
+                                <textarea
+                                    value={modalData.description}
+                                    onChange={(e) => setModalData({ ...modalData, description: e.target.value })}
+                                    placeholder="Ex: O valor do envio será calculado no app e cobrado via Pix ou WhatsApp."
+                                    rows={2}
+                                    className="w-full rounded-xl border-slate-200 bg-white px-4 py-2.5 text-sm dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end gap-3 mt-8">
+                            <button
+                                type="button"
+                                onClick={() => setShowModal(false)}
+                                className="px-5 py-2.5 rounded-full border border-slate-200 dark:border-slate-800 text-sm font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900 transition"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="button"
+                                onClick={saveModalData}
+                                className="px-5 py-2.5 rounded-full bg-gold-500 text-neutral-950 text-sm font-bold shadow-lg transition hover:bg-gold-400"
+                            >
+                                Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </motion.div>
     );
 }

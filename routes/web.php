@@ -53,7 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
 
     // Admin Routes
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware('admin')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::resource('products', AdminProductController::class)->except(['show']);
         Route::get('/products/{product}/history', [AdminProductController::class, 'history'])->name('products.history');
@@ -100,6 +100,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/orders', [\App\Http\Controllers\Client\OrderController::class, 'index'])->name('orders');
         Route::post('/orders', [\App\Http\Controllers\Client\OrderController::class, 'store'])->name('orders.store');
         Route::get('/orders/success/{order}', [\App\Http\Controllers\Client\OrderController::class, 'success'])->name('orders.success');
+        Route::get('/orders/{order}', [\App\Http\Controllers\Client\OrderController::class, 'show'])->name('orders.show');
 
         // Favorites
         Route::get('/favorites', [ClientDashboardController::class, 'favorites'])->name('favorites');

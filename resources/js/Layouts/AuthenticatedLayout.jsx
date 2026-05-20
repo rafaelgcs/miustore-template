@@ -121,19 +121,21 @@ export default function AuthenticatedLayout({ header, children }) {
         }
     ];
 
-    const sections = user.is_admin ? adminSections : clientSections;
+    const sections = user?.is_admin ? adminSections : clientSections;
 
     useEffect(() => {
         const initialOpen = {};
-        sections.forEach(section => {
-            section.links.forEach(link => {
-                if (link.subLinks && link.active) {
-                    initialOpen[link.name] = true;
-                }
+        if (sections) {
+            sections.forEach(section => {
+                section.links.forEach(link => {
+                    if (link.subLinks && link.active) {
+                        initialOpen[link.name] = true;
+                    }
+                });
             });
-        });
+        }
         setOpenSubMenus(initialOpen);
-    }, []);
+    }, [user?.is_admin, route().current()]);
 
     return (
         <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 dark:bg-neutral-950 dark:text-slate-100">
@@ -142,14 +144,14 @@ export default function AuthenticatedLayout({ header, children }) {
                     <div className="flex items-center gap-4">
                         <Link href="/" className="flex items-center gap-3">
                             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20">
-                                {user.is_admin ? 'R' : user.name.charAt(0).toUpperCase()}
+                                {user?.is_admin ? 'R' : user?.name?.charAt(0).toUpperCase() || 'G'}
                             </div>
                             <div>
                                 <p className="text-xs uppercase tracking-[0.32em] text-slate-500 dark:text-slate-400">
-                                    {user.is_admin ? 'Admin' : 'Cliente'}
+                                    {user?.is_admin ? 'Admin' : 'Cliente'}
                                 </p>
                                 <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                                    {user.is_admin ? 'Miu Store' : user.name}
+                                    {user?.is_admin ? 'Miu Store' : user?.name || 'Visitante'}
                                 </p>
                             </div>
                         </Link>
@@ -168,7 +170,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                 </span>
                             )}
                         </Link>
-                        {user.is_admin && (
+                        {user?.is_admin && (
                             <Link
                                 href={route('admin.notifications')}
                                 className="relative inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200/80 bg-white/80 text-slate-700 shadow-sm backdrop-blur-xl transition hover:border-gold-300 hover:bg-gold-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-gold-500/50 dark:hover:bg-gold-500/10"
@@ -181,36 +183,45 @@ export default function AuthenticatedLayout({ header, children }) {
                                 )}
                             </Link>
                         )}
-                        <Dropdown>
-                            <Dropdown.Trigger>
-                                <span className="inline-flex rounded-md">
-                                    <button
-                                        type="button"
-                                        className="inline-flex items-center rounded-full border border-slate-200/80 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-xl transition hover:border-gold-300 hover:bg-gold-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-gold-500/50 dark:hover:bg-gold-500/10"
-                                    >
-                                        {user.name}
-
-                                        <svg
-                                            className="-me-0.5 ms-2 h-4 w-4"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 20 20"
-                                            fill="currentColor"
+                        {user ? (
+                            <Dropdown>
+                                <Dropdown.Trigger>
+                                    <span className="inline-flex rounded-md">
+                                        <button
+                                            type="button"
+                                            className="inline-flex items-center rounded-full border border-slate-200/80 bg-white/80 px-4 py-2 text-sm font-medium text-slate-700 shadow-sm backdrop-blur-xl transition hover:border-gold-300 hover:bg-gold-50 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:border-gold-500/50 dark:hover:bg-gold-500/10"
                                         >
-                                            <path
-                                                fillRule="evenodd"
-                                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                clipRule="evenodd"
-                                            />
-                                        </svg>
-                                    </button>
-                                </span>
-                            </Dropdown.Trigger>
+                                            {user.name}
 
-                            <Dropdown.Content>
-                                <Dropdown.Link href={route('profile.edit')}>Perfil</Dropdown.Link>
-                                <Dropdown.Link href={route('logout')} method="post" as="button">Desconectar</Dropdown.Link>
-                            </Dropdown.Content>
-                        </Dropdown>
+                                            <svg
+                                                className="-me-0.5 ms-2 h-4 w-4"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                viewBox="0 0 20 20"
+                                                fill="currentColor"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                    clipRule="evenodd"
+                                                />
+                                            </svg>
+                                        </button>
+                                    </span>
+                                </Dropdown.Trigger>
+
+                                <Dropdown.Content>
+                                    <Dropdown.Link href={route('profile.edit')}>Perfil</Dropdown.Link>
+                                    <Dropdown.Link href={route('logout')} method="post" as="button">Desconectar</Dropdown.Link>
+                                </Dropdown.Content>
+                            </Dropdown>
+                        ) : (
+                            <Link
+                                href={route('login')}
+                                className="inline-flex items-center rounded-full bg-gold-500 px-5 py-2.5 text-sm font-semibold text-neutral-950 shadow-lg shadow-gold-500/20 transition hover:bg-gold-400"
+                            >
+                                Entrar
+                            </Link>
+                        )}
                     </div>
 
                     <div className="-me-2 flex items-center md:hidden">
@@ -273,9 +284,15 @@ export default function AuthenticatedLayout({ header, children }) {
                                 ))}
                             </div>
                         ))}
-                        <ResponsiveNavLink method="post" href={route('logout')} as="button">
-                            Desconectar
-                        </ResponsiveNavLink>
+                        {user ? (
+                            <ResponsiveNavLink method="post" href={route('logout')} as="button">
+                                Desconectar
+                            </ResponsiveNavLink>
+                        ) : (
+                            <ResponsiveNavLink href={route('login')}>
+                                Entrar
+                            </ResponsiveNavLink>
+                        )}
                     </div>
                 </div>
             </nav>
@@ -293,14 +310,14 @@ export default function AuthenticatedLayout({ header, children }) {
                     <aside className="hidden rounded-[2.5rem] border border-slate-200/80 bg-white/90 p-6 shadow-[0_30px_100px_-60px_rgba(15,23,42,0.5)] backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90 dark:shadow-none xl:block xl:sticky xl:top-24 xl:h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar">
                         <div className="flex items-center gap-3 pb-6 border-b border-slate-200/70 dark:border-slate-800 sticky top-0 bg-white/90 dark:bg-slate-950/90 z-10">
                             <div className="flex h-12 w-12 items-center justify-center rounded-3xl bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20">
-                                {user.is_admin ? 'R' : user.name.charAt(0).toUpperCase()}
+                                {user?.is_admin ? 'R' : user?.name?.charAt(0).toUpperCase() || 'G'}
                             </div>
                             <div>
                                 <p className="text-sm font-medium uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">
-                                    {user.is_admin ? 'Administrador' : 'Cliente'}
+                                    {user?.is_admin ? 'Administrador' : 'Cliente'}
                                 </p>
                                 <p className="text-lg font-semibold text-slate-950 dark:text-slate-100">
-                                    {user.name}
+                                    {user?.name || 'Visitante'}
                                 </p>
                             </div>
                         </div>
@@ -381,15 +398,25 @@ export default function AuthenticatedLayout({ header, children }) {
                         </nav>
 
                         <div className="mt-8 border-t border-slate-200/70 pt-5 dark:border-slate-800 sticky bottom-0 bg-white/90 dark:bg-slate-950/90 z-10">
-                            <Link
-                                method="post"
-                                href={route('logout')}
-                                as="button"
-                                className="inline-flex w-full items-center justify-center gap-2 rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-red-300 hover:bg-red-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-red-900/50"
-                            >
-                                <LogOut className="h-5 w-5" />
-                                Sair
-                            </Link>
+                            {user ? (
+                                <Link
+                                    method="post"
+                                    href={route('logout')}
+                                    as="button"
+                                    className="inline-flex w-full items-center justify-center gap-2 rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-red-300 hover:bg-red-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-red-900/50"
+                                >
+                                    <LogOut className="h-5 w-5" />
+                                    Sair
+                                </Link>
+                            ) : (
+                                <Link
+                                    href={route('login')}
+                                    className="inline-flex w-full items-center justify-center gap-2 rounded-3xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-gold-300 hover:bg-gold-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-gold-500/10"
+                                >
+                                    <LogOut className="h-5 w-5" />
+                                    Entrar
+                                </Link>
+                            )}
                         </div>
                     </aside>
 

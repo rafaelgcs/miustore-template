@@ -61,7 +61,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load(['user', 'items.product', 'notifications']);
+        $order->load(['user', 'items.product', 'notifications', 'address']);
 
         // Get unread notifications count
         $unreadNotifications = Notification::where('user_id', auth()->id())

@@ -37,6 +37,11 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function address()
+    {
+        return $this->belongsTo(UserAddress::class, 'address_id');
+    }
+
     public function notifications()
     {
         return $this->hasMany(Notification::class);

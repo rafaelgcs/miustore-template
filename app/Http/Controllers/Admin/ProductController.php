@@ -16,13 +16,35 @@ class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        $products = Product::with('category')
-            ->orderByDesc('created_at')
-            ->paginate(20)
-            ->withQueryString();
+        $search = $request->input('search');
+        $perPage = $request->integer('per_page', 20);
+
+        if (!in_array($perPage, [10, 20, 50, 100])) {
+            $perPage = 20;
+        }
+
+        $query = Product::with('category')
+            ->orderByDesc('created_at');
+
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('sku', 'like', "%{$search}%")
+                  ->orWhere('type', 'like', "%{$search}%")
+                  ->orWhereHas('category', function($catQ) use ($search) {
+                      $catQ->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $products = $query->paginate($perPage)->withQueryString();
 
         return Inertia::render('Admin/Products/Index', [
             'products' => $products,
+            'filters' => [
+                'search' => $search,
+                'per_page' => $perPage,
+            ],
         ]);
     }
 

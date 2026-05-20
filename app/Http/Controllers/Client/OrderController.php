@@ -102,11 +102,26 @@ class OrderController extends Controller
                 'order_id' => $order->id,
                 'type' => 'order_pending',
                 'title' => 'Pedido Recebido #' . $order->id,
-                'message' => 'Recebemos seu pedido! Ele está sendo analisado e em breve será processado.',
+                'message' => 'O pedido foi agendado. Aguarde mensagem no Whatsapp para confirmação e finalizar o pedido.',
             ]);
 
             return redirect()->route('client.orders.success', $order->id);
         });
+    }
+
+    /**
+     * Display a listing of the client's orders.
+     */
+    public function index()
+    {
+        $orders = Order::where('user_id', auth()->id())
+            ->with(['items.product'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return Inertia::render('Client/Orders', [
+            'orders' => $orders,
+        ]);
     }
 
     /**
@@ -123,6 +138,27 @@ class OrderController extends Controller
 
         return Inertia::render('Client/Orders/Success', [
             'order' => $order,
+        ]);
+    }
+
+    /**
+     * Display the specified order details.
+     */
+    public function show(Order $order)
+    {
+        // Security check: ensure the order belongs to the user
+        if ($order->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $order->load(['items.product', 'notifications', 'address']);
+
+        $generalSetting = \App\Models\ShippingSetting::where('provider', 'general')->first();
+        $customShippingMethods = $generalSetting ? ($generalSetting->config['custom_methods'] ?? []) : [];
+
+        return Inertia::render('Client/Orders/Show', [
+            'order' => $order,
+            'customShippingMethods' => $customShippingMethods,
         ]);
     }
 }

@@ -30,6 +30,23 @@ class HomeSettingController extends Controller
             'features.*.title' => 'required|string|max:255',
             'features.*.subtitle' => 'required|string|max:255',
             'features.*.icon' => 'required|string|max:50',
+            'footer' => 'required|array',
+            'footer.brand_name' => 'required|string|max:255',
+            'footer.brand_description' => 'required|string',
+            'footer.social_instagram' => 'nullable|string|max:255',
+            'footer.social_facebook' => 'nullable|string|max:255',
+            'footer.social_twitter' => 'nullable|string|max:255',
+            'footer.cnpj' => 'nullable|string|max:255',
+            'footer.payment_methods' => 'nullable|array',
+            'footer.contact_phone' => 'nullable|string|max:255',
+            'footer.contact_hours' => 'nullable|string|max:255',
+            'footer.contact_email' => 'nullable|string|max:255', // Keep as string for fallback or custom formats if needed
+            'footer.contact_address' => 'nullable|string',
+            'footer.columns' => 'required|array|min:2|max:2',
+            'footer.columns.*.title' => 'required|string|max:255',
+            'footer.columns.*.links' => 'required|array',
+            'footer.columns.*.links.*.name' => 'required|string|max:255',
+            'footer.columns.*.links.*.href' => 'required|string|max:255',
         ]);
 
         HomeSetting::current()->update($validated);

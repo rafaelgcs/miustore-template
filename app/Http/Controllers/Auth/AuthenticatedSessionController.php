@@ -29,9 +29,19 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
+        $sessionId = session()->getId();
+
         $request->authenticate();
 
+        if (Auth::check()) {
+            \App\Models\CartItem::mergeGuestCartToUser($sessionId, Auth::id());
+        }
+
         $request->session()->regenerate();
+ 
+        if ($request->has('redirect_url')) {
+            return redirect($request->input('redirect_url'));
+        }
 
         return redirect()->intended(route('dashboard', absolute: false));
     }

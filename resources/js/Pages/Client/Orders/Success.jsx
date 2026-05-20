@@ -51,8 +51,23 @@ export default function Success({ auth, order }) {
                         transition={{ delay: 0.4 }}
                         className="text-lg text-slate-600 dark:text-slate-400"
                     >
-                        Seu pedido <span className="font-bold text-gold-600 dark:text-gold-400">#{order.id}</span> foi recebido e está em processamento.
+                        Seu pedido <span className="font-bold text-gold-600 dark:text-gold-400">#{order.id}</span> foi agendado. Aguarde mensagem no Whatsapp para confirmação e finalizar o pedido.
                     </motion.p>
+
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.6 }}
+                        className="mt-8 inline-flex items-start gap-3 rounded-3xl border border-green-200 bg-green-50/90 p-5 text-left text-sm text-slate-700 dark:border-green-500/30 dark:bg-green-950/40 dark:text-slate-100"
+                    >
+                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-200 text-green-800 dark:bg-green-500/20 dark:text-green-200">
+                            <Calendar className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <p className="font-semibold text-slate-900 dark:text-white">Atenção</p>
+                            <p>O pedido foi agendado. Em breve você receberá uma mensagem no WhatsApp para confirmar e finalizar o pedido.</p>
+                        </div>
+                    </motion.div>
                 </div>
 
                 <motion.div

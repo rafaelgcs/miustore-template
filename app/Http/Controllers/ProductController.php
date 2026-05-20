@@ -27,8 +27,8 @@ class ProductController extends Controller
             $currentCategory = Category::where('slug', $categorySlug)->first();
         }
 
-        $categories = Category::withCount('products')
-            ->having('products_count', '>', 0)
+        $categories = Category::whereHas('products')
+            ->withCount('products')
             ->orderBy('name')
             ->get();
 

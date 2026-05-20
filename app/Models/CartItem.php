@@ -61,4 +61,37 @@ class CartItem extends Model
     {
         return $this->final_price * $this->quantity;
     }
+
+    /**
+     * Merge guest cart items into the user's cart upon login/registration.
+     */
+    public static function mergeGuestCartToUser($sessionId, $userId)
+    {
+        if (!$sessionId || !$userId) {
+            return;
+        }
+
+        $guestItems = self::where('session_id', $sessionId)->get();
+
+        foreach ($guestItems as $guestItem) {
+            // Find if user already has the same product with the same options
+            $userItem = self::where('user_id', $userId)
+                ->where('product_id', $guestItem->product_id)
+                ->get()
+                ->filter(function ($item) use ($guestItem) {
+                    return $item->options == $guestItem->options;
+                })
+                ->first();
+
+            if ($userItem) {
+                $userItem->increment('quantity', $guestItem->quantity);
+                $guestItem->delete();
+            } else {
+                $guestItem->update([
+                    'user_id' => $userId,
+                    'session_id' => null,
+                ]);
+            }
+        }
+    }
 }

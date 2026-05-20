@@ -1,28 +1,65 @@
-import React, { useState } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import React from 'react';
+import { Head, Link } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
     ArrowLeft, 
     Package, 
     Truck, 
     CheckCircle2, 
     AlertCircle, 
-    User, 
-    Mail, 
     Calendar, 
-    Clock, 
     CreditCard,
     ShoppingBag,
     History,
-    ChevronRight,
-    MapPin
+    MapPin,
+    MessageSquare
 } from 'lucide-react';
 
 export default function OrderShow({ order, customShippingMethods = [] }) {
-    const { data, setData, put, processing, errors } = useForm({
-        status: order.status,
-    });
+    const getStatusStyles = (status) => {
+        const styles = {
+            pending: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200/50 dark:border-amber-500/20',
+            processing: 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 border-blue-200/50 dark:border-blue-500/20',
+            shipped: 'bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400 border-purple-200/50 dark:border-purple-500/20',
+            delivered: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-500/20',
+            cancelled: 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 border-rose-200/50 dark:border-rose-500/20',
+        };
+        return styles[status] || 'bg-slate-50 text-slate-700 dark:bg-slate-500/10 dark:text-slate-400 border-slate-200/50 dark:border-slate-500/20';
+    };
+
+    const getStatusLabel = (status) => {
+        const labels = {
+            pending: 'Aguardando Aprovação',
+            processing: 'Em Processamento',
+            shipped: 'Despachado',
+            delivered: 'Entregue',
+            cancelled: 'Cancelado',
+        };
+        return labels[status] || status;
+    };
+
+    const formatCurrency = (value) => {
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+        }).format(value);
+    };
+
+    const formatDate = (date) => {
+        return new Intl.DateTimeFormat('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+        }).format(new Date(date));
+    };
+
+    const formatTime = (date) => {
+        return new Intl.DateTimeFormat('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit',
+        }).format(new Date(date));
+    };
 
     const getShippingMethodDisplay = () => {
         if (order.shipping_mode === 'individual') {
@@ -63,57 +100,9 @@ export default function OrderShow({ order, customShippingMethods = [] }) {
         return customMethod?.price_mode === 'combine';
     };
 
-    const handleStatusChange = (e) => {
-        const newStatus = e.target.value;
-        setData('status', newStatus);
-        put(route('admin.orders.updateStatus', order.id), {
-            preserveScroll: true,
-        });
-    };
-
-    const getStatusStyles = (status) => {
-        const styles = {
-            pending: 'bg-amber-50 text-amber-700 dark:bg-amber-500/10 dark:text-amber-400 border-amber-200/50 dark:border-amber-500/20',
-            processing: 'bg-blue-50 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400 border-blue-200/50 dark:border-blue-500/20',
-            shipped: 'bg-purple-50 text-purple-700 dark:bg-purple-500/10 dark:text-purple-400 border-purple-200/50 dark:border-purple-500/20',
-            delivered: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-500/20',
-            cancelled: 'bg-rose-50 text-rose-700 dark:bg-rose-500/10 dark:text-rose-400 border-rose-200/50 dark:border-rose-500/20',
-        };
-        return styles[status] || 'bg-slate-50 text-slate-700 dark:bg-slate-500/10 dark:text-slate-400 border-slate-200/50 dark:border-slate-500/20';
-    };
-
-    const getStatusLabel = (status) => {
-        const labels = {
-            pending: 'Pendente',
-            processing: 'Processando',
-            shipped: 'Enviado',
-            delivered: 'Entregue',
-            cancelled: 'Cancelado',
-        };
-        return labels[status] || status;
-    };
-
-    const formatCurrency = (value) => {
-        return new Intl.NumberFormat('pt-BR', {
-            style: 'currency',
-            currency: 'BRL',
-        }).format(value);
-    };
-
-    const formatDate = (date) => {
-        return new Intl.DateTimeFormat('pt-BR', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-        }).format(new Date(date));
-    };
-
-    const formatTime = (date) => {
-        return new Intl.DateTimeFormat('pt-BR', {
-            hour: '2-digit',
-            minute: '2-digit',
-        }).format(new Date(date));
-    };
+    // Construct support message link
+    const supportMessage = `Olá! Preciso de ajuda com o Pedido #${order.id}.`;
+    const whatsappLink = `https://wa.me/5500000000000?text=${encodeURIComponent(supportMessage)}`;
 
     return (
         <AuthenticatedLayout
@@ -121,7 +110,7 @@ export default function OrderShow({ order, customShippingMethods = [] }) {
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-4">
                         <Link
-                            href={route('admin.orders.index')}
+                            href={route('client.orders')}
                             className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition-all hover:border-gold-500 hover:text-gold-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400"
                         >
                             <ArrowLeft className="h-5 w-5" />
@@ -200,7 +189,7 @@ export default function OrderShow({ order, customShippingMethods = [] }) {
                         >
                             <h3 className="flex items-center gap-2 text-lg font-bold text-slate-900 dark:text-white mb-6">
                                 <History className="h-5 w-5 text-gold-500" />
-                                Histórico de Atualizações
+                                Atualizações do Pedido
                             </h3>
                             <div className="space-y-6">
                                 {order.notifications.map((notification, index) => (
@@ -223,46 +212,13 @@ export default function OrderShow({ order, customShippingMethods = [] }) {
 
                 {/* Sidebar */}
                 <div className="lg:col-span-4 space-y-8">
-                    {/* Status Update Card */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="overflow-hidden rounded-[2.5rem] border border-slate-200/80 bg-white/80 p-6 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90"
-                    >
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Gerenciar Status</h3>
-                        <div className="relative">
-                            <select
-                                value={data.status}
-                                onChange={handleStatusChange}
-                                disabled={processing}
-                                className="w-full rounded-2xl border-slate-200 bg-slate-50 p-4 pr-10 text-sm font-bold text-slate-700 transition-all focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 appearance-none disabled:opacity-50"
-                            >
-                                <option value="pending">Pendente</option>
-                                <option value="processing">Processando</option>
-                                <option value="shipped">Enviado</option>
-                                <option value="delivered">Entregue</option>
-                                <option value="cancelled">Cancelado</option>
-                            </select>
-                            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
-                                <ChevronRight className="h-4 w-4 rotate-90" />
-                            </div>
-                        </div>
-                        {errors.status && (
-                            <p className="mt-2 text-xs font-bold text-rose-500">{errors.status}</p>
-                        )}
-                        <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
-                            A alteração do status notificará automaticamente o cliente.
-                        </p>
-                    </motion.div>
-
                     {/* Order Summary Card */}
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.1 }}
                         className="overflow-hidden rounded-[2.5rem] border border-slate-200/80 bg-white/80 p-6 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90"
                     >
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Resumo Financeiro</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Resumo da Compra</h3>
                         <div className="space-y-4">
                             <div className="flex justify-between text-sm">
                                 <span className="text-slate-500 dark:text-slate-400">Subtotal</span>
@@ -314,53 +270,23 @@ export default function OrderShow({ order, customShippingMethods = [] }) {
                         </div>
                     </motion.div>
 
-                    {/* Customer Info Card */}
+                    {/* Delivery Details Card */}
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="overflow-hidden rounded-[2.5rem] border border-slate-200/80 bg-white/80 p-6 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90"
-                    >
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Dados do Cliente</h3>
-                        <div className="space-y-5">
-                            <div className="flex items-start gap-4">
-                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500">
-                                    <User className="h-5 w-5" />
-                                </div>
-                                <div className="min-w-0">
-                                    <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Nome Completo</p>
-                                    <p className="font-bold text-slate-900 dark:text-white truncate">{order.user.name}</p>
-                                </div>
-                            </div>
-                            <div className="flex items-start gap-4">
-                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500">
-                                    <Mail className="h-5 w-5" />
-                                </div>
-                                <div className="min-w-0">
-                                    <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-1">Endereço de Email</p>
-                                    <p className="font-bold text-slate-900 dark:text-white truncate">{order.user.email}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div>
-
-                    {/* Delivery Address / Info Card */}
-                    <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 }}
+                        transition={{ delay: 0.1 }}
                         className="overflow-hidden rounded-[2.5rem] border border-slate-200/80 bg-white/80 p-6 shadow-sm backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/90"
                     >
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
                             <MapPin className="h-5 w-5 text-gold-500" />
-                            Dados de Entrega
+                            Informações de Entrega
                         </h3>
                         {order.shipping_method === 'retirada' ? (
                             <div className="space-y-4 text-sm text-slate-600 dark:text-slate-400">
                                 <div className="rounded-2xl bg-gold-500/5 border border-gold-500/10 p-4">
                                     <p className="font-bold text-gold-600 dark:text-gold-400">Retirada no Local</p>
                                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                                        O cliente optou por retirar o produto diretamente no endereço de origem.
+                                        Você optou por retirar seu pedido no endereço de origem da loja.
                                     </p>
                                 </div>
                             </div>
@@ -368,7 +294,7 @@ export default function OrderShow({ order, customShippingMethods = [] }) {
                             <div className="space-y-4 text-sm text-slate-600 dark:text-slate-400">
                                 <div>
                                     <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-0.5">Destinatário</p>
-                                    <p className="font-bold text-slate-900 dark:text-white">{order.address.name || order.user.name}</p>
+                                    <p className="font-bold text-slate-900 dark:text-white">{order.address.name}</p>
                                 </div>
                                 <div>
                                     <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-0.5">Logradouro / Número</p>
@@ -400,9 +326,31 @@ export default function OrderShow({ order, customShippingMethods = [] }) {
                             </div>
                         ) : (
                             <p className="text-sm text-slate-500 dark:text-slate-400 italic">
-                                Endereço de entrega não selecionado ou excluído.
+                                Endereço de entrega não disponível.
                             </p>
                         )}
+                    </motion.div>
+
+                    {/* Support Call-to-action */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="overflow-hidden rounded-[2.5rem] border border-slate-200/80 bg-gold-500/5 dark:bg-gold-500/10 p-6 shadow-sm dark:border-gold-500/20"
+                    >
+                        <h4 className="font-bold text-slate-900 dark:text-white">Precisa de ajuda com este pedido?</h4>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                            Se houver dúvidas sobre o prazo, entrega customizada ou pagamento, entre em contato via Whatsapp.
+                        </p>
+                        <a
+                            href={whatsappLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gold-500 hover:bg-gold-400 text-neutral-950 font-bold px-4 py-2.5 text-xs transition"
+                        >
+                            <MessageSquare className="h-4 w-4" />
+                            Falar com Suporte
+                        </a>
                     </motion.div>
                 </div>
             </div>

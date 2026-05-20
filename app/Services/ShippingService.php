@@ -10,7 +10,7 @@ class ShippingService
 {
     public static function getAllAvailableMethods()
     {
-        return [
+        $methods = [
             ['id' => 'melhor_envio_pac', 'name' => 'PAC (Melhor Envio)', 'provider' => 'melhor_envio'],
             ['id' => 'melhor_envio_sedex', 'name' => 'SEDEX (Melhor Envio)', 'provider' => 'melhor_envio'],
             ['id' => 'correios_pac', 'name' => 'PAC (Correios)', 'provider' => 'correios'],
@@ -18,6 +18,21 @@ class ShippingService
             ['id' => 'frenet_expresso', 'name' => 'Expresso (Frenet)', 'provider' => 'frenet'],
             ['id' => 'retirada', 'name' => 'Retirada no Local', 'provider' => 'general'],
         ];
+
+        $generalSettings = ShippingSetting::where('provider', 'general')->first();
+        if ($generalSettings && isset($generalSettings->config['custom_methods'])) {
+            foreach ($generalSettings->config['custom_methods'] as $method) {
+                if ($method['is_enabled'] ?? false) {
+                    $methods[] = [
+                        'id' => $method['id'],
+                        'name' => $method['name'],
+                        'provider' => 'custom',
+                    ];
+                }
+            }
+        }
+
+        return $methods;
     }
 
     public function calculateForCart($items, $cep, $location = null)
@@ -33,6 +48,25 @@ class ShippingService
             $availableMethods = array_merge($availableMethods, $methods);
         }
 
+        // 1.5 Add enabled Custom Shipping Methods
+        $generalSettings = ShippingSetting::where('provider', 'general')->first();
+        if ($generalSettings && isset($generalSettings->config['custom_methods'])) {
+            foreach ($generalSettings->config['custom_methods'] as $method) {
+                if ($method['is_enabled'] ?? false) {
+                    $availableMethods[] = [
+                        'id' => $method['id'],
+                        'name' => $method['name'],
+                        'price' => $method['price_mode'] === 'combine' ? 0.00 : (float)($method['fixed_price'] ?? 0),
+                        'price_mode' => $method['price_mode'] ?? 'fixed',
+                        'deadline' => (int)($method['deadline'] ?? 1),
+                        'icon' => 'truck',
+                        'provider' => 'custom',
+                        'description' => $method['description'] ?? ''
+                    ];
+                }
+            }
+        }
+
         // 2. Filter methods based on product restrictions
         // A method is only available if ALL products in the cart allow it.
         // If a product has no restrictions (null or empty array), it allows all.
@@ -40,8 +74,8 @@ class ShippingService
             $product = $item->product;
             if ($product->shipping_methods && count($product->shipping_methods) > 0) {
                 $availableMethods = array_filter($availableMethods, function($method) use ($product) {
-                    // Always allow pickup if explicitly enabled for the product, or if it matches the restriction
-                    if ($method['id'] === 'retirada') return true; 
+                    // Always allow pickup and custom methods
+                    if ($method['id'] === 'retirada' || str_starts_with($method['id'], 'custom_')) return true; 
                     return in_array($method['id'], $product->shipping_methods);
                 });
             }

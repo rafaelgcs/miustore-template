@@ -78,10 +78,10 @@ export default function Orders({ auth, orders }) {
                                                 <span className="text-lg font-semibold text-slate-950 dark:text-slate-100">
                                                     R$ {parseFloat(order.total_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                                                 </span>
-                                                <button className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-gold-200 hover:bg-gold-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
+                                                <Link href={route('client.orders.show', order.id)} className="inline-flex items-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-gold-200 hover:bg-gold-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
                                                     <Eye className="mr-2 h-4 w-4" />
                                                     Ver detalhes
-                                                </button>
+                                                </Link>
                                             </div>
                                         </div>
                                     </motion.article>
