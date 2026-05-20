@@ -17,8 +17,8 @@ class ShopController extends Controller
         $search = $request->query('search');
         $categorySlug = $request->query('category');
 
-        $categories = Category::withCount('products')
-            ->having('products_count', '>', 0)
+        $categories = Category::whereHas('products')
+            ->withCount('products')
             ->orderBy('name')
             ->get();
 
