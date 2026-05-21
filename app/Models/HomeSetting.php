@@ -44,7 +44,7 @@ class HomeSetting extends Model
     public static function defaultFooter(): array
     {
         return [
-            'brand_name' => 'Miu Store',
+            'brand_name' => 'Antonelli Acessórios',
             'brand_description' => 'Joias exclusivas e produtos de bem-estar selecionados para elevar sua autoestima e proporcionar momentos de puro luxo.',
             'social_instagram' => '#',
             'social_facebook' => '#',
@@ -68,7 +68,7 @@ class HomeSetting extends Model
                 [
                     'title' => 'Institucional',
                     'links' => [
-                        ['name' => 'Sobre a Miu Store', 'href' => '#'],
+                        ['name' => 'Sobre a Antonelli Acessórios', 'href' => '#'],
                         ['name' => 'Política de Trocas', 'href' => '#'],
                         ['name' => 'Envio e Entrega', 'href' => '#'],
                         ['name' => 'Contato', 'href' => '#'],

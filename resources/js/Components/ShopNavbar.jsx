@@ -129,10 +129,10 @@ export default function ShopNavbar() {
                     {/* Left: Logo */}
                     <Link href={route('home')} className="flex items-center gap-3 group">
                         <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20 group-hover:scale-105 transition duration-300 font-bold text-xl">
-                            M
+                            A
                         </div>
                         <div className="hidden sm:block">
-                            <p className="text-[10px] uppercase tracking-[0.32em] text-slate-400 dark:text-slate-400">Miu Store</p>
+                            <p className="text-[10px] uppercase tracking-[0.32em] text-slate-400 dark:text-slate-400">Antonelli Acessórios</p>
                             <h1 className="text-lg font-semibold tracking-wide text-black dark:text-white">Joias & Bem-estar</h1>
                         </div>
                     </Link>
@@ -310,9 +310,9 @@ export default function ShopNavbar() {
                         <div className="p-6 flex items-center justify-between border-b border-slate-100 dark:border-white/10">
                             <div className="flex items-center gap-3">
                                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gold-500 text-neutral-950 shadow-lg">
-                                    M
+                                    A
                                 </div>
-                                <span className="text-lg font-bold tracking-wide">Miu Store</span>
+                                <span className="text-lg font-bold tracking-wide">Antonelli Acessórios</span>
                             </div>
                             <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-slate-600 dark:text-slate-300">
                                 <X className="h-6 w-6" />

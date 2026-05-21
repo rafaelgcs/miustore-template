@@ -14,7 +14,7 @@ export default function Footer() {
     
     // Safety fallback
     const footer = footer_settings || {};
-    const brandName = footer.brand_name || 'Miu Store';
+    const brandName = footer.brand_name || 'Antonelli Acessórios';
     const brandLetter = brandName.charAt(0).toUpperCase();
 
     return (

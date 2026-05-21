@@ -40,7 +40,7 @@ class HomeSettingTest extends TestCase
         $admin = User::factory()->create(['is_admin' => true]);
 
         $footerData = [
-            'brand_name' => 'Custom Miu Store',
+            'brand_name' => 'Custom Antonelli Acessórios',
             'brand_description' => 'Custom description',
             'social_instagram' => 'https://instagram.com/custom',
             'social_facebook' => 'https://facebook.com/custom',
@@ -90,7 +90,7 @@ class HomeSettingTest extends TestCase
         $response->assertSessionHasNoErrors();
 
         $settings = HomeSetting::current();
-        $this->assertEquals('Custom Miu Store', $settings->footer['brand_name']);
+        $this->assertEquals('Custom Antonelli Acessórios', $settings->footer['brand_name']);
         $this->assertEquals('Custom Col 1', $settings->footer['columns'][0]['title']);
         $this->assertEquals('Link A', $settings->footer['columns'][0]['links'][0]['name']);
     }

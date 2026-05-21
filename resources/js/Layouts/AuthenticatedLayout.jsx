@@ -152,7 +152,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     {user?.is_admin ? 'Admin' : 'Cliente'}
                                 </p>
                                 <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                                    {user?.is_admin ? 'Miu Store' : user?.name || 'Visitante'}
+                                    {user?.is_admin ? 'Antonelli Acessórios' : user?.name || 'Visitante'}
                                 </p>
                             </div>
                         </Link>

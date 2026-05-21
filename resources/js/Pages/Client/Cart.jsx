@@ -802,7 +802,7 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
     if (!auth?.user) {
         return (
             <div className="min-h-screen bg-white dark:bg-neutral-950 text-slate-900 dark:text-slate-100 font-sans">
-                <Head title="Carrinho - Miu Store" />
+                <Head title="Carrinho - Antonelli Acessórios" />
                 <ShopNavbar />
 
                 <main className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -846,7 +846,7 @@ export default function Cart({ auth, cartItems, addresses: initialAddresses = []
             user={auth.user}
             header={<h2 className="text-xl font-semibold leading-tight text-slate-800 dark:text-slate-200">Finalizar Compra</h2>}
         >
-            <Head title="Carrinho - Miu Store" />
+            <Head title="Carrinho - Antonelli Acessórios" />
 
             <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
                 {cartItems.length > 0 && <StepIndicator />}

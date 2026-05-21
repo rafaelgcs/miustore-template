@@ -105,7 +105,7 @@ export default function SeoSettings({ seoSetting }) {
                                     type="text"
                                     value={data.site_title}
                                     onChange={(event) => setData('site_title', event.target.value)}
-                                    placeholder="Miu Store - Joias Artesanais"
+                                    placeholder="Antonelli Acessórios"
                                     className="w-full rounded-2xl border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
                                 />
                             </div>
@@ -301,7 +301,7 @@ export default function SeoSettings({ seoSetting }) {
                                     type="text"
                                     value={data.business_name}
                                     onChange={(event) => setData('business_name', event.target.value)}
-                                    placeholder="Miu Store Ltda"
+                                    placeholder="Antonelli Acessórios"
                                     className="w-full rounded-2xl border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
                                 />
                             </div>

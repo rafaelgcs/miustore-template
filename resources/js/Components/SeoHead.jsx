@@ -3,7 +3,7 @@ import { Head, usePage } from '@inertiajs/react';
 export default function SeoHead() {
     const { seo = {}, url } = usePage().props;
 
-    const title = seo.site_title || import.meta.env.VITE_APP_NAME || 'Miu Store';
+    const title = seo.site_title || import.meta.env.VITE_APP_NAME || 'Antonelli Acessórios';
     const description = seo.meta_description || 'Loja online de joias e bem-estar com peças artesanais, atendimento personalizado e entrega rápida.';
     const keywords = seo.meta_keywords || 'joias, alianças, brincos, colares, anéis, joias artisanais, ouro 18k, presente de luxo';
     const image = seo.meta_image || null;

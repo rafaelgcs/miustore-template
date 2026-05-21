@@ -14,10 +14,10 @@ export default function SharedFavorites({ user, favorites }) {
                     <div className="flex items-center gap-3">
                         <Link href="/" className="flex items-center gap-3">
                             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gold-500 text-neutral-950 shadow-lg shadow-gold-500/20">
-                                M
+                                A
                             </div>
                             <div>
-                                <p className="text-xs uppercase tracking-[0.32em] text-slate-400 dark:text-slate-400">Miu Store</p>
+                                <p className="text-xs uppercase tracking-[0.32em] text-slate-400 dark:text-slate-400">Antonelli Acessórios</p>
                                 <h1 className="text-lg font-semibold tracking-wide text-black dark:text-white">Joias & Bem-estar</h1>
                             </div>
                         </Link>
@@ -105,7 +105,7 @@ export default function SharedFavorites({ user, favorites }) {
             <footer className="border-t border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-black/30 py-12">
                 <div className="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
                     <p className="text-sm text-slate-500 dark:text-slate-400">
-                        &copy; 2026 Miu Store Joias & Bem-estar. Todos os direitos reservados.
+                        &copy; 2026 Antonelli Acessórios Joias & Bem-estar. Todos os direitos reservados.
                     </p>
                 </div>
             </footer>

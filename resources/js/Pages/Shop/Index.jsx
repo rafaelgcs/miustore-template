@@ -43,7 +43,7 @@ export default function Index({ featuredProducts, categories, newArrivals, carou
     };
     return (
         <div className="min-h-screen bg-white dark:bg-neutral-950 text-slate-900 dark:text-slate-100 font-sans">
-            <Head title="Miu Store" />
+            <Head title="Antonelli Acessórios" />
 
             <ShopNavbar />
 

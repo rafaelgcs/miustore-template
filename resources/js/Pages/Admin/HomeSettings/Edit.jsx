@@ -21,7 +21,7 @@ export default function Edit({ settings }) {
     const [activeTab, setActiveTab] = React.useState('general');
 
     const defaultFooter = {
-        brand_name: 'Miu Store',
+        brand_name: 'Antonelli Acessórios',
         brand_description: 'Joias exclusivas e produtos de bem-estar selecionados para elevar sua autoestima e proporcionar momentos de puro luxo.',
         social_instagram: '#',
         social_facebook: '#',
@@ -45,7 +45,7 @@ export default function Edit({ settings }) {
             {
                 title: 'Institucional',
                 links: [
-                    { name: 'Sobre a Miu Store', href: '#' },
+                    { name: 'Sobre a Antonelli Acessórios', href: '#' },
                     { name: 'Política de Trocas', href: '#' },
                     { name: 'Envio e Entrega', href: '#' },
                     { name: 'Contato', href: '#' }
