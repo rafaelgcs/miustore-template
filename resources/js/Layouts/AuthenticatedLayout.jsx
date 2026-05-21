@@ -57,6 +57,7 @@ export default function AuthenticatedLayout({ header, children }) {
             links: [
                 { name: 'Visão Geral', href: route('admin.dashboard'), icon: LayoutDashboard, active: route().current('admin.dashboard') },
                 { name: 'Pedidos', href: route('admin.orders.index'), icon: ShoppingBag, active: route().current('admin.orders.*') },
+                { name: 'Usuários', href: route('admin.users.index'), icon: Users, active: route().current('admin.users.*') },
                 { name: 'Notificações', href: route('admin.notifications'), icon: Bell, active: route().current('admin.notifications'), badge: notifications.unread_count },
             ]
         },

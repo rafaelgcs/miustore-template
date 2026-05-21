@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Head, Link, useForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { motion, AnimatePresence } from 'framer-motion';
+import MediaSelectorModal from '@/Components/MediaSelectorModal';
 import {
     Key,
     Plus,
@@ -27,6 +28,8 @@ import {
 
 export default function Create({ categories, availableShippingMethods }) {
     const [activeTab, setActiveTab] = useState('general');
+    const [mediaSelectorOpen, setMediaSelectorOpen] = useState(false);
+    const [mediaSelectorTarget, setMediaSelectorTarget] = useState({ type: '', index: null });
 
     const { data, setData, post, processing, errors } = useForm({
         category_id: '',
@@ -102,6 +105,20 @@ export default function Create({ categories, availableShippingMethods }) {
         const newImages = [...data.images];
         newImages[index].url = url;
         setData('images', newImages);
+    };
+
+    const openMediaSelectorFor = (type, index = null) => {
+        setMediaSelectorTarget({ type, index });
+        setMediaSelectorOpen(true);
+    };
+
+    const handleMediaSelect = (url) => {
+        if (mediaSelectorTarget.type === 'main') {
+            setData('image', url);
+        } else if (mediaSelectorTarget.type === 'gallery' && mediaSelectorTarget.index !== null) {
+            updateImageUrl(mediaSelectorTarget.index, url);
+        }
+        setMediaSelectorOpen(false);
     };
 
     const submit = (event) => {
@@ -263,13 +280,23 @@ export default function Create({ categories, availableShippingMethods }) {
                                                 <Globe className="h-4 w-4 text-gold-500" />
                                                 URL da Imagem Principal (Opcional se usar a Galeria)
                                             </label>
-                                            <input
-                                                type="text"
-                                                value={data.image}
-                                                onChange={(e) => setData('image', e.target.value)}
-                                                placeholder="/images/products/example.jpg"
-                                                className="w-full rounded-2xl border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
-                                            />
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="text"
+                                                    value={data.image}
+                                                    onChange={(e) => setData('image', e.target.value)}
+                                                    placeholder="/images/products/example.jpg"
+                                                    className="flex-1 rounded-2xl border-slate-200 bg-slate-50/50 px-4 py-3.5 text-sm transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-800 dark:bg-slate-900/50 dark:text-white"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => openMediaSelectorFor('main')}
+                                                    className="px-4 rounded-2xl border border-slate-200 bg-white text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 flex items-center gap-1.5 shrink-0"
+                                                >
+                                                    <ImageIcon className="h-4 w-4 text-gold-500" />
+                                                    Biblioteca
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-white/5">
@@ -329,13 +356,23 @@ export default function Create({ categories, availableShippingMethods }) {
                                                     </div>
 
                                                     <div className="space-y-3">
-                                                        <input
-                                                            type="text"
-                                                            value={image.url}
-                                                            onChange={(e) => updateImageUrl(index, e.target.value)}
-                                                            placeholder="URL da imagem..."
-                                                            className="w-full rounded-xl border-slate-200 bg-white px-4 py-2 text-xs transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
-                                                        />
+                                                         <div className="flex gap-2">
+                                                             <input
+                                                                 type="text"
+                                                                 value={image.url}
+                                                                 onChange={(e) => updateImageUrl(index, e.target.value)}
+                                                                 placeholder="URL da imagem..."
+                                                                 className="flex-1 rounded-xl border-slate-200 bg-white px-3 py-2 text-xs transition focus:border-gold-500 focus:ring-gold-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                                                             />
+                                                             <button
+                                                                 type="button"
+                                                                 onClick={() => openMediaSelectorFor('gallery', index)}
+                                                                 className="px-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-700 flex items-center justify-center shrink-0"
+                                                                 title="Selecionar da biblioteca"
+                                                             >
+                                                                 <ImageIcon className="h-3.5 w-3.5" />
+                                                             </button>
+                                                         </div>
 
                                                         <div className="flex items-center justify-between gap-2">
                                                             <button
@@ -788,6 +825,11 @@ export default function Create({ categories, availableShippingMethods }) {
                     </motion.div>
                 </div>
             </div>
+            <MediaSelectorModal
+                isOpen={mediaSelectorOpen}
+                onClose={() => setMediaSelectorOpen(false)}
+                onSelect={handleMediaSelect}
+            />
         </AuthenticatedLayout>
     );
 }

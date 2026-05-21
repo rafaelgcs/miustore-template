@@ -42,6 +42,15 @@ class MediaController extends Controller
             $tempFolder = $tempFolder->parent;
         }
 
+        if (!$request->hasHeader('X-Inertia') && ($request->wantsJson() || $request->ajax())) {
+            return response()->json([
+                'folders' => $folders,
+                'media' => $media,
+                'currentFolder' => $currentFolder,
+                'breadcrumbs' => $breadcrumbs,
+            ]);
+        }
+
         return Inertia::render('Admin/Media/Index', [
             'folders' => $folders,
             'media' => $media,
